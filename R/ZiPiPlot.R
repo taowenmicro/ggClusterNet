@@ -16,10 +16,8 @@
 #' @export
 
 
+
 ZiPiPlot = function(igraph = igraph,method = "cluster_fast_greedy"){
-
-
-
 
   if (method == "cluster_walktrap" ) {
     fc <- igraph::cluster_walktrap(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
@@ -36,14 +34,15 @@ ZiPiPlot = function(igraph = igraph,method = "cluster_fast_greedy"){
   }
   modularity <- igraph::modularity(igraph,membership(fc))
   # 模块化程度
-  modularity
   # 按照模块为节点配色，这里我们可以加入到nodes中
-  comps <- membership(fc)
+  comps <- igraph::membership(fc)
 
   # comps
-  V(igraph)$module <- as.character(comps)
+  igraph::V(igraph)$module <- as.character(comps)
 
-  taxa.roles <- microbiomeSeq::module.roles(igraph)
+  taxa.roles <- module.roles(igraph)
+
+
 
   head(taxa.roles)
   head(taxa.roles)

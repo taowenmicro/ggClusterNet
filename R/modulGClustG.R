@@ -55,13 +55,11 @@ modulGroup = function( corr = cor,cut = 3,method = "cluster_walktrap"){
 
   # unique(nodes$elements)
 
-  node = tibble::tibble(name = unique(c(edges$from, edges$to)))
+  node = data.frame(name = unique(c(as.character(edges$from),as.character( edges$to))))
   row.names(node) = node$name
-  head(node)
 
   # Output igraph object
   igraph  = igraph::graph_from_data_frame(edges, directed = FALSE, vertices = node)
-
 
   # Modularity - there are four common calculation methods here
 
