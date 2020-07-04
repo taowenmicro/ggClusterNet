@@ -43,7 +43,7 @@ modulGroup = function( corr = cor,cut = 3,method = "cluster_walktrap"){
                           r = as.vector(corr)
                           )
   # Extract half of the matrix, and remove the diagonal correlation (self related to yourself)
-  edges <- dplyr::filter(edges, lower.tri(corr))
+  edges <- dplyr::filter(edges, as.vector(lower.tri(corr)))
   colnames(edges)[3] = "weight"
   #---Set the sign of the edge
   # E.color <- edges$weight

@@ -33,7 +33,7 @@ nodeEdge = function(cor = cor,zero = TRUE){
   )
   head(edges)
   # 提取一半的矩阵，并去除对角线的相关（自己于自己相关）
-  edges <- dplyr::filter(edges, lower.tri(corr))
+  edges <- dplyr::filter(edges, as.vector(lower.tri(corr)))
   #按照R 阈值和P阈值筛选
 if (zero == TRUE) {
   edges <- dplyr::filter(edges,abs(r)> 0)
