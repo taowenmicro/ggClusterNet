@@ -8,18 +8,19 @@ corMicro(ps = ps, N = 0.02, r.threshold = 0.6, p.threshold = 0.05,
   method = "pearson")
 }
 \arguments{
-\item{ps}{phyloseq Object, could contains OTU tables, tax table and map table, represented sequences.}
+\item{ps}{phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.}
 
-\item{N}{number object, filter OTU tables by abundance.}
+\item{N}{filter OTU tables by abundance.The defult, N=0.02, extract the top 0.02 relative abundance of OTU.}
 
-\item{r.threshold}{Correlation threshold}
+\item{r.threshold}{The defult, r.threshold=0.6, it represents the correlation that the absolute value
+of the correlation threshold is greater than 0.6. the value range of correlation threshold from 0 to 1.}
 
-\item{p.threshold}{Significance threshold}
+\item{p.threshold}{The defult, p.threshold=0.05, it represents significance threshold below 0.05.}
 
 \item{method}{method for Correlation calculation,method="pearson" is the default value. The alternatives to be passed to cor are "spearman" and "kendall".}
 }
 \value{
-list
+list which contains OTU correlation matrix
 }
 \description{
 Correlation network calculation of microbial community data
@@ -36,5 +37,5 @@ Root exudates drive the soil-borne legacy of aboveground pathogen infection
 Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 }
 \author{
-Contact: Tao Wen \email{2018203048@njau.edu.cn} Jun Yuan \email{junyuan@njau.edu.cn}
+Contact: Tao Wen \email{2018203048@njau.edu.cn} Jun Yuan \email{junyuan@njau.edu.cn} Penghao Xie \email{2019103106@njau.edu.cn}
 }

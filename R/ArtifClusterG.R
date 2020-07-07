@@ -1,7 +1,7 @@
 #' Manually specify coordinates to display the network
 #'
 #' @param cor Correlation matrix
-#' @param nodeGroup Classification information of network nodes
+#' @param nodeGroup Classification information of network nodes.Group according to actual requirements, see example
 #' @param r Radius of each submodule
 #' @param da The coordinates of each submodule
 #' @examples
@@ -9,11 +9,26 @@
 #' result = corMicro (ps = ps,N = 0.02,r.threshold=0.8,p.threshold=0.05,method = "pearson")
 #' #Extract correlation matrix
 #' cor = result[[1]]
-#' # building the node group
-#' netClu = data.frame(ID = row.names(cor),group =rep(1:3,length(row.names(cor)))[1:length(row.names(cor))] )
+#' # Extract taxonomy table
+#' ps_net = result[[3]]
+#' # set group of experimental
+#' netClu = data.frame(ID = row.names(tax_table),group =rep(1:5,length(row.names(tax_table)))[1:length(row.names(tax_table))] )
 #' netClu$group = as.factor(netClu$group)
-#' @return list
-#' @author Contact: Tao Wen \email{2018203048@@njau.edu.cn} Jun Yuan \email{junyuan@@njau.edu.cn}
+#' xs = as.data.frame(table(netClu$group))
+#' # set the radicus
+#' r = rep(4,length(xs$Freq))
+#' # Set the coordinates manually
+#' ax1 = c(120,0)
+#' ax2 = c(130,-30)
+#' ax3 = c(140,-70)
+#' ax4 = c(130,-110)
+#' ax5 = c(120,-140)
+#' da = rbind(ax1,ax2,ax3,ax4,ax5)
+#' # Calculate network layout
+#' result2 = ArtifCluster(cor = cor,nodeGroup =netClu,r = r,da =da)
+#' node = result2[[1]]
+#' @return list which contains node position coordinates
+#' @author Contact: Tao Wen \email{2018203048@@njau.edu.cn} Jun Yuan \email{junyuan@@njau.edu.cn} Penghao Xie \email{2019103106@@njau.edu.cn}
 #' @references
 #'
 #' Yuan J, Zhao J, Wen T, Zhao M, Li R, Goossens P, Huang Q, Bai Y, Vivanco JM, Kowalchuk GA, Berendsen RL, Shen Q

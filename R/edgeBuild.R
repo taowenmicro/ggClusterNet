@@ -10,13 +10,13 @@
 #' # building the node group
 #' netClu = data.frame(ID = row.names(cor),group =rep(1:3,length(row.names(cor)))[1:length(row.names(cor))] )
 #' netClu$group = as.factor(netClu$group)
-#' #---calculate node location
+#' #Calculate node location
 #' result2 = PolygonRrClusterG(cor = cor,nodeGroup = netClu )
 #' node = result2[[1]]
 #' edge = edgeBuild(cor = cor,plotcord = node)
 #'
-#' @return data frame
-#' @author Contact: Tao Wen \email{2018203048@@njau.edu.cn} Jun Yuan \email{junyuan@@njau.edu.cn}
+#' @return edge which contains OTU and its coordinates, the correlation of edge between nodes
+#' @author Contact: Tao Wen \email{2018203048@@njau.edu.cn} Jun Yuan \email{junyuan@@njau.edu.cn} Penghao Xie \email{2019103106@@njau.edu.cn}
 #' @references
 #'
 #' Yuan J, Zhao J, Wen T, Zhao M, Li R, Goossens P, Huang Q, Bai Y, Vivanco JM, Kowalchuk GA, Berendsen RL, Shen Q

@@ -2,33 +2,42 @@
 % Please edit documentation in R/nodeEdge.R
 \name{nodeEdge}
 \alias{nodeEdge}
-\title{Construct a network layout. Arrange network nodes to different locations according to grouping}
+\title{Construct igraph and tidygraph object}
 \usage{
 nodeEdge(cor = cor, zero = TRUE)
 }
 \arguments{
 \item{cor}{Correlation matrix}
 
-\item{zero}{TRUE or FEASE}
+\item{zero}{TRUE or FALSE. If the edge-to-edge correlation is 0, FALSE preserves the output.}
 }
 \value{
-list
+list Documents required for drawing
 }
 \description{
-Construct a network layout. Arrange network nodes to different locations according to grouping
+Construct igraph and tidygraph object
 }
 \examples{
 data(ps)
 result = corMicro (ps = ps,N = 0.02,r.threshold=0.8,p.threshold=0.05,method = "pearson")
 #Extract correlation matrix
 cor = result[[1]]
-# building the node group
-netClu = data.frame(ID = row.names(cor),group =rep(1:3,length(row.names(cor)))[1:length(row.names(cor))] )
-netClu$group = as.factor(netClu$group)
-result2 = PolygonRrClusterG (cor = cor,nodeGroup =netClu ）
-node = result2[[1]]
-
-
+# nodeEdge function generates nodes and edge files
+result4 = nodeEdge(cor = cor)
+# Extract edge file
+edge = result4[[1]]
+dim(edge)
+edge$weight
+# Extract node file
+node = result4[[2]]
+dim(node)
+# Input to the igraph for plot
+igraph  = igraph::graph_from_data_frame(edge, directed = FALSE, vertices = node)
+# Input to the tidygraph for plot
+library(tidygraph)
+library(ggraph)
+tbl_graph = tidygraph::tbl_graph(nodes = node, edges = edge, directed = FALSE)
+tbl_graph
 }
 \references{
 Yuan J, Zhao J, Wen T, Zhao M, Li R, Goossens P, Huang Q, Bai Y, Vivanco JM, Kowalchuk GA, Berendsen RL, Shen Q
@@ -36,5 +45,5 @@ Root exudates drive the soil-borne legacy of aboveground pathogen infection
 Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 }
 \author{
-Contact: Tao Wen \email{2018203048@njau.edu.cn} Jun Yuan \email{junyuan@njau.edu.cn}
+Contact: Tao Wen \email{2018203048@njau.edu.cn} Jun Yuan \email{junyuan@njau.edu.cn} Penghao Xie \email{2019103106@njau.edu.cn}
 }

@@ -1,4 +1,4 @@
-#' Construct a network layout. Arrange network nodes to different locations according to grouping
+#' Construct a network layout. Calculate the layout according to grouping and random distribution
 #'
 #' @param cor Correlation matrix
 #' @param nodeGroup Classification information of network nodes
@@ -9,14 +9,24 @@
 #' #Extract correlation matrix
 #' cor = result[[1]]
 #' # building the node group
-#' netClu = data.frame(ID = row.names(cor),group =rep(1:3,length(row.names(cor)))[1:length(row.names(cor))] )
+#' ps_net = result[[3]]
+#' vegan_tax <-  function(physeq){
+#' tax <-  tax_table(physeq)
+#'
+#' return(as(tax,"matrix"))
+#' }
+#' tax_table = as.data.frame(vegan_tax(ps_net))
+#' group = as.data.frame(tax_table)
+#' group$ID = row.names(group)
+#' netClu = data.frame(ID = row.names(group),group = group$Phylum)
 #' netClu$group = as.factor(netClu$group)
-#' result2 = PolygonRrClusterG (cor = cor,nodeGroup =netClu ）
+#' result2 = PolygonRrClusterG (cor = cor,nodeGroup =netClu )
 #' node = result2[[1]]
 #'
 #'
-#' @return list
-#' @author Contact: Tao Wen \email{2018203048@@njau.edu.cn} Jun Yuan \email{junyuan@@njau.edu.cn}
+#' @return result2 Which contains 2 lists.Result2[[1]], consists of OTU and its corresponding coordinates.
+#' result2[[2]], consists of the network center coordinates of each group
+#' @author Contact: Tao Wen \email{2018203048@@njau.edu.cn} Jun Yuan \email{junyuan@@njau.edu.cn} Penghao Xie \email{2019103106@@njau.edu.cn}
 #' @references
 #'
 #' Yuan J, Zhao J, Wen T, Zhao M, Li R, Goossens P, Huang Q, Bai Y, Vivanco JM, Kowalchuk GA, Berendsen RL, Shen Q

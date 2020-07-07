@@ -9,10 +9,11 @@ PolygonClusterG(cor = cor, nodeGroup = netClu)
 \arguments{
 \item{cor}{Correlation matrix}
 
-\item{nodeGroup}{Classification information of network nodes}
+\item{nodeGroup}{Classification information of network nodes.Group according to actual requirements, see example}
 }
 \value{
-list
+result2 Which contains 2 lists.Result2[[1]], consists of OTU and its corresponding coordinates.
+Result2[[2]], consists of the network center coordinates of each group
 }
 \description{
 Construct a network layout. Arrange network nodes to different locations according to grouping
@@ -36,5 +37,5 @@ Root exudates drive the soil-borne legacy of aboveground pathogen infection
 Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 }
 \author{
-Contact: Tao Wen \email{2018203048@njau.edu.cn} Jun Yuan \email{junyuan@njau.edu.cn}
+Contact: Tao Wen \email{2018203048@njau.edu.cn} Jun Yuan \email{junyuan@njau.edu.cn} Penghao Xie \email{2019103106@njau.edu.cn}
 }

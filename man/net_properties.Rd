@@ -16,17 +16,12 @@ list
 Use the layout in the sne package to calculate the visual layout of the network
 }
 \examples{
-data
-data(ps)
-result = corMicro (ps = ps,N = 0.02,r.threshold=0.8,p.threshold=0.05,method = "pearson")
-#Extract correlation matrix
-cor = result[[1]]
-# building the node group
-netClu = data.frame(ID = row.names(cor),group =rep(1:3,length(row.names(cor)))[1:length(row.names(cor))] )
-netClu$group = as.factor(netClu$group)
-result2 = ranSNEClusterG (cor=  cor,layout ="circle")
-node = result2[[1]]
-
+# Import network data
+data(igraph)
+# Computing network related properties：the total number of edges, the number of positive correlation edges, the number of negative correlation edges, the number of vertices...
+reslt = net_properties(igraph)
+# export file
+write.csv(reslt,"netproperties.csv")
 
 }
 \references{
@@ -35,5 +30,5 @@ Root exudates drive the soil-borne legacy of aboveground pathogen infection
 Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 }
 \author{
-Contact: Tao Wen \email{2018203048@njau.edu.cn} Jun Yuan \email{junyuan@njau.edu.cn}
+Contact: Tao Wen \email{2018203048@njau.edu.cn} Jun Yuan \email{junyuan@njau.edu.cn} Penghao Xie \email{2019103106@njau.edu.cn}
 }

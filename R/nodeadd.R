@@ -1,21 +1,45 @@
-#' Use otu forms and annotation files to annotate microbial network nodes
+#' Add annotation information to network nodes
 #'
-#' @param ps phyloseq Object, could contains OTU tables, tax table and map table, represented sequences.
-#' @param N number object, filter OTU tables by abundance.
-#' @param r.threshold Correlation threshold
-#' @param p.threshold Significance threshold
-#' @param  method method for Correlation calculation,method="pearson" is the default value. The alternatives to be passed to cor are "spearman" and "kendall".
+#' @param plotcord The coordinate information of node OTU
+#' @param otu_table Relative abundance of node OTU
+#' @param tax_table Species annotation information of the node OTU
 #' @examples
+#' data(ps)
+#' # Calculate the correlation network of microbial community data.Generate 4 lists
+#' result = corMicro (ps = ps,N = 0.02,r.threshold=0.8,p.threshold=0.05,method = "pearson")
+#'# Extract phyloseq object from result
+#' ps_net = result[[3]]
+#' # Extract otu_table from ps_net
+#' vegan_otu <-  function(physeq){
+#' OTU <-  otu_table(physeq)
+#' if(taxa_are_rows(OTU)){
+#'   OTU <-  t(OTU)
+#' }
+#' return(as(OTU,"matrix"))
+#' }
+#' otu_table = as.data.frame(t(vegan_otu(ps_net)))
+#' Extract tax_table from ps_net
+#' vegan_tax <-  function(physeq){
+#' tax <-  tax_table(physeq)
+#'
+#' return(as(tax,"matrix"))
+#' }
+#' tax_table = as.data.frame(vegan_tax(ps_net))
+#' # Set up OTU grouping
+#' netClu = data.frame(ID = row.names(otu_table),group =rep(1:5,length(row.names(otu_table)))[1:length(row.names(otu_table))] )
+#' netClu$group = as.factor(netClu$group)
+#' # Construct a network layout. Arrange network nodes to different locations according to grouping
+#' result2 = PolygonClusterG (cor = cor,nodeGroup =netClu  )
+#' node = result2[[1]]
 #' nodes = nodeadd(plotcord =node,otu_table = otu_table,tax_table = tax_table)
 #' @return list
-#' @author Contact: Tao Wen \email{2018203048@@njau.edu.cn} Jun Yuan \email{junyuan@@njau.edu.cn}
+#' @author Contact: Tao Wen \email{2018203048@@njau.edu.cn} Jun Yuan \email{junyuan@@njau.edu.cn} Penghao Xie \email{2019103106@@njau.edu.cn}
 #' @references
 #'
 #' Yuan J, Zhao J, Wen T, Zhao M, Li R, Goossens P, Huang Q, Bai Y, Vivanco JM, Kowalchuk GA, Berendsen RL, Shen Q
 #' Root exudates drive the soil-borne legacy of aboveground pathogen infection
 #' Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 #' @export
-
 
 nodeadd = function(plotcord =node,otu_table = otu_table,tax_table = tax_table){
 

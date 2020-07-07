@@ -1,7 +1,7 @@
 #' Construct a network layout. Arrange network nodes to different locations according to grouping
 #'
 #' @param cor Correlation matrix
-#' @param nodeGroup Classification information of network nodes
+#' @param nodeGroup Classification information of network nodes.Group according to actual requirements, see example
 #' @examples
 #' data
 #' data(ps)
@@ -14,15 +14,16 @@
 #' result2 = PolygonClusterG(cor = cor,nodeGroup =  netClu )
 #'
 #'
-#' @return list
-#' @author Contact: Tao Wen \email{2018203048@@njau.edu.cn} Jun Yuan \email{junyuan@@njau.edu.cn}
+#' @return result2 Which contains 2 lists.Result2[[1]], consists of OTU and its corresponding coordinates.
+#' Result2[[2]], consists of the network center coordinates of each group
+#'
+#' @author Contact: Tao Wen \email{2018203048@@njau.edu.cn} Jun Yuan \email{junyuan@@njau.edu.cn} Penghao Xie \email{2019103106@@njau.edu.cn}
 #' @references
 #'
 #' Yuan J, Zhao J, Wen T, Zhao M, Li R, Goossens P, Huang Q, Bai Y, Vivanco JM, Kowalchuk GA, Berendsen RL, Shen Q
 #' Root exudates drive the soil-borne legacy of aboveground pathogen infection
 #' Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 #' @export
-
 
 
 PolygonClusterG <- function(cor = cor,nodeGroup =netClu ){

@@ -2,7 +2,7 @@
 % Please edit documentation in R/PolygonRrClusterG.R
 \name{PolygonRrClusterG}
 \alias{PolygonRrClusterG}
-\title{Construct a network layout. Arrange network nodes to different locations according to grouping}
+\title{Construct a network layout. Calculate the layout according to grouping and random distribution}
 \usage{
 PolygonRrClusterG(cor = cor, nodeGroup = netClu)
 }
@@ -12,10 +12,11 @@ PolygonRrClusterG(cor = cor, nodeGroup = netClu)
 \item{nodeGroup}{Classification information of network nodes}
 }
 \value{
-list
+result2 Which contains 2 lists.Result2[[1]], consists of OTU and its corresponding coordinates.
+result2[[2]], consists of the network center coordinates of each group
 }
 \description{
-Construct a network layout. Arrange network nodes to different locations according to grouping
+Construct a network layout. Calculate the layout according to grouping and random distribution
 }
 \examples{
 data
@@ -24,9 +25,18 @@ result = corMicro (ps = ps,N = 0.02,r.threshold=0.8,p.threshold=0.05,method = "p
 #Extract correlation matrix
 cor = result[[1]]
 # building the node group
-netClu = data.frame(ID = row.names(cor),group =rep(1:3,length(row.names(cor)))[1:length(row.names(cor))] )
+ps_net = result[[3]]
+vegan_tax <-  function(physeq){
+tax <-  tax_table(physeq)
+
+return(as(tax,"matrix"))
+}
+tax_table = as.data.frame(vegan_tax(ps_net))
+group = as.data.frame(tax_table)
+group$ID = row.names(group)
+netClu = data.frame(ID = row.names(group),group = group$Phylum)
 netClu$group = as.factor(netClu$group)
-result2 = PolygonRrClusterG (cor = cor,nodeGroup =netClu ）
+result2 = PolygonRrClusterG (cor = cor,nodeGroup =netClu )
 node = result2[[1]]
 
 
@@ -37,5 +47,5 @@ Root exudates drive the soil-borne legacy of aboveground pathogen infection
 Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 }
 \author{
-Contact: Tao Wen \email{2018203048@njau.edu.cn} Jun Yuan \email{junyuan@njau.edu.cn}
+Contact: Tao Wen \email{2018203048@njau.edu.cn} Jun Yuan \email{junyuan@njau.edu.cn} Penghao Xie \email{2019103106@njau.edu.cn}
 }

@@ -21,8 +21,6 @@
 #'
 #' @export module.roles
 #' @export plot_roles
-#'
-
 
 
 module.roles <- function(comm_graph){

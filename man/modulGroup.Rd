@@ -9,7 +9,7 @@ modulGroup(corr = cor, cut = 3, method = "cluster_walktrap")
 \arguments{
 \item{cut}{which model contain node less than cut,will be tegether to other group}
 
-\item{method}{method to culculate Degree of modularity}
+\item{method}{method to culculate Degree of modularity.There are four module clustering algorithms inside.}
 
 \item{cor}{Correlation matrix}
 }
@@ -50,5 +50,5 @@ Root exudates drive the soil-borne legacy of aboveground pathogen infection
 Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 }
 \author{
-Contact: Tao Wen \email{2018203048@njau.edu.cn} Jun Yuan \email{junyuan@njau.edu.cn}
+Contact: Tao Wen \email{2018203048@njau.edu.cn} Jun Yuan \email{junyuan@njau.edu.cn} Penghao Xie \email{2019103106@njau.edu.cn}
 }

@@ -4,7 +4,7 @@
 #' @description Enter correlation matrix, calculate network modules, and generate groups.
 #' @param cor Correlation matrix
 #' @param cut which model contain node less than cut,will be tegether to other group
-#' @param method method to culculate Degree of modularity
+#' @param method method to culculate Degree of modularity.There are four module clustering algorithms inside.
 #' @details
 #' By default, returns table, contain node and group imformation
 #' The available method to culculate Degree of modularity include the following:
@@ -26,14 +26,13 @@
 #' node = result2[[1]]
 #'
 #' @return data table.
-#' @author Contact: Tao Wen \email{2018203048@@njau.edu.cn} Jun Yuan \email{junyuan@@njau.edu.cn}
+#' @author Contact: Tao Wen \email{2018203048@@njau.edu.cn} Jun Yuan \email{junyuan@@njau.edu.cn} Penghao Xie \email{2019103106@@njau.edu.cn}
 #' @references
 #'
 #' Yuan J, Zhao J, Wen T, Zhao M, Li R, Goossens P, Huang Q, Bai Y, Vivanco JM, Kowalchuk GA, Berendsen RL, Shen Q
 #' Root exudates drive the soil-borne legacy of aboveground pathogen infection
 #' Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 #' @export
-
 
 modulGroup = function( corr = cor,cut = 3,method = "cluster_walktrap"){
 
