@@ -19,8 +19,7 @@ Imports:
 	ggplot2,
 	ggrepel,
 	phyloseq,
-	ggrepel,
-	microbiomeSeq
+	ggrepel
 URL: https://github.com/taowenmicro/ggClusterNet
 BugReports: https://github.com/taowenmicro/ggClusterNet/issues
 
