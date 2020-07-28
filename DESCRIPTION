@@ -19,7 +19,9 @@ Imports:
 	ggplot2,
 	ggrepel,
 	phyloseq,
-	ggrepel
+	ggrepel,
+	reshape2,
+	packcircles
 URL: https://github.com/taowenmicro/ggClusterNet
 BugReports: https://github.com/taowenmicro/ggClusterNet/issues
 
