@@ -27,6 +27,7 @@
 #' Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 #' @export
 
+
 div_culculate <- function(table = result[[3]],distance = 1.1,distance2 = 1.5,distance3 = 1.3,order = FALSE){
 
   all = table[rowSums(table) == dim(table)[2],]
@@ -78,26 +79,29 @@ div_culculate <- function(table = result[[3]],distance = 1.1,distance2 = 1.5,dis
   }
   da1 = data.frame(x = x,y = y)
   da1
-
-  i = 1
+  # i = 1
   for (i in 1:dim(table)[2]) {
 
-    table = table[rowSums(table) != 3,]
+    table = table[rowSums(table) != dim(table)[2],]
     N = length(table[,i][table[,i] != 0])
 
-    if (order== TRUE) {
-      packing <- packcircles::circleProgressiveLayout(rep(1,N))
-    } else {
-      packing <- packcircles::circleProgressiveLayout(runif(min = 1, max = 10,n=N))
+    if (N != 0) {
+      if (order== TRUE) {
+        packing <- packcircles::circleProgressiveLayout(rep(1,N))
+      } else {
+        packing <- packcircles::circleProgressiveLayout(runif(min = 1, max = 10,n=N))
+      }
+      data <- packcircles::circleLayoutVertices(packing)  %>% dplyr::group_by(id) %>%
+        dplyr::summarise(x = mean(x),y = mean(y))  %>%
+        dplyr::select(-id)  %>%
+        as.data.frame()
+      data <- data.frame(x = data$x + da1[i,1] * distance3,y = data$y + da1[i,2]* distance3)
+      row.names(data ) = row.names(table[table[,i] != 0,])
+      data$elements = row.names(data )
+      colnames(data)[1:2] = c("X1","X2")
+    } else{
+      data = NULL
     }
-    data <- packcircles::circleLayoutVertices(packing)  %>% dplyr::group_by(id) %>%
-      dplyr::summarise(x = mean(x),y = mean(y))  %>%
-      dplyr::select(-id)  %>%
-      as.data.frame()
-    data <- data.frame(x = data$x + da1[i,1] * distance3,y = data$y + da1[i,2]* distance3)
-    row.names(data ) = row.names(table[table[,i] != 0,])
-    data$elements = row.names(data )
-    colnames(data)[1:2] = c("X1","X2")
 
     if (i == 1) {
       oridata = data

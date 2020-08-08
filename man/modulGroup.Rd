@@ -4,10 +4,10 @@
 \alias{modulGroup}
 \title{Correlation matrix calculates groups according to the degree of network module speech.}
 \usage{
-modulGroup(corr = cor, cut = 3, method = "cluster_walktrap")
+modulGroup(corr = cor, cut = NULL, method = "cluster_walktrap")
 }
 \arguments{
-\item{cut}{which model contain node less than cut,will be tegether to other group}
+\item{cut}{which model contain node less than cut,will be tegether to other group,if NULL was assignment, will not to do with nothing.}
 
 \item{method}{method to culculate Degree of modularity.There are four module clustering algorithms inside.}
 

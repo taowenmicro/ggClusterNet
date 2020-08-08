@@ -3,7 +3,7 @@
 #' @title Correlation matrix calculates groups according to the degree of network module speech.
 #' @description Enter correlation matrix, calculate network modules, and generate groups.
 #' @param cor Correlation matrix
-#' @param cut which model contain node less than cut,will be tegether to other group
+#' @param cut which model contain node less than cut,will be tegether to other group,if NULL was assignment, will not to do with nothing.
 #' @param method method to culculate Degree of modularity.There are four module clustering algorithms inside.
 #' @details
 #' By default, returns table, contain node and group imformation
@@ -34,7 +34,8 @@
 #' Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 #' @export
 
-modulGroup = function( corr = cor,cut = 3,method = "cluster_walktrap"){
+
+modulGroup = function( corr = cor,cut = NULL,method = "cluster_walktrap"){
 
   # Construct Edge File
   edges <- data.frame(from = rep(row.names(corr), ncol(corr)),
@@ -66,7 +67,7 @@ modulGroup = function( corr = cor,cut = 3,method = "cluster_walktrap"){
   if (method == "cluster_walktrap" ) {
     fc <- cluster_walktrap(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
-  ?cluster_walktrap
+
   if (method == "cluster_edge_betweenness" ) {
     fc <- cluster_edge_betweenness(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
@@ -93,13 +94,19 @@ modulGroup = function( corr = cor,cut = 3,method = "cluster_walktrap"){
 
   # mod$Freq[mod$Freq< cut] = 0
   # All modules with less than one cut of otu are grouped into one, defined as 0
-  for (i in 1:length(netClu$group)) {
-    if (netClu$group[i] %in% mod$Freq[mod$Freq>= cut] ) {
-      netClu$group[i] = netClu$group[i]
-    } else {
-      netClu$group[i] = 0
+
+  if (is.null(cut)) {
+    netClu = netClu
+  } else {
+    for (i in 1:length(netClu$group)) {
+      if (netClu$group[i] %in% as.character(mod$Var1[mod$Freq>= cut])) {
+        netClu$group[i] = netClu$group[i]
+      } else {
+        netClu$group[i] = 0
+      }
     }
   }
+
   netClu$group = as.factor(netClu$group)
   return(netClu)
 }

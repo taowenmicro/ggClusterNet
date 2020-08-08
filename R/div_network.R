@@ -23,8 +23,11 @@
 #' Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 #' @export
 
+
+
 div_network = function(ps,num = 6,group = "Group",flour = TRUE){
   mapping = as.data.frame(sample_data(ps))
+  mapping = mapping[,group]
   colnames(mapping[,group]) <- "Group"
   sample_data(ps) = mapping
   ps_rela  = phyloseq::transform_sample_counts(ps, function(x) x / sum(x) );ps_rela
