@@ -4,12 +4,16 @@
 \alias{PolygonClusterG}
 \title{Construct a network layout. Arrange network nodes to different locations according to grouping}
 \usage{
-PolygonClusterG(cor = cor, nodeGroup = netClu)
+PolygonClusterG(cor = cor, nodeGroup = netClu, zoom = 1, zoom2 = 1)
 }
 \arguments{
 \item{cor}{Correlation matrix}
 
 \item{nodeGroup}{Classification information of network nodes.Group according to actual requirements, see example}
+
+\item{zoom}{Set the distance between modules}
+
+\item{zoom2}{Scaling module radius size}
 }
 \value{
 result2 Which contains 2 lists.Result2[[1]], consists of OTU and its corresponding coordinates.

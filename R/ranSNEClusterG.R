@@ -3,6 +3,7 @@
 #' @param cor Correlation matrix
 #' @param layout select layout to building sub cluster，could br on of the sna package layout, such as "circle","adj","circrand","eigen","random".
 #' @param nodeGroup group you must imput
+#' @param zoom Set the distance between modules
 #' @examples
 #' data
 #' data(ps)
@@ -26,12 +27,12 @@
 #' @export
 
 
-ranSNEClusterG = function(cor=  cor,layout ="circle",nodeGroup = netClu ){
+ranSNEClusterG = function(cor=  cor,layout ="circle",nodeGroup = netClu,zoom = 1){
 
   num = length(levels(nodeGroup$group))
   xs = as.data.frame(table(nodeGroup$group))
   r = rep(1,length(xs$Freq))
-  rtotal = sum(r)
+  rtotal = sum(r) *zoom
 
   whichnum = dim(combn(num,2))[2]
   # whichnum = num
@@ -55,14 +56,6 @@ ranSNEClusterG = function(cor=  cor,layout ="circle",nodeGroup = netClu ){
       A[i]= sqrt(AS)> sum(r[cs[,i]])
     }
   }
-
-
-  # layouts = c("circle","kamadakawai","adj","circrand","eigen","geodist","hall","mds","princoord","random","rmds","segeo","seham",
-  #             "spring","springrepulse","target"
-  #             )
-
-
-  #"target":The algorithm is very slow-don't run this algorithm if it is not necessary
 
 
   #

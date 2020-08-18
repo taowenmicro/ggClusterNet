@@ -4,12 +4,17 @@
 \alias{PolygonRrClusterG}
 \title{Construct a network layout. Calculate the layout according to grouping and random distribution}
 \usage{
-PolygonRrClusterG(cor = cor, nodeGroup = netClu)
+PolygonRrClusterG(cor = cor, nodeGroup = netClu, zoom = 1,
+  zoom2 = 1)
 }
 \arguments{
 \item{cor}{Correlation matrix}
 
 \item{nodeGroup}{Classification information of network nodes}
+
+\item{zoom}{Set the distance between modules}
+
+\item{zoom2}{Scaling module radius size}
 }
 \value{
 result2 Which contains 2 lists.Result2[[1]], consists of OTU and its corresponding coordinates.

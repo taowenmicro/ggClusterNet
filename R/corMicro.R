@@ -35,7 +35,7 @@ corMicro = function(ps = ps,N = 0.02,r.threshold=0.6,p.threshold=0.05,method = "
   #-----Relative abundance conversion-------
   ps_rela  = transform_sample_counts(ps, function(x) x / sum(x) )
   #--根据设定的阈值筛选应该包含otu#---------
-  ps_sub = filter_taxa(ps_rela, function(x) sum(x ) > N , TRUE)
+  ps_sub = filter_taxa(ps_rela, function(x) mean(x ) > N , TRUE)
 
   #output map table
   # design = mapping= as.data.frame(sample_data(ps_sub))

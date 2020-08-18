@@ -4,7 +4,8 @@
 \alias{ranSNEClusterG}
 \title{Use the layout in the sne package to calculate the visual layout of the network}
 \usage{
-ranSNEClusterG(cor = cor, layout = "circle", nodeGroup = netClu)
+ranSNEClusterG(cor = cor, layout = "circle", nodeGroup = netClu,
+  zoom = 1)
 }
 \arguments{
 \item{cor}{Correlation matrix}
@@ -12,6 +13,8 @@ ranSNEClusterG(cor = cor, layout = "circle", nodeGroup = netClu)
 \item{layout}{select layout to building sub cluster，could br on of the sna package layout, such as "circle","adj","circrand","eigen","random".}
 
 \item{nodeGroup}{group you must imput}
+
+\item{zoom}{Set the distance between modules}
 }
 \value{
 list

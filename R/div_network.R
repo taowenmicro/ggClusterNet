@@ -136,7 +136,11 @@ div_network = function(ps,num = 6,group = "Group",flour = TRUE){
     net_all = reshape2::melt(otu_net2, id=c("ID","Kingdom","Phylum" ,"Class", "Order","Family" ,"Genus","Species",
                                             paste(unique(mapping$Group),"mean",sep = "")))
   }
+  if (length(colnames(tax_table(ps))) != 7|length(colnames(tax_table(ps))) != 6 ) {
 
+    net_all = reshape2::melt(otu_net2, id=c("ID",rank_names(ps),
+                                            paste(unique(mapping$Group),"mean",sep = "")))
+  }
 
   net_filter<- dplyr::filter(net_all, value != 0 )
 

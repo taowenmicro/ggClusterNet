@@ -2,6 +2,8 @@
 #'
 #' @param cor Correlation matrix
 #' @param nodeGroup Classification information of network nodes
+#' @param zoom Set the distance between modules
+#' @param zoom2 Scaling module radius size
 #' @examples
 #' data
 #' data(ps)
@@ -36,18 +38,18 @@
 
 
 
-PolygonRrClusterG = function(cor = cor,nodeGroup =netClu ){
+PolygonRrClusterG = function(cor = cor,nodeGroup =netClu,zoom = 1,zoom2 = 1 ){
 
   #
   num = length(levels(nodeGroup$group))
 
   #
   xs = as.data.frame(table(nodeGroup$group))
-  r = xs$Freq/10
+  r = xs$Freq/10 *zoom
 
   # Calculate angle according to group
   arg = seq(0,360,360/(length(r)))
-  i = 1
+  # i = 1
   rsum = sum(r)
   x= rep(0,length(r))
   y = rep(0,length(r))
@@ -90,7 +92,7 @@ PolygonRrClusterG = function(cor = cor,nodeGroup =netClu ){
       n <- attr(d, "n")
       # 提取半径
       s = r[i]
-
+      s = s * zoom2
 
       data = cbind(sin(2 * pi * ((0:(n - 1))/n))*s +da[i,1], cos(2 * pi * ((0:(n - 1))/n))*s +da[i,2])
 

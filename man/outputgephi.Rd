@@ -19,7 +19,6 @@ Result2[[2]], consists of the network center coordinates of each group
 use the phylsoeq object and cor matrix building Gephi input network file contain edge and node
 }
 \examples{
-data
 data(ps)
 result = corMicro (ps = ps,N = 0.02,r.threshold=0.8,p.threshold=0.05,method = "pearson")
 #Extract correlation matrix
