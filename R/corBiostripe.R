@@ -21,6 +21,8 @@
 #' @export
 
 
+
+
 corBiostripe = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.threshold=0.05,method = "spearman"){
 
   if (is.null(data)&is.null(group)&!is.null(ps)) {
@@ -45,7 +47,7 @@ corBiostripe = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.th
   }
 
 
-  if (is.null(ps)) {
+  if (is.null(ps)&!is.null(data)&!is.null(group)) {
     cordata <- t(data[-1])
     colnames(cordata) =data$SampleID
     #--- use corr.test function to calculate relation#--------
@@ -57,7 +59,7 @@ corBiostripe = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.th
 
     #--biostripe network filter
     A <- levels(as.factor(group$Group))
-    i = 1
+
 
 
     for (i in 1:length(A)) {
@@ -68,7 +70,45 @@ corBiostripe = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.th
     }
 
   }
-  return(list(occor.r,method,occor.p))
+
+
+  if (!is.null(ps)&!is.null(data)&!is.null(group)) {
+    otu_table = as.data.frame(t(vegan_otu(ps)))
+    cordata <- (data[-1])
+    row.names(cordata) = data$SampleID
+
+    finaldata <- rbind(otu_table,cordata)
+
+
+    #--- use corr.test function to calculate relation#--------
+    occor = psych::corr.test(t(finaldata),use="pairwise",method=method,adjust="fdr",alpha=.05)
+    occor.r = occor$r
+    occor.p = occor$p
+    occor.r[occor.p > p.threshold|abs(occor.r)<r.threshold] = 0
+
+    tax = as.data.frame((vegan_tax(ps)))
+    head(tax)
+    A1 <- levels(as.factor(tax$filed))
+    A1
+    A2 <- levels(as.factor(group$Group))
+    A2
+    A = c(A1,A2)
+
+    group2 <- data.frame(SampleID = row.names(tax),Group = tax$filed)
+    # i = 5
+    finalgru = rbind(group,group2)
+
+    for (i in 1:length(A)) {
+      fil <- intersect(row.names(occor.r),as.character(as.character(finalgru$SampleID)[as.character(finalgru$Group) == A[i]]))
+      a <- row.names(occor.r) %in% fil
+      occor.r[a,a] = 0
+      occor.p[a,a] = 1
+    }
+
+  }
+  return(list(occor.r, method, occor.p, A))
 
 }
+
+
 
