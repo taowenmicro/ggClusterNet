@@ -49,7 +49,7 @@ corBiostripe = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.th
 
   if (is.null(ps)&!is.null(data)&!is.null(group)) {
     cordata <- t(data[-1])
-    colnames(cordata) =data$SampleID
+    colnames(cordata) =data[[1]]
     #--- use corr.test function to calculate relation#--------
     occor = psych::corr.test(cordata,use="pairwise",method=method,adjust="fdr",alpha=.05)
     occor.r = occor$r
@@ -75,13 +75,18 @@ corBiostripe = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.th
   if (!is.null(ps)&!is.null(data)&!is.null(group)) {
     otu_table = as.data.frame(t(vegan_otu(ps)))
     cordata <- (data[-1])
-    row.names(cordata) = data$SampleID
+    row.names(cordata) = data[[1]]
 
+    if (!is.na(match(colnames(otu_table) , data[[1]]))) {
+      cordata = t(cordata)
+    }
+    dim(cordata)
+    dim(otu_table)
     finaldata <- rbind(otu_table,cordata)
 
 
     #--- use corr.test function to calculate relation#--------
-    occor = psych::corr.test(t(finaldata),use="pairwise",method=method,adjust="fdr",alpha=.05)
+    occor = psych::corr.test(t(finaldata),use="pairwise",method= method ,adjust="fdr",alpha=.05)
     occor.r = occor$r
     occor.p = occor$p
     occor.r[occor.p > p.threshold|abs(occor.r)<r.threshold] = 0
@@ -90,12 +95,13 @@ corBiostripe = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.th
     head(tax)
     A1 <- levels(as.factor(tax$filed))
     A1
-    A2 <- levels(as.factor(group$Group))
+    A2 <- levels(as.factor(group[[2]]))
     A2
     A = c(A1,A2)
 
     group2 <- data.frame(SampleID = row.names(tax),Group = tax$filed)
     # i = 5
+    colnames(group) = c("SampleID","Group")
     finalgru = rbind(group,group2)
 
     for (i in 1:length(A)) {

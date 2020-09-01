@@ -78,7 +78,7 @@ PolygonRrClusterG = function(cor = cor,nodeGroup =netClu,zoom = 1,zoom2 = 1 ){
     }
 
     as$ID
-    as$ID = as.character( as$ID)
+    as$ID = as.character(as$ID)
 
     # Calculation of a single circular coordinate
 
