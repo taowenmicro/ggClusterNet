@@ -21,7 +21,8 @@ Imports:
 	phyloseq,
 	ggrepel,
 	reshape2,
-	packcircles
+	packcircles,
+	ggpubr
 URL: https://github.com/taowenmicro/ggClusterNet
 BugReports: https://github.com/taowenmicro/ggClusterNet/issues
 

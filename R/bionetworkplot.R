@@ -183,8 +183,8 @@ corBionetwork = function(otu = NULL,
     rand.g<- erdos.renyi.game(length(V(igraph)), length(E(igraph)),type = c("gnm"))
     # degree_distribution
 
-    ##我们比对随机网络和本网络的度
-    data1 = data.frame(network= degree_distribution(igraph, cumulative = FALSE),group = "Erdős–Rényi network",ID = c(1:length(degree_distribution(igraph, cumulative = FALSE))))
+    ## compared the degree of random network and this network
+    data1 = data.frame(network= degree_distribution(igraph, cumulative = FALSE),group = "E–R network",ID = c(1:length(degree_distribution(igraph, cumulative = FALSE))))
     data2 = data.frame(network = degree_distribution(rand.g, cumulative = FALSE) ,group = "network",ID = c(1:length(degree_distribution(rand.g, cumulative = FALSE) )))
     data = rbind(data1,data2)
     p1 <- ggplot(data) +geom_point(aes(x = ID,y = network,group =group,fill = group),pch = 21,size = 2) +
