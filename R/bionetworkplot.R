@@ -55,7 +55,8 @@ corBionetwork = function(otu = NULL,
                    zipi = FALSE,
                    step = 100,
                    width = 8,
-                   height = 6 ){
+                   height = 6,
+                   allnode = TRUE){
   #--imput data ---------
   ps = inputMicro(otu,tax,map,tree,ps,group  = group)
   #---------------------------data washing-------------------------------------------------
@@ -103,8 +104,9 @@ corBionetwork = function(otu = NULL,
       occor.r = result[[1]]
       tax = as.data.frame((vegan_tax(ps_sub)))
       group2 <- data.frame(SampleID = row.names(tax),Group = tax$filed)
-      colnames(Gru) <-c("SampleID","Group")
-      netClu = rbind(Gru,group2)
+      colnames(envGroup) <-c("SampleID","Group")
+      row.names(envGroup) =  envGroup$SampleID
+      netClu = rbind(group2,envGroup)
       colnames(netClu) <- c("ID","group")
     }
 
@@ -154,16 +156,29 @@ corBionetwork = function(otu = NULL,
 
     write.csv(nodepro,paste(path,"/",layout,"_node_properties.csv",sep = ""),row.names = FALSE)
     row.names(plotcord) = plotcord$elements
-    nodeG = merge(plotcord,nodepro,by = "row.names",all =FALSE)
-    head(nodeG)
+
+    if (allnode == TRUE) {
+      nodeG = merge(plotcord,nodepro,by = "row.names",all.x = TRUE)
+    }else {
+      nodeG = merge(plotcord,nodepro,by = "row.names",all = FALSE)
+    }
     row.names(nodeG) = nodeG$Row.names
     nodeG$Row.names = NULL
     #--
+    nodeG[is.na(nodeG)] = 0
+
+    if (fill == group) {
+      fill = "group"
+    }
     plotnode <- nodeG %>% dplyr::select(c("X1" , "X2","elements",fill, size))
     colnames(plotnode) <- gsub(fill,"XXXX",colnames(plotnode))
     colnames(plotnode) <- gsub(size,"YYYY",colnames(plotnode))
     head(plotnode)
+
+
     ### 出图
+
+
     pnet <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = as.factor(wei_label)),
                                     data = edges, size = 0.5) +
       geom_point(aes(x = X1, y = X2,size = YYYY,fill =XXXX),pch = 21, data =  plotnode) + scale_colour_brewer(palette = "Set1") +
