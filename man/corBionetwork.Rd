@@ -9,7 +9,8 @@ corBionetwork(otu = NULL, tax = NULL, map = NULL, ps = NULL,
   group = "Group", env = NULL, envGroup = NULL,
   method = "spearman", layout = "fruchtermanreingold", path = "./",
   fill = "Phylum", size = "igraph.degree", scale = TRUE,
-  bio = FALSE, zipi = FALSE, step = 100, width = 8, height = 6)
+  bio = FALSE, zipi = FALSE, step = 100, width = 8, height = 6,
+  allnode = TRUE)
 }
 \arguments{
 \item{ps}{phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.}

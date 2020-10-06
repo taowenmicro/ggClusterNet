@@ -93,13 +93,24 @@ corBiostripe = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.th
 
     tax = as.data.frame((vegan_tax(ps)))
     head(tax)
-    A1 <- levels(as.factor(tax$filed))
-    A1
-    A2 <- levels(as.factor(group[[2]]))
-    A2
-    A = c(A1,A2)
+    if (length(tax$filed) != 0) {
+      A1 <- levels(as.factor(tax$filed))
+      A1
+      A2 <- levels(as.factor(group[[2]]))
+      A2
+      A = c(A1,A2)
 
-    group2 <- data.frame(SampleID = row.names(tax),Group = tax$filed)
+      group2 <- data.frame(SampleID = row.names(tax),Group = tax$filed)
+    } else {
+      A1 = "OTU"
+      A2 <- levels(as.factor(group[[2]]))
+      A2
+      A = c(A1,A2)
+      group2 <- data.frame(SampleID = row.names(tax),Group = "OTU")
+    }
+
+
+
     # i = 5
     colnames(group) = c("SampleID","Group")
     finalgru = rbind(group,group2)

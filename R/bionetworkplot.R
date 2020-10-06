@@ -103,7 +103,11 @@ corBionetwork = function(otu = NULL,
       #-- extract cor matrix
       occor.r = result[[1]]
       tax = as.data.frame((vegan_tax(ps_sub)))
-      group2 <- data.frame(SampleID = row.names(tax),Group = tax$filed)
+      if (length(tax$filed) != 0) {
+        group2 <- data.frame(SampleID = row.names(tax),Group = tax$filed)
+      } else {
+        group2 <- data.frame(SampleID = row.names(tax),Group = "OTU")
+      }
       colnames(envGroup) <-c("SampleID","Group")
       row.names(envGroup) =  envGroup$SampleID
       netClu = rbind(group2,envGroup)
@@ -187,7 +191,7 @@ corBionetwork = function(otu = NULL,
     pnet
 
     if (label == TRUE ) {
-      pnet <- pnet +  geom_text_repel(aes(X1, X2,label=XXXX),size=4, data = plotnode)
+      pnet <- pnet +  geom_text_repel(aes(X1, X2,label= XXXX),size=4, data = plotnode)
     }
 
     plotname = paste(path,"/network",layout,".pdf",sep = "")

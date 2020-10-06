@@ -20,17 +20,16 @@
 ZiPiPlot = function(igraph = igraph,method = "cluster_fast_greedy"){
 
   if (method == "cluster_walktrap" ) {
-    fc <- igraph::cluster_walktrap(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- igraph::cluster_walktrap(igraph,weights =  abs(igraph::E(igraph)$weight))
   }
-
   if (method == "cluster_edge_betweenness" ) {
-    fc <- igraph::cluster_edge_betweenness(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- igraph::cluster_edge_betweenness(igraph,weights =  abs(igraph::E(igraph)$weight))
   }
   if (method == "cluster_fast_greedy" ) {
-    fc <- igraph::cluster_fast_greedy(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- igraph::cluster_fast_greedy(igraph,weights =  abs(igraph::E(igraph)$weight))
   }
   if (method == "cluster_spinglass" ) {
-    fc <- igraph::cluster_spinglass(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- igraph::cluster_spinglass(igraph,weights =  abs(igraph::E(igraph)$weight))
   }
   modularity <- igraph::modularity(igraph,membership(fc))
   # 模块化程度

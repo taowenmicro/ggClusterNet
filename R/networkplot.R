@@ -1,7 +1,7 @@
 #' Microbial related network
 #'
 #' @param ps phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.
-#' @param N filter OTU tables by abundance.The defult, N=0.001, extract the top 0.001 relative abundance of OTU.
+#' @param N filter OTU tables by abundance using otu table with all samples.The defult, N=0.001, extract the top 0.001 relative abundance of OTU.
 #' @param r.threshold The defult, r.threshold=0.6, it represents the correlation that the absolute value
 #'  of the correlation threshold is greater than 0.6. the value range of correlation threshold from 0 to 1.
 #' @param p.threshold The defult, p.threshold=0.05, it represents significance threshold below 0.05.
@@ -180,8 +180,15 @@ network = function(otu = NULL,
     # building node table
     node_Gephi = data.frame(ID= plotcord$elements,plotcord[4:dim(plotcord)[2]],Label = plotcord$elements)
 
+    idedge <- c(as.character(edge_Gephi$source),as.character(edge_Gephi$target))
+    idedge <- unique(idedge)
+
+    row.names(node_Gephi) <- as.character(node_Gephi$ID)
+    node_Gephi1 <- node_Gephi[idedge, ]
+
     write.csv(edge_Gephi ,paste(path,"/",layout,"_Gephi_edge.csv",sep = ""),row.names = FALSE)
-    write.csv(node_Gephi,paste(path,"/",layout,"_Gephi_node.csv",sep = ""),row.names = FALSE)
+    write.csv(node_Gephi,paste(path,"/",layout,"_Gephi_allnode.csv",sep = ""),row.names = FALSE)
+    write.csv(node_Gephi1,paste(path,"/",layout,"_Gephi_edgenode.csv",sep = ""),row.names = FALSE)
 
     nodepro = node_properties(igraph)
 
@@ -244,8 +251,8 @@ network = function(otu = NULL,
 
     ###网络边的赋值及其设置
     igraph.weight <- E(igraph)$weight# 将igraph weight属性赋值到igraph.weight,用于后边做图
-    E(igraph)$weight <- NA
-    igraph<-remove.edge.attribute(igraph,"weight")#把边值删除
+    # E(igraph)$weight <- NA
+    # igraph<-remove.edge.attribute(igraph,"weight")#把边值删除
     netpro_result<- net_properties(igraph)
     colnames(netpro_result)<-layout
 
