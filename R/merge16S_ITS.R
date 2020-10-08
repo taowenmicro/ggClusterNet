@@ -31,8 +31,10 @@ merge16S_ITS <- function(ps16s = ps16s,
     ps16s  = phyloseq::transform_sample_counts(ps16s, function(x) x / sum(x) )
     psITS  = phyloseq::transform_sample_counts(psITS, function(x) x / sum(x) )
   }
+
   ps_16s = phyloseq::filter_taxa(ps16s, function(x) mean(x) > N16s, TRUE)#select OTUs according to  relative abundance
   ps_ITS = phyloseq::filter_taxa(psITS, function(x) mean(x) > NITS , TRUE)#select OTUs according to  relative abundance
+
   ###
   otu_table_16s = as.data.frame(t(vegan_otu(ps_16s)))
   row.names(otu_table_16s) = paste("bac",row.names(otu_table_16s),sep = "_")

@@ -200,14 +200,25 @@ network = function(otu = NULL,
     nodeG$Row.names = NULL
     #--
     plotnode <- nodeG %>% dplyr::select(c("X1" , "X2","elements",fill, "mean",size))
-    colnames(plotnode) <- gsub(fill,"XXXX",colnames(plotnode))
-    colnames(plotnode) <- gsub(size,"YYYY",colnames(plotnode))
+    if (!is.null(fill)) {
+      colnames(plotnode) <- gsub(fill,"XXXX",colnames(plotnode))
+      colnames(plotnode) <- gsub(size,"YYYY",colnames(plotnode))
 
-    pnet <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = as.factor(wei_label)),
-                                    data = edges, size = 0.5) +
-      geom_point(aes(x = X1, y = X2,size = YYYY,fill =XXXX),pch = 21, data =  plotnode) + scale_colour_brewer(palette = "Set1") +
-      scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
-      labs( title = paste(layout,"network",sep = "_")) + theme_void()
+      pnet <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = as.factor(wei_label)),
+                                      data = edges, size = 0.5) +
+        geom_point(aes(x = X1, y = X2,size = YYYY,fill =XXXX),pch = 21, data =  plotnode) + scale_colour_brewer(palette = "Set1") +
+        scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
+        labs( title = paste(layout,"network",sep = "_")) + theme_void()
+    } else {
+      colnames(plotnode) <- gsub(size,"YYYY",colnames(plotnode))
+
+      pnet <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = as.factor(wei_label)),
+                                      data = edges, size = 0.5) +
+        geom_point(aes(x = X1, y = X2,size = YYYY),pch = 21, data =  plotnode) + scale_colour_brewer(palette = "Set1") +
+        scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
+        labs( title = paste(layout,"network",sep = "_")) + theme_void()
+    }
+
 
     if (label == TRUE ) {
       pnet <- pnet +  geom_text_repel(aes(X1, X2,label=XXXX),size=4, data = plotnode)

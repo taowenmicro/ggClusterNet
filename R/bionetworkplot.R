@@ -83,19 +83,26 @@ corBionetwork = function(otu = NULL,
 
     print(layout)
     map <- as.data.frame(phyloseq::sample_data(ps_all))
+    map$Group = as.character(map$Group)
     mapsub <- map[map$Group == layout,]
-    ps_sub <- ps
+    ps_sub <- ps_all
     sample_data(ps_sub) <- mapsub
     ps_sub = filter_taxa(ps_sub, function(x) sum(x) > 0 , TRUE)# remove 0 of all sample
 
 
     # match(as.character(mapsub$ID),colnames(env))
 
-    colnames(env)[1] = "ID"
+    # colnames(env)[1] = "ID"
     # xx = dplyr::filter(as.tibble(map), Group %in% layout)
 
-    env_sub <-  env[match(as.character(mapsub$ID),as.character(env$ID)),]
+    if (length(match(row.names(env),mapsub$ID)[!is.na(match(row.names(env),mapsub$ID))]) == 0) {
+     env = t(env)
+     env = as.data.frame(env)
+    }
+    env$ID = row.names(env)
 
+    env_sub <-  env[match(as.character(mapsub$ID),as.character(env$ID)),]
+    env_sub <- env_sub[,c(ncol(env_sub),1:c(ncol(env_sub) - 1))]
 
     if (bio == TRUE) {
 
