@@ -4,8 +4,7 @@
 \alias{PolygonRrClusterG}
 \title{Construct a network layout. Calculate the layout according to grouping and random distribution}
 \usage{
-PolygonRrClusterG(cor = cor, nodeGroup = netClu, zoom = 1,
-  zoom2 = 1)
+PolygonRrClusterG(cor = cor, nodeGroup = netClu, zoom = 1, zoom2 = 1)
 }
 \arguments{
 \item{cor}{Correlation matrix}

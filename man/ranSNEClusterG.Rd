@@ -4,8 +4,7 @@
 \alias{ranSNEClusterG}
 \title{Use the layout in the sne package to calculate the visual layout of the network}
 \usage{
-ranSNEClusterG(cor = cor, layout = "circle", nodeGroup = netClu,
-  zoom = 1)
+ranSNEClusterG(cor = cor, layout = "circle", nodeGroup = netClu, zoom = 1)
 }
 \arguments{
 \item{cor}{Correlation matrix}

@@ -4,8 +4,14 @@
 \alias{corBiostripe}
 \title{Inter-Domain Ecological Network, we call this biostripe network}
 \usage{
-corBiostripe(data = NULL, group = NULL, ps = NULL,
-  r.threshold = 0.6, p.threshold = 0.05, method = "spearman")
+corBiostripe(
+  data = NULL,
+  group = NULL,
+  ps = NULL,
+  r.threshold = 0.6,
+  p.threshold = 0.05,
+  method = "spearman"
+)
 }
 \arguments{
 \item{ps}{phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.}

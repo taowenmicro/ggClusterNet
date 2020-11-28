@@ -18,7 +18,7 @@ Use the layout in the sne package to calculate the visual layout of the network
 \examples{
 # Import network data
 data(igraph)
-# Computing network related properties：the total number of edges, the number of positive correlation edges, the number of negative correlation edges, the number of vertices...
+# Computing network related properties锛歵he total number of edges, the number of positive correlation edges, the number of negative correlation edges, the number of vertices...
 reslt = net_properties(igraph)
 # export file
 write.csv(reslt,"netproperties.csv")

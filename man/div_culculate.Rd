@@ -4,8 +4,13 @@
 \alias{div_culculate}
 \title{Calculate a bipartite network for microbiome data}
 \usage{
-div_culculate(table = result[[3]], distance = 1.1, distance2 = 1.5,
-  distance3 = 1.3, order = FALSE)
+div_culculate(
+  table = result[[3]],
+  distance = 1.1,
+  distance2 = 1.5,
+  distance3 = 1.3,
+  order = FALSE
+)
 }
 \arguments{
 \item{table}{ven output}

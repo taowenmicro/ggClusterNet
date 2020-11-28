@@ -53,7 +53,7 @@ ZiPiPlot = function(igraph = igraph,method = "cluster_fast_greedy"){
   }
 
   library(ggrepel)
-  p <- microbiomeSeq::plot_roles(taxa.roles) + ggrepel::geom_text_repel(data = taxa.roles, aes(x = p, y = z, color = module,label=taxa.roles$label),size=4)#
+  p <- plot_roles(taxa.roles) + ggrepel::geom_text_repel(data = taxa.roles, aes(x = p, y = z, color = module,label=taxa.roles$label),size=4)#
   #geom_text(data = taxa.roles, aes(x = p, y = z, color = module,label=taxa.roles$label),size=4)
   # print(p)
 

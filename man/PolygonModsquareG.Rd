@@ -4,8 +4,7 @@
 \alias{PolygonModsquareG}
 \title{Construct a network layout. Arrange network nodes to different locations according to grouping}
 \usage{
-PolygonModsquareG(cor = cor, nodeGroup = netClu, r1 = 1, N = 1.1,
-  cut = 3)
+PolygonModsquareG(cor = cor, nodeGroup = netClu, r1 = 1, N = 1.1, cut = 3)
 }
 \arguments{
 \item{cor}{Correlation matrix}

@@ -4,12 +4,26 @@
 \alias{network}
 \title{Microbial related network}
 \usage{
-network(otu = NULL, tax = NULL, map = NULL, ps = NULL, N = 0.001,
-  r.threshold = 0.6, p.threshold = 0.05, method = "pearson",
-  label = FALSE, group = "Group", lay = "fruchtermanreingold",
-  path = "./", fill = "Phylum", size = "igraph.degree",
-  scale = TRUE, zipi = FALSE, clu_method = "cluster_fast_greedy",
-  step = 100)
+network(
+  otu = NULL,
+  tax = NULL,
+  map = NULL,
+  ps = NULL,
+  N = 0.001,
+  r.threshold = 0.6,
+  p.threshold = 0.05,
+  method = "pearson",
+  label = FALSE,
+  group = "Group",
+  lay = "fruchtermanreingold",
+  path = "./",
+  fill = "Phylum",
+  size = "igraph.degree",
+  scale = TRUE,
+  zipi = FALSE,
+  clu_method = "cluster_fast_greedy",
+  step = 100
+)
 }
 \arguments{
 \item{ps}{phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.}

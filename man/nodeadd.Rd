@@ -4,8 +4,7 @@
 \alias{nodeadd}
 \title{Add annotation information to network nodes}
 \usage{
-nodeadd(plotcord = node, otu_table = otu_table,
-  tax_table = tax_table)
+nodeadd(plotcord = node, otu_table = otu_table, tax_table = tax_table)
 }
 \arguments{
 \item{plotcord}{The coordinate information of node OTU}

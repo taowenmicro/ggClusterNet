@@ -4,8 +4,13 @@
 \alias{merge16S_ITS}
 \title{merge phyloseq object of 16s and ITS}
 \usage{
-merge16S_ITS(ps16s = ps16s, psITS = psITS, N16s = 0.001,
-  NITS = 0.001, scale = TRUE)
+merge16S_ITS(
+  ps16s = ps16s,
+  psITS = psITS,
+  N16s = 0.001,
+  NITS = 0.001,
+  scale = TRUE
+)
 }
 \arguments{
 \item{ps16s}{phyloseq Object bacterial, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.}

@@ -4,8 +4,14 @@
 \alias{inputMicro}
 \title{Quickly import microbiome data and bulding phyloseq object}
 \usage{
-inputMicro(otu = NULL, tax = NULL, map = NULL, tree = NULL,
-  ps = NULL, group = "Group")
+inputMicro(
+  otu = NULL,
+  tax = NULL,
+  map = NULL,
+  tree = NULL,
+  ps = NULL,
+  group = "Group"
+)
 }
 \arguments{
 \item{otu}{dataframe,otu table}

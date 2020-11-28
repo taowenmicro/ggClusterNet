@@ -4,8 +4,13 @@
 \alias{corMicro}
 \title{Correlation network calculation of microbial community data}
 \usage{
-corMicro(ps = ps, N = 0.02, r.threshold = 0.6, p.threshold = 0.05,
-  method = "pearson")
+corMicro(
+  ps = ps,
+  N = 0.02,
+  r.threshold = 0.6,
+  p.threshold = 0.05,
+  method = "pearson"
+)
 }
 \arguments{
 \item{ps}{phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.}

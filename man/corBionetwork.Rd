@@ -4,13 +4,31 @@
 \alias{corBionetwork}
 \title{Microbial related network}
 \usage{
-corBionetwork(otu = NULL, tax = NULL, map = NULL, ps = NULL,
-  N = 0.001, r.threshold = 0.6, p.threshold = 0.05, label = FALSE,
-  group = "Group", env = NULL, envGroup = NULL,
-  method = "spearman", layout = "fruchtermanreingold", path = "./",
-  fill = "Phylum", size = "igraph.degree", scale = TRUE,
-  bio = FALSE, zipi = FALSE, step = 100, width = 8, height = 6,
-  allnode = TRUE)
+corBionetwork(
+  otu = NULL,
+  tax = NULL,
+  map = NULL,
+  ps = NULL,
+  N = 0.001,
+  r.threshold = 0.6,
+  p.threshold = 0.05,
+  label = FALSE,
+  group = "Group",
+  env = NULL,
+  envGroup = NULL,
+  method = "spearman",
+  layout = "fruchtermanreingold",
+  path = "./",
+  fill = "Phylum",
+  size = "igraph.degree",
+  scale = TRUE,
+  bio = FALSE,
+  zipi = FALSE,
+  step = 100,
+  width = 8,
+  height = 6,
+  allnode = TRUE
+)
 }
 \arguments{
 \item{ps}{phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.}
