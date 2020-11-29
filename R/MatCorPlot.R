@@ -63,6 +63,8 @@ MatCorPlot <- function(
   tabOTU,
   distance = "bray",
   method = "metal",
+  method.cor = "spearman",
+  cor.p = 0.05,
   x = TRUE,
   y = TRUE,
   diag = T,
@@ -87,6 +89,8 @@ MatCorPlot <- function(
 
 
   result <- Miccorplot(data = env.dat,
+                       method.cor = method.cor,
+                       cor.p = cor.p,
                        x = x,
                        y = y,
                        diag = diag,
@@ -117,6 +121,8 @@ MatCorPlot <- function(
 
 #---function for cor matrix of helf
 Miccorplot <- function(data,
+                       method.cor="spearman",
+                       cor.p = 0.05,
                        x = TRUE,
                        y = TRUE,
                        diag = TRUE,
@@ -132,10 +138,12 @@ Miccorplot <- function(data,
   lab.1 = 0
   lab.2 = 0
   #-culculate cor
-  occor = psych::corr.test(data,use="pairwise",method="spearman",adjust="fdr",alpha=.05)
+  occor = psych::corr.test(data,use="pairwise",method=method.cor,adjust="fdr",alpha=cor.p)
   occor.r = occor$r
   occor.p = occor$p
-  occor.r[occor.p > 0.05] = 0
+  if (sig == TRUE) {
+    occor.r[occor.p > cor.p] = 0
+  }
   #--pick out lower matrix
   occor.r2 = occor.r[lower.tri(occor.r, diag = TRUE)]
   #--cul x,y
