@@ -72,6 +72,7 @@ MatCorPlot <- function(
   numpoint = 22,
   numpoint2 = 21,
   numsymbol = NULL,
+  curvature = 0.2,
   lacx = "left",
   lacy = "bottom",
   range = 0.5,# set of line size
@@ -104,6 +105,7 @@ MatCorPlot <- function(
     envdata = repR,# R value table
     Ptab = repP,#p value table
     numpoint2 = numpoint2,
+    curvature = curvature,
     range = range,# line size
     lacx = lacx,#  left or right
     lacy = lacy,# top or bottom
@@ -245,6 +247,7 @@ cor_link <- function(data,
                      lacx = "left",
                      lacy = "bottom",
                      numpoint2 = 21,
+                     curvature = 0.2,
                      p.thur = 0.3,
                      onlysig = TRUE
 ){
@@ -319,7 +322,7 @@ cor_link <- function(data,
       geom_curve(data = data3,aes_string(x = max(data3$x), y = max(data3$x)*0.5, xend = "x", yend = "y",
                                          group = paste("group",colnames(envdata)[-1][1],sep = ""),
                                          color = paste("group",colnames(envdata)[-1][1],sep = "")),
-                 curvature = 0.2,size = data3[,colnames(envdata)[-1][1]]^2*200 *range) +
+                 curvature = curvature,size = data3[,colnames(envdata)[-1][1]]^2*200 *range) +
       geom_point(data = data3,aes(x = x, y = y),pch = numpoint2,size =4,color = "black",fill = "#FFF5EB")+
       geom_point(data = data3,aes(x = max(data3$x), y = max(data3$x)*0.5),pch = numpoint2,size = 6,color = "black",fill = "#FEE6CE") +
       geom_text(data = data3,aes(x = max(data3$x), y =max(data3$x)*0.5,label = colnames(envdata)[-1][1] ),vjust = -1,hjust = -1)
@@ -330,7 +333,7 @@ cor_link <- function(data,
       geom_curve(data = data3,aes_string(x = 0, y = max(data3$x)*0.5, xend = "x", yend = "y",
                                          group = paste("group",colnames(envdata)[-1][1],sep = ""),
                                          color = paste("group",colnames(envdata)[-1][1],sep = "")),
-                 curvature = 0.2,size = data3[,colnames(envdata)[-1][1]]^2*200 *range) +
+                 curvature = curvature,size = data3[,colnames(envdata)[-1][1]]^2*200 *range) +
       geom_point(data = data3,aes(x = x, y = y),pch = numpoint2,size =4,color = "black",fill = "#FFF5EB")+
       geom_point(data = data3,aes(x = 0, y = max(data3$x)*0.5),pch = numpoint2,size = 6,color = "black",fill = "#FEE6CE") +
       geom_text(data = data3,aes(x = 0, y =max(data3$x)*0.5,label = colnames(envdata)[-1][1] ),vjust = -1,hjust = -1)
@@ -342,9 +345,9 @@ cor_link <- function(data,
   if (n == 2) {
     p = p +
       geom_curve(data = data3,aes_string(x =linx[1], y = liny[1], xend = "x", yend = "y",group = paste("group",colnames(envdata)[-1][1],sep = ""),
-                                         color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = 0.2,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
+                                         color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = curvature,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
       geom_curve(data = data3,aes_string(x =linx[3], y = liny[3], xend = "x", yend = "y",group = paste("group",colnames(envdata)[-1][1],sep = ""),
-                                         color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = 0.2,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
+                                         color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = curvature,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
       geom_point(data = data3,aes(x = x, y = y),pch = numpoint2,size =4,color = "black",fill = "#FFF5EB")+
       geom_point(data = data3,aes(x =linx[1], y = liny[1]),pch = numpoint2,size = 6,color = "black",fill = "#FEE6CE") +
       geom_point(data = data3,aes(x =linx[3], y = liny[3]),pch = numpoint2,size = 6,color = "black",fill = "#FEE6CE") +
@@ -357,11 +360,11 @@ cor_link <- function(data,
   if (n == 3) {
     p = p +
       geom_curve(data = data3,aes_string(x =linx[1], y = liny[1], xend = "x", yend = "y",group = paste("group",colnames(envdata)[-1][1],sep = ""),
-                                         color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = 0.2,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
+                                         color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = curvature,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
       geom_curve(data = data3,aes_string(x =linx[2], y = liny[2], xend = "x", yend = "y",group = paste("group",colnames(envdata)[-1][1],sep = ""),
-                                         color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = 0.2,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
+                                         color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = curvature,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
       geom_curve(data = data3,aes_string(x =linx[3], y = liny[3], xend = "x", yend = "y",group = paste("group",colnames(envdata)[-1][1],sep = ""),
-                                         color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = 0.2,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
+                                         color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = curvature,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
       geom_point(data = data3,aes(x = x, y = y),pch = numpoint2,size =4,color = "black",fill = "#FFF5EB") +
       geom_point(data = data3,aes(x =linx[1], y = liny[1]),pch = numpoint2,size = 6,color = "black",fill = "#FEE6CE") +
       geom_point(data = data3,aes(x =linx[2], y = liny[2]),pch = numpoint2,size = 6,color = "black",fill = "#FEE6CE") +
