@@ -201,7 +201,7 @@ Miccorplot <- function(data,
 
   # ig dig only  adding *
   if (siglabel == TRUE) {
-    df$r2 = "*"
+    addat$r2 = "*"
     p <- p + geom_text(aes(x = x, y = y,label = r2),addat)
 
   }
@@ -354,8 +354,8 @@ cor_link <- function(data,
     p = p +
       geom_curve(data = data3,aes_string(x =linx[1], y = liny[1], xend = "x", yend = "y",group = paste("group",colnames(envdata)[-1][1],sep = ""),
                                          color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = curvature,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
-      geom_curve(data = data3,aes_string(x =linx[3], y = liny[3], xend = "x", yend = "y",group = paste("group",colnames(envdata)[-1][1],sep = ""),
-                                         color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = curvature,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
+      geom_curve(data = data3,aes_string(x =linx[3], y = liny[3], xend = "x", yend = "y",group = paste("group",colnames(envdata)[-1][2],sep = ""),
+                                         color = paste("group",colnames(envdata)[-1][2],sep = "")), curvature = curvature,size = data3[,colnames(envdata)[-1][2]]^2*200*range) +
       geom_point(data = data3,aes(x = x, y = y),pch = numpoint2,size =4,color = "black",fill = "#FFF5EB")+
       geom_point(data = data3,aes(x =linx[1], y = liny[1]),pch = numpoint2,size = 6,color = "black",fill = "#FEE6CE") +
       geom_point(data = data3,aes(x =linx[3], y = liny[3]),pch = numpoint2,size = 6,color = "black",fill = "#FEE6CE") +
@@ -369,10 +369,10 @@ cor_link <- function(data,
     p = p +
       geom_curve(data = data3,aes_string(x =linx[1], y = liny[1], xend = "x", yend = "y",group = paste("group",colnames(envdata)[-1][1],sep = ""),
                                          color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = curvature,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
-      geom_curve(data = data3,aes_string(x =linx[2], y = liny[2], xend = "x", yend = "y",group = paste("group",colnames(envdata)[-1][1],sep = ""),
-                                         color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = curvature,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
-      geom_curve(data = data3,aes_string(x =linx[3], y = liny[3], xend = "x", yend = "y",group = paste("group",colnames(envdata)[-1][1],sep = ""),
-                                         color = paste("group",colnames(envdata)[-1][1],sep = "")), curvature = curvature,size = data3[,colnames(envdata)[-1][1]]^2*200*range) +
+      geom_curve(data = data3,aes_string(x =linx[2], y = liny[2], xend = "x", yend = "y",group = paste("group",colnames(envdata)[-1][2],sep = ""),
+                                         color = paste("group",colnames(envdata)[-1][2],sep = "")), curvature = curvature,size = data3[,colnames(envdata)[-1][2]]^2*200*range) +
+      geom_curve(data = data3,aes_string(x =linx[3], y = liny[3], xend = "x", yend = "y",group = paste("group",colnames(envdata)[-1][3],sep = ""),
+                                         color = paste("group",colnames(envdata)[-1][3],sep = "")), curvature = curvature,size = data3[,colnames(envdata)[-1][3]]^2*200*range) +
       geom_point(data = data3,aes(x = x, y = y),pch = numpoint2,size =4,color = "black",fill = "#FFF5EB") +
       geom_point(data = data3,aes(x =linx[1], y = liny[1]),pch = numpoint2,size = 6,color = "black",fill = "#FEE6CE") +
       geom_point(data = data3,aes(x =linx[2], y = liny[2]),pch = numpoint2,size = 6,color = "black",fill = "#FEE6CE") +
@@ -389,6 +389,9 @@ cor_link <- function(data,
   p
 }
 
+# env.dat = env
+# tabOTU = tabOTU1
+# MetalTast(env.dat = env,tabOTU = tabOTU1,distance = "jcd",method = "metal")
 
 
 MetalTast <- function(env.dat,
