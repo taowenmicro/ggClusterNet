@@ -27,7 +27,9 @@ corBionetwork(
   step = 100,
   width = 8,
   height = 6,
-  allnode = TRUE
+  allnode = TRUE,
+  ncol = 3,
+  nrow = 1
 )
 }
 \arguments{

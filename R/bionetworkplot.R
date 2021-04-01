@@ -56,7 +56,9 @@ corBionetwork = function(otu = NULL,
                    step = 100,
                    width = 8,
                    height = 6,
-                   allnode = TRUE){
+                   allnode = TRUE,
+                   ncol = 3,
+                   nrow = 1){
   #--imput data ---------
   ps = inputMicro(otu,tax,map,tree,ps,group  = group)
   #---------------------------data washing-------------------------------------------------
@@ -99,10 +101,12 @@ corBionetwork = function(otu = NULL,
      env = t(env)
      env = as.data.frame(env)
     }
+
     env$ID = row.names(env)
 
     env_sub <-  env[match(as.character(mapsub$ID),as.character(env$ID)),]
-    env_sub <- env_sub[,c(ncol(env_sub),1:c(ncol(env_sub) - 1))]
+    # env_sub <- env_sub[,c(ncol(env_sub),1:c(ncol(env_sub) - 1))]
+    env_sub <- env_sub %>% select(ID,everything())
 
     if (bio == TRUE) {
 
@@ -140,8 +144,10 @@ corBionetwork = function(otu = NULL,
     }
 
     netClu$group = as.factor(netClu$group)
-    colnames(occor.r)
-    result2 = PolygonRrClusterG (cor = occor.r ,nodeGroup = netClu,zoom = 3,zoom2 = 2 )
+
+    result2 = PolygonClusterG (cor = occor.r ,nodeGroup = netClu,zoom = 3,zoom2 = 2 )
+
+
     nodesub = result2[[1]]
     print("PolygonRrClusterG")
 
@@ -151,8 +157,8 @@ corBionetwork = function(otu = NULL,
     #-----计算边#--------
     print("start_edgebuilding")
     edges = edgeBuild(cor = occor.r,plotcord = nodesub)
+    edges = edges %>% filter(wei_label != "a")
     head(plotcord)
-    colnames( occor.r)
     print(dim(edges))
     #-------output---edges and nodes--to Gephi --imput--
     edge_Gephi = data.frame(source = edges$OTU_1,target = edges$OTU_2,correlation =  edges$weight,direct= "undirected",cor =  edges$wei_label)
@@ -175,30 +181,36 @@ corBionetwork = function(otu = NULL,
     }
     row.names(nodeG) = nodeG$Row.names
     nodeG$Row.names = NULL
-    #--
     nodeG[is.na(nodeG)] = 0
 
-    if (fill == group) {
-      fill = "group"
-    }
-    plotnode <- nodeG %>% dplyr::select(c("X1" , "X2","elements",fill, size))
-    colnames(plotnode) <- gsub(fill,"XXXX",colnames(plotnode))
-    colnames(plotnode) <- gsub(size,"YYYY",colnames(plotnode))
-    head(plotnode)
+    # if (fill == group) {
+    #   fill = "group"
+    # }
 
-
+    head(nodeG)
+    plotnode <- nodeG
+    # plotnode <- nodeG %>% dplyr::select(c("X1" , "X2","elements",fill, size))
+    # colnames(plotnode) <- gsub(fill,"XXXX",colnames(plotnode))
+    # colnames(plotnode) <- gsub(size,"YYYY",colnames(plotnode))
+    # head(plotnode)
+    # !!sym(a)
+    # fill = "group"
+    # size = "igraph.betweenness"
+    lab = "elements"
     ### 出图
+
 
 
     pnet <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = as.factor(wei_label)),
                                     data = edges, size = 0.5) +
-      geom_point(aes(x = X1, y = X2,size = YYYY,fill =XXXX),pch = 21, data =  plotnode) + scale_colour_brewer(palette = "Set1") +
+      geom_point(aes(x = X1, y = X2,size = !!sym(size),fill = !!sym(fill)),pch = 21, data =  plotnode) + scale_colour_brewer(palette = "Set1") +
       scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
       labs( title = paste(layout,"network",sep = "_")) + theme_void()
     pnet
 
     if (label == TRUE ) {
-      pnet <- pnet +  geom_text_repel(aes(X1, X2,label= XXXX),size=4, data = plotnode)
+      pnet <- pnet +  geom_text(aes(X1, X2,label= !!sym(lab)), data = plotnode)
+
     }
 
     plotname = paste(path,"/network",layout,".pdf",sep = "")
@@ -257,7 +269,7 @@ corBionetwork = function(otu = NULL,
     aa = aa+1
   }
   plotname = paste(path,"/network_all.pdf",sep = "")
-  p  = ggarrange(plotlist = plots, common.legend = TRUE, legend="right")
+  p  = ggarrange(plotlist = plots, common.legend = TRUE, legend="right",ncol = ncol,nrow = nrow)
   return(list(p,y))
 
 }

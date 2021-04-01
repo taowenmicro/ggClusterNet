@@ -9,7 +9,10 @@ merge16S_ITS(
   psITS = psITS,
   N16s = 0.001,
   NITS = 0.001,
-  scale = TRUE
+  scale = TRUE,
+  onlygroup = FALSE,
+  dat1.lab = "bac",
+  dat2.lab = "fun"
 )
 }
 \arguments{

@@ -25,24 +25,12 @@
 
 
 
-div_network = function(ps,num = 6,group = "Group",flour = TRUE){
+div_network = function(ps,group = "Group",flour = TRUE){
   mapping = as.data.frame(sample_data(ps))
   mapping = mapping[,group]
   colnames(mapping[,group]) <- "Group"
   sample_data(ps) = mapping
   ps_rela  = phyloseq::transform_sample_counts(ps, function(x) x / sum(x) );ps_rela
-  vegan_otu <-  function(physeq){
-    OTU <-  otu_table(physeq)
-    if(taxa_are_rows(OTU)){
-      OTU <-  t(OTU)
-    }
-    return(as(OTU,"matrix"))
-  }
-  vegan_tax <-  function(physeq){
-    tax <-  tax_table(physeq)
-
-    return(as(tax,"matrix"))
-  }
 
 
   aa = vegan_otu(ps)
@@ -54,7 +42,7 @@ div_network = function(ps,num = 6,group = "Group",flour = TRUE){
 
 
   ##########这里的操作为提取三个分组
-  pick_val_num <- num*2/3
+  # pick_val_num <- num*2/3
   count[count > 0] <- 1###这个函数只能用于0,1 的数据，所以我这么转换
 
   count2 = as.data.frame(count)
@@ -66,10 +54,22 @@ div_network = function(ps,num = 6,group = "Group",flour = TRUE){
   # 组合结果
   iris.combine <- do.call(rbind,iris.apply)
   ven2 = t(iris.combine)
-  head(ven2)
-  ven2[ven2 < pick_val_num]  = 0
-  ven2[ven2 >=pick_val_num]  = 1
+  for (i in 1:length(unique(sample_data(ps)$Group))) {
+    aa <- as.data.frame(table(sample_data(ps)$Group))[i,1]
+    bb =  as.data.frame(table(sample_data(ps)$Group))[i,2]
+    ven2[,aa] = ven2[,aa]/bb
+  }
+
+
+  ven2[ven2 < N]  = 0
+  ven2[ven2 >=N]  = 1
   ven2 = as.data.frame(ven2)
+
+
+  # head(ven2)
+  # ven2[ven2 < pick_val_num]  = 0
+  # ven2[ven2 >=pick_val_num]  = 1
+  # ven2 = as.data.frame(ven2)
 
 
   ven3 = as.list(ven2)
@@ -105,7 +105,7 @@ div_network = function(ps,num = 6,group = "Group",flour = TRUE){
   norm2 <- do.call(rbind,iris.apply)%>%
     t()
 
-  dim(norm2)
+  head(norm2)
   colnames(norm2) = paste(colnames(norm2),"mean",sep = "")
   dim(otu_net)
   otu_net2 = merge(otu_net,norm2,by = "row.names",all= F)
@@ -128,7 +128,7 @@ div_network = function(ps,num = 6,group = "Group",flour = TRUE){
   head(otu_net2)
   if (length(colnames(tax_table(ps))) == 6) {
     net_all = reshape2::melt(otu_net2, id=c("ID","Kingdom","Phylum" ,"Class", "Order","Family" ,"Genus",
-                                            paste(unique(mapping$SampleType),"mean",sep = "")))
+                                            paste(unique(mapping$Group),"mean",sep = "")))
   }
 
 

@@ -31,7 +31,9 @@ corBiostripe = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.th
     occor = psych::corr.test(t(otu_table),use="pairwise",method=method,adjust="fdr",alpha=.05)
     occor.r = occor$r
     occor.p = occor$p
-    occor.r[occor.p > p.threshold|abs(occor.r)<r.threshold] = 0
+    # occor.r[occor.p > p.threshold|abs(occor.r)<r.threshold] = 0
+    occor.r[abs(occor.r)<r.threshold] = 0
+    occor.r[occor.p > p.threshold] = 0
     tax = as.data.frame((vegan_tax(ps)))
     head(tax)
     A <- levels(as.factor(tax$filed))

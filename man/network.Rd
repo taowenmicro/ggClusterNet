@@ -22,7 +22,10 @@ network(
   scale = TRUE,
   zipi = FALSE,
   clu_method = "cluster_fast_greedy",
-  step = 100
+  step = 100,
+  yourmem = theme_void(),
+  ncol = 3,
+  nrow = 1
 )
 }
 \arguments{

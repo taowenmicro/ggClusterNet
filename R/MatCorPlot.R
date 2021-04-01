@@ -132,7 +132,9 @@ Miccorplot <- function(data,
                        siglabel = FALSE,
                        shownum = TRUE,
                        numpoint = 22,
-                       numsymbol = NULL
+                       numsymbol = NULL,
+                       dig.vjust = -0.5,
+                       dig.hjust = -0.5
 ){
 
   lab.1 = 0
@@ -222,7 +224,7 @@ Miccorplot <- function(data,
 
   if (lab.1 == 0 ) {
     if (diag == TRUE) {
-      p <- p +  geom_text(aes(x = x + 1, y = abs(lab.2-z),label=labx),labdat,angle = 30,vjust =  -0.5)
+      p <- p +  geom_text(aes(x = x + 1, y = abs(lab.2-z),label=labx),labdat,angle = 30,vjust =  dig.vjust,hjust = dig.vjust)
     }
     lindat = data.frame(x = labdat$x + 1,y = abs(lab.2-labdat$z) ,label = labdat$labx)
   }

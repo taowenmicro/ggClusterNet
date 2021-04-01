@@ -47,7 +47,11 @@ network = function(otu = NULL,
                    scale = TRUE,
                    zipi = FALSE,
                    clu_method = "cluster_fast_greedy",
-                   step = 100){
+                   step = 100,
+                   yourmem = theme_void(),
+                   ncol = 3,
+                   nrow = 1
+                   ){
 
 
   #--imput data ---------
@@ -128,7 +132,7 @@ network = function(otu = NULL,
     }
 
     g <- network::network(occor.r, directed=FALSE)
-    g  = g
+
     m <- network::as.matrix.network.adjacency(g)  # get sociomatrix
 
     # get coordinates from Fruchterman and Reingold's force-directed placement algorithm.
@@ -198,30 +202,22 @@ network = function(otu = NULL,
     head(nodeG)
     row.names(nodeG) = nodeG$Row.names
     nodeG$Row.names = NULL
-    #--
-    plotnode <- nodeG %>% dplyr::select(c("X1" , "X2","elements",fill, "mean",size))
-    if (!is.null(fill)) {
-      colnames(plotnode) <- gsub(fill,"XXXX",colnames(plotnode))
-      colnames(plotnode) <- gsub(size,"YYYY",colnames(plotnode))
+    # size = NULL
+    plotnode <- nodeG
+
 
       pnet <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = as.factor(wei_label)),
                                       data = edges, size = 0.5) +
-        geom_point(aes(x = X1, y = X2,size = YYYY,fill =XXXX),pch = 21, data =  plotnode) + scale_colour_brewer(palette = "Set1") +
+        geom_point(aes(x = X1, y = X2,size = !!sym(size),fill =!!sym(fill)),pch = 21, data =  plotnode) + scale_colour_brewer(palette = "Set1") +
         scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
-        labs( title = paste(layout,"network",sep = "_")) + theme_void()
-    } else {
-      colnames(plotnode) <- gsub(size,"YYYY",colnames(plotnode))
+        labs( title = paste(layout,"network",sep = "_")) + theme_void() + theme(
+          plot.margin=unit(c(0,0,0,0), "cm")
+        )
 
-      pnet <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = as.factor(wei_label)),
-                                      data = edges, size = 0.5) +
-        geom_point(aes(x = X1, y = X2,size = YYYY),pch = 21, data =  plotnode) + scale_colour_brewer(palette = "Set1") +
-        scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
-        labs( title = paste(layout,"network",sep = "_")) + theme_void()
-    }
 
 
     if (label == TRUE ) {
-      pnet <- pnet +  geom_text_repel(aes(X1, X2,label=XXXX),size=4, data = plotnode)
+      pnet <- pnet +  geom_text_repel(aes(X1, X2,label=XXXX),size=4, data = plotnode) + yourmem
     }
 
     plotname = paste(path,"/network",layout,".pdf",sep = "")
@@ -238,7 +234,9 @@ network = function(otu = NULL,
     data = rbind(data1,data2)
     p1 <- ggplot(data) +geom_point(aes(x = ID,y = network,group =group,fill = group),pch = 21,size = 2) +
       geom_smooth(aes(x = ID,y = network,group =group,color = group))+
-      theme_bw()
+      theme_bw() + theme(
+        plot.margin=unit(c(0,0,0,0), "cm")
+      )
     plotname = paste(path,"/Power_law_distribution_",layout,".pdf",sep = "")
     ggsave(plotname, p1, width = 8, height =6)
 
@@ -278,7 +276,7 @@ network = function(otu = NULL,
     aa = aa+1
   }
   plotname = paste(path,"/network_all.pdf",sep = "")
-  p  = ggpubr::ggarrange(plotlist = plots, common.legend = TRUE, legend="right")
+  p  = ggpubr::ggarrange(plotlist = plots, common.legend = TRUE, legend="right",ncol = ncol,nrow = nrow)
   return(list(p,y))
 }
 
