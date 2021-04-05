@@ -12,10 +12,10 @@ network(
   N = 0.001,
   r.threshold = 0.6,
   p.threshold = 0.05,
-  method = "pearson",
+  method = "spearman",
   label = FALSE,
+  lab = "elements",
   group = "Group",
-  lay = "fruchtermanreingold",
   path = "./",
   fill = "Phylum",
   size = "igraph.degree",
@@ -44,8 +44,6 @@ of the correlation threshold is greater than 0.6. the value range of correlation
 
 \item{group}{Separate Group.}
 
-\item{lay}{layout which network show}
-
 \item{path}{save path of all of network analyse.}
 
 \item{fill}{fill coulor of node}
@@ -55,6 +53,8 @@ of the correlation threshold is greater than 0.6. the value range of correlation
 \item{zipi}{zipi Calculation}
 
 \item{step}{Random network sampling times}
+
+\item{lay}{layout which network show}
 }
 \value{
 list which contains OTU correlation matrix

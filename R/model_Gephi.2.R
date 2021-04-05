@@ -87,7 +87,7 @@ model_Gephi.2 <- function(cor = cor,method = "cluster_fast_greedy",seed = 2){
   igraph.degree<-igraph::degree(igraph) %>% as.data.frame()
   colnames(igraph.degree) = "degree"
   igraph.degree$ID = row.names(igraph.degree)
-dim(igraph.degree)
+  dim(igraph.degree)
   netClu <- netClu %>% left_join(igraph.degree,na_matches = "never")
   netClu$degree[is.na(netClu$degree)] = 0
   netClu <- netClu %>% arrange(desc(degree))
@@ -103,20 +103,33 @@ dim(igraph.degree)
   tab3 <- tab0 %>% left_join(tab1,by = "group")
 
   num.node <- dim(cor)[1]
-  n = (sqrt((num.node-1)/3) - 1) %>% floor()
-  wai.mode = num.node - (3*(n + 1)^2 + 1) + n + 1
+
+  for (N in 1: num.node) {
+    A = 1 + (7*(N + 1)*N )/2 - N
+    if (A >= num.node) {
+
+     break
+    }
+    n = N - 1
+    print(n)
+  }
+
+
+  # n = (sqrt((num.node-1)/3) - 1) %>% floor()
+  wai.mode = num.node - (1 + (7*(n + 1)*n )/2 - n)
   dat = data.frame(x = 0,y = 0)
+  i = 1
   for (i in 1:n) {
     t <- seq(0, 2*pi, length.out = 7*i)
     t = t[-1]
     x <- sin(t)*i
     y <- cos(t)*i
-
     add = data.frame(x = x,y = y)
     dat = rbind(dat,add)
+
     if (i== n) {
       i = i + 1
-      t <- seq(0, 2*pi, length.out = wai.mode)
+      t <- seq(0, 2*pi, length.out = (wai.mode + 1))
       t = t[-1]
       x <- sin(t)*i
       y <- cos(t)*i
@@ -125,6 +138,7 @@ dim(igraph.degree)
     }
 
   }
+  dim(dat)
   row.names(dat) = row.names(cor)
   dat$elements = row.names(cor)
   colnames(dat)[1:2] = c("X1","X2")

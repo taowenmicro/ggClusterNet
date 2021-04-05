@@ -30,6 +30,7 @@
 
 
 
+
 network = function(otu = NULL,
                    tax = NULL,
                    map = NULL,
@@ -37,10 +38,10 @@ network = function(otu = NULL,
                    N = 0.001,
                    r.threshold = 0.6,
                    p.threshold = 0.05,
-                   method = "pearson",
+                   method = "spearman",
                    label = FALSE,
+                   lab = "elements",
                    group = "Group",
-                   lay = "fruchtermanreingold",
                    path = "./",
                    fill = "Phylum",
                    size = "igraph.degree",
@@ -59,134 +60,67 @@ network = function(otu = NULL,
   #---------------------------data washing-------------------------------------------------
   #transform to relative abundance
   if (scale == TRUE) {
-    ps_rela  = phyloseq::transform_sample_counts(ps, function(x) x / sum(x) )
+    ps_rela  = scale_micro(ps = ps,method = "rela")
 
   } else {
     ps_rela <- ps
   }
 
-  ps_sub = phyloseq::filter_taxa(ps_rela, function(x) mean(x) > N , TRUE)#select OTUs according to  relative abundance
-
-
-  # extract map table
-  design = mapping= as.data.frame(phyloseq::sample_data(ps_sub))
-  colnames(mapping) <- "Group"
-  otu_table = as.data.frame(t(vegan_otu(ps_sub)))
-  tax_table = as.data.frame(vegan_tax(ps_sub ))
-
-  # network = otu_table
+  mapping = as.data.frame(sample_data(ps))
+  ps_sub = phyloseq::filter_taxa(ps_rela, function(x) mean(x) > N , TRUE)
   y = matrix(1,nrow = 14,ncol = length(unique(mapping$Group)))
   #--transmit N
   d = N
 
-
   layouts = as.character(unique(mapping$Group))
   mapping$ID = row.names(mapping)
   ##################---------------------------------------calculate network---------------------------------------------------
-  aa = 1
+
   plots = list()
+  plots1 = list()
   # layout = layouts[1]
-
+  aa = 1
   for (layout in layouts) {
+    mapi <- mapping[mapping$Group ==  layout,]
+    psi = phyloseq(otu_table(ps_sub),
+                   tax_table(ps_sub),
+                   sample_data(mapi )
+                   )
+    psi = filter_taxa(psi, function(x) sum(x ) > 0 , TRUE)
 
-    # xx = dplyr::filter(as.tibble(mapping), Group %in% layout)
-    xx <- mapping[mapping$Group ==  layout,]
-
-    network_sub =  otu_table[xx$ID]
-    n=ncol(network_sub)
-    network_sub[n+1]=apply(network_sub[c(1:nrow(network_sub)),],1,sum)
-    network_sub=network_sub[network_sub[n+1] > 0,1:n]
 
     print(layout)
-    occor = psych::corr.test(t(network_sub),use="pairwise",method= method,adjust="fdr",alpha=.05)
-    print("over")
-    occor.r = occor$r #
-    occor.p = occor$p #
-    occor.r[occor.p > p.threshold|abs(occor.r)< r.threshold] = 0
+    result = corMicro (ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,method = method)
+    print("cor matrix culculating over")
+    cor = result[[1]]    #Extract correlation matrix
 
-    # if (bio == TRUE) {
-    #   # intersect(row.names(occor.r),as.character(row.names(tax_table[as.character(tax_table$tax3)== "ARG",])))
-    #   a <- row.names(occor.r) %in% intersect(row.names(occor.r),as.character(row.names(tax_table[as.character(tax_table$tax3)== "ARG",])))
-    #   a
-    #   occor.r[a,a] = 0
-    #   a <- row.names(occor.r) %in% intersect(row.names(occor.r),as.character(row.names(tax_table[as.character(tax_table$tax3)== "MEG",])))
-    #   a
-    #   occor.r[a,a] = 0
-    #
-    # }
-    result4 = nodeEdge(cor = occor.r)
-    # extract edge file
-    edge = result4[[1]]
-    # extract node file
-    node = result4[[2]]
-    #--
-    igraph  = igraph::graph_from_data_frame(edge, directed = FALSE, vertices = node)
-    # nodepro = node_properties(igraph)
-    if (zipi == TRUE) {
-      #----culculate zi pi
-      res = ZiPiPlot(igraph = igraph,method = clu_method)
-      p <- res[[1]]
-      ggsave(paste(path,"/",layout,"_ZiPi.pdf",sep = ""),p)
-      ZiPi <- res[[2]]
-      write.csv(ZiPi ,paste(path,"/",layout,"ZiPi.csv",sep = ""),row.names = FALSE)
-    }
+    result2 <- model_Gephi.2(cor = cor,
+                             method = clu_method,
+                             seed = 12
+    )
+    node = result2[[1]]
+    dim(node)
 
-    g <- network::network(occor.r, directed=FALSE)
-
-    m <- network::as.matrix.network.adjacency(g)  # get sociomatrix
-
-    # get coordinates from Fruchterman and Reingold's force-directed placement algorithm.
-    # plotcord <- data.frame(sna::gplot.layout.fruchtermanreingold(m, NULL))
-
-    plotcord <- selectlayout(m = m,layout = lay)
+    ps_net = result[[3]]
+    otu_table = as.data.frame(t(vegan_otu(ps_net)))
 
 
-    colnames(plotcord) = c("X1", "X2")
-    plotcord$elements <- colnames(occor.r)
-    edglist <- network::as.matrix.network.edgelist(g)
-    edglist = as.data.frame(edglist)
+    tax_table = as.data.frame(vegan_tax(ps_net))
+    #---node节点注释#-----------
+    nodes = nodeadd(plotcord =node,otu_table = otu_table,tax_table = tax_table)
+    head(nodes)
 
-    network::set.edge.value(g,"weigt",occor.r)
-    edglist$weight = as.numeric(network::get.edge.attribute(g,"weigt"))
-    edges <- data.frame(plotcord[edglist[, 1], ], plotcord[edglist[, 2], ])
-    edges$weight = as.numeric(network::get.edge.attribute(g,"weigt"))
-    aaa = rep("a",length(edges$weight))
-    for (i in 1:length(edges$weight)) {
-      if (edges$weight[i]> 0) {
-        aaa[i] = "+"
-      }
-      if (edges$weight[i]< 0) {
-        aaa[i] = "-"
-      }
-    }
-    #add to edge table
-    edges$wei_label = as.factor(aaa)
-    colnames(edges) <- c("X1", "Y1","OTU_1", "X2", "Y2","OTU_2","weight","wei_label")
-    edges$midX <- (edges$X1 + edges$X2)/2
-    edges$midY <- (edges$Y1 + edges$Y2)/2
-
-    ##plotcord add tax
-    row.names(plotcord) = plotcord$elements
-    network_tax =tax_table
-    res = merge(plotcord,network_tax,by = "row.names",all = F)
-
-    row.names(res) = res$Row.names
-    res$Row.names = NULL
-    plotcord = res
-
-    xx = data.frame(mean  =rowMeans(otu_table))
-    plotcord = merge(plotcord,xx,by = "row.names",all = FALSE)
-    row.names(plotcord) = plotcord$Row.names
-    plotcord$Row.names = NULL
-
+    #-----计算边#--------
+    edge = edgeBuild(cor = cor,plotcord = node)
+    head(edge)
+    colnames(edge)[8] = "cor"
     #-------output---edges and nodes--to Gephi --imput--
-    edge_Gephi = data.frame(source = edges$OTU_1,target = edges$OTU_2,correlation =  edges$weight,direct= "undirected",cor =  edges$wei_label)
+    edge_Gephi = data.frame(source = edge$OTU_1,target = edge$OTU_2,correlation =  edge$weight,direct= "undirected",cor =  edge$cor)
     # building node table
-    node_Gephi = data.frame(ID= plotcord$elements,plotcord[4:dim(plotcord)[2]],Label = plotcord$elements)
+    node_Gephi = data.frame(ID= nodes$elements,nodes[4:dim(nodes)[2]],Label = nodes$elements)
 
     idedge <- c(as.character(edge_Gephi$source),as.character(edge_Gephi$target))
     idedge <- unique(idedge)
-
     row.names(node_Gephi) <- as.character(node_Gephi$ID)
     node_Gephi1 <- node_Gephi[idedge, ]
 
@@ -194,36 +128,71 @@ network = function(otu = NULL,
     write.csv(node_Gephi,paste(path,"/",layout,"_Gephi_allnode.csv",sep = ""),row.names = FALSE)
     write.csv(node_Gephi1,paste(path,"/",layout,"_Gephi_edgenode.csv",sep = ""),row.names = FALSE)
 
+
+    igraph  = igraph::graph_from_data_frame(nodeEdge(cor = cor)[[1]], directed = FALSE, vertices = nodeEdge(cor = cor)[[2]])
     nodepro = node_properties(igraph)
-
     write.csv(nodepro,paste(path,"/",layout,"_node_properties.csv",sep = ""),row.names = FALSE)
-
-    nodeG = merge(plotcord,nodepro,by = "row.names",all  =FALSE)
-    head(nodeG)
+    nodeG = merge(nodes,nodepro,by = "row.names",all  =FALSE)
     row.names(nodeG) = nodeG$Row.names
     nodeG$Row.names = NULL
-    # size = NULL
-    plotnode <- nodeG
 
+    pnet <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = cor),
+                                    data = edge, size = 0.5,alpha = 0.3) +
+      geom_point(aes(X1, X2,fill = !!sym(fill),size = !!sym(size)),pch = 21, data = nodeG) +
+      labs( title = paste(layout,"network",sep = "_"))  +
+      # geom_text_repel(aes(X1, X2,label = elements),pch = 21, data = nodeG) +
+      # geom_text(aes(X1, X2,label = elements),pch = 21, data = nodeG) +
+      scale_colour_manual(values = c("#377EB8","#E41A1C")) +
+      scale_size(range = c(4, 14)) +
+      scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
+      theme(panel.background = element_blank()) +
+      theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
+      theme(legend.background = element_rect(colour = NA)) +
+      theme(panel.background = element_rect(fill = "white",  colour = NA)) +
+      theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank())
+    pnet
 
-      pnet <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = as.factor(wei_label)),
-                                      data = edges, size = 0.5) +
-        geom_point(aes(x = X1, y = X2,size = !!sym(size),fill =!!sym(fill)),pch = 21, data =  plotnode) + scale_colour_brewer(palette = "Set1") +
-        scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
-        labs( title = paste(layout,"network",sep = "_")) + theme_void() + theme(
-          plot.margin=unit(c(0,0,0,0), "cm")
-        )
-
-
+    pnet1 <- ggplot() + geom_curve(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = cor),
+                                              data = edge, size = 0.5,alpha = 0.3,curvature = -0.2) +
+      geom_point(aes(X1, X2,fill = !!sym(fill),size = !!sym(size)),pch = 21, data = nodeG) +
+      labs( title = paste(layout,"network",sep = "_"))  +
+      # geom_text_repel(aes(X1, X2,label = elements),pch = 21, data = nodeG) +
+      # geom_text(aes(X1, X2,label = elements),pch = 21, data = nodeG) +
+      scale_colour_manual(values = c("#377EB8","#E41A1C")) +
+      scale_size(range = c(4, 14)) +
+      scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
+      theme(panel.background = element_blank()) +
+      theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
+      theme(legend.background = element_rect(colour = NA)) +
+      theme(panel.background = element_rect(fill = "white",  colour = NA)) +
+      theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank())
+    pnet1
 
     if (label == TRUE ) {
-      pnet <- pnet +  geom_text_repel(aes(X1, X2,label=XXXX),size=4, data = plotnode) + yourmem
+      pnet <- pnet +  geom_text_repel(aes(X1, X2,label=!!sym(lab)),size=4, data = nodeG)
+      pnet1 <- pnet1 +  geom_text_repel(aes(X1, X2,label=!!sym(lab)),size=4, data = nodeG)
     }
 
     plotname = paste(path,"/network",layout,".pdf",sep = "")
-    ggsave(plotname, pnet, width = 12, height =8)
+    # ggsave(plotname, pnet, width = 16 * dim(nodeG)[1]/200, height = 14*dim(nodeG)[1]/200)
+    ggsave(plotname, pnet, width = 16 , height = 14)
 
+    plotname = paste(path,"/network",layout,"_cover.pdf",sep = "")
+    # ggsave(plotname, pnet, width = 16 * dim(nodeG)[1]/200, height = 14*dim(nodeG)[1]/200)
+    ggsave(plotname, pnet1, width = 16 , height = 14)
     plots[[aa]] = pnet
+    plots1[[aa]] = pnet1
+
+    # nodepro = node_properties(igraph)
+    if (zipi == TRUE) {
+      #----culculate zi pi
+      res = ZiPiPlot(igraph = igraph,method = clu_method)
+      p <- res[[1]]
+      ggsave(paste(path,"/",layout,"_ZiPi.pdf",sep = ""),p,width = 12, height = 10)
+      ZiPi <- res[[2]]
+      write.csv(ZiPi ,paste(path,"/",layout,"ZiPi.csv",sep = ""),row.names = FALSE)
+    }
+
     #----
     rand.g<- erdos.renyi.game(length(V(igraph)), length(E(igraph)),type = c("gnm"))
     # degree_distribution
@@ -277,71 +246,8 @@ network = function(otu = NULL,
   }
   plotname = paste(path,"/network_all.pdf",sep = "")
   p  = ggpubr::ggarrange(plotlist = plots, common.legend = TRUE, legend="right",ncol = ncol,nrow = nrow)
-  return(list(p,y))
-}
-
-
-
-
-selectlayout <- function(m,layout = "fruchtermanreingold"){
-  if (layout == "fruchtermanreingold") {
-    plotcord <- data.frame(sna::gplot.layout.fruchtermanreingold(m, NULL))
-
-  }
-
-  if (layout == "circle") {
-    plotcord <-  data.frame(sna::gplot.layout.circle(m, NULL))
-  }
-
-  if (layout == "kamadakawai") {
-    plotcord <-  data.frame(sna::gplot.layout.adj(m, NULL))
-  }
-  if (layout == "adj") {
-    plotcord <-  data.frame(sna::gplot.layout.kamadakawai(m, NULL))
-  }
-  if (layout == "circrand") {
-    plotcord <-  data.frame(sna::gplot.layout.circrand(m, NULL))
-  }
-  if (layout == "eigen") {
-    plotcord <-  data.frame(sna::gplot.layout.eigen(m, NULL))
-  }
-  if (layout == "geodist") {
-    plotcord <-  data.frame(sna::gplot.layout.geodist(m, NULL))
-  }
-  if (layout == "hall") {
-    plotcord <-  data.frame(sna::gplot.layout.hall(m, NULL))
-  }
-
-  if (layout == "mds") {
-    plotcord <-  data.frame(sna::gplot.layout.mds(m, NULL))
-  }
-
-  if (layout == "princoord") {
-    plotcord <-  data.frame(sna::gplot.layout.princoord(m, NULL))
-  }
-  if (layout == "random") {
-    plotcord <-  data.frame(sna::gplot.layout.random(m, NULL))
-  }
-  if (layout == "rmds") {
-    plotcord <-  data.frame(sna::gplot.layout.rmds(m, NULL))
-  }
-  if (layout == "segeo") {
-    plotcord <-  data.frame(sna::gplot.layout.segeo(m, NULL))
-  }
-  if (layout == "seham") {
-    plotcord <-  data.frame(sna::gplot.layout.seham(m, NULL))
-  }
-  if (layout == "spring") {
-    plotcord <-  data.frame(sna::gplot.layout.spring(m, NULL))
-  }
-  if (layout == "springrepulse") {
-    plotcord <-  data.frame(sna::gplot.layout.springrepulse(m, NULL))
-  }
-  if (layout == "target") {
-    plotcord <-  data.frame(sna::gplot.layout.target(m, NULL))
-  }
-
-  return(plotcord)
+  p1  = ggpubr::ggarrange(plotlist = plots1, common.legend = TRUE, legend="right",ncol = ncol,nrow = nrow)
+  return(list(p,y,p1))
 }
 
 
