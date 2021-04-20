@@ -3,9 +3,11 @@
 #' @title scaling microbiome data
 #' @description will use many method for microbiome data scaling
 #' @param ps phyloseq abject containg microbiome data
-#' @param  method could be selected byy rela, sampling, log,TMM, et al
+#' @param  method could be selected byy rela, sampling, log,TMM,RLE,upperquartile
+#'  et al
 #' @examples
 #' scale_micro(ps = ps,method = "rela")
+
 
 scale_micro <- function(ps,
                         method = "rela"
@@ -25,12 +27,34 @@ scale_micro <- function(ps,
 
   }
 
-  if (method == "TMM") {
-    print("In the next version will be added")
+  if (method %in% c("TMM","RLE","upperquartile")) {
+    count = t(vegan_otu(ps))
+    map <- as.data.frame(sample_data(ps))
+    map$Group <- as.factor(map$Group)
+    # create DGE list
+    d = edgeR::DGEList(counts=count,group = map$Group)
+    d$samples
+    d = edgeR::calcNormFactors(d,method=method)
+    # 生成实验设计矩阵
+    design.mat = model.matrix(~ 0 + d$samples$group)
+    colnames(design.mat)=levels(map$Group)
+    d2 = edgeR::estimateGLMCommonDisp(d, design.mat)
+    d2 = edgeR::estimateGLMTagwiseDisp(d2, design.mat)
+    fit = edgeR::glmFit(d2, design.mat)
+
+    otu = as.matrix(fit$fitted.values)
+    head(otu)
+
+    ps1 <- phyloseq(otu_table(as.matrix(otu),taxa_are_rows = TRUE),
+                   tax_table(ps),
+                   sample_data(ps)
+    )
   }
+
 
   return(ps1)
 }
+
 
 
 

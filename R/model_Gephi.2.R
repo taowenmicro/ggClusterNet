@@ -91,8 +91,8 @@ model_Gephi.2 <- function(cor = cor,method = "cluster_fast_greedy",seed = 2){
   netClu <- netClu %>% left_join(igraph.degree,na_matches = "never")
   netClu$degree[is.na(netClu$degree)] = 0
   netClu <- netClu %>% arrange(desc(degree))
-  sumtav <- netClu %>% group_by(group) %>%
-    summarise(sum(degree))
+  sumtav <- netClu %>% dplyr::group_by(group) %>%
+    dplyr::summarise(sum(degree))
   colnames(sumtav) = c("group","degree")
   tab0 <- sumtav %>% arrange(desc(degree))
   tab0$group = as.character(tab0$group)

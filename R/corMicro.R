@@ -5,7 +5,10 @@
 #' @param r.threshold The defult, r.threshold=0.6, it represents the correlation that the absolute value
 #'  of the correlation threshold is greater than 0.6. the value range of correlation threshold from 0 to 1.
 #' @param p.threshold The defult, p.threshold=0.05, it represents significance threshold below 0.05.
-#' @param  method method for Correlation calculation,method="pearson" is the default value. The alternatives to be passed to cor are "spearman" and "kendall".
+#' @param  method method for Correlation calculation,method="pearson" is the default value.
+#' The alternatives to be passed to cor are "spearman" and "kendall". recentliy "sparcc" added to method
+#' @param R number of repeats for sparcc p value
+#' @param ncpus number of cpu for sparcc calculate p value
 #' @examples
 #' data(ps)
 #' result <- corMicro(ps = ps,N = 0.02,r.threshold=0.6,p.threshold=0.05,method = "pearson")
@@ -20,46 +23,113 @@
 #' Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 #' @export
 
-corMicro = function(ps = ps,N = 0.02,r.threshold=0.6,p.threshold=0.05,method = "pearson"){
+corMicro = function(ps = ps,N = 0.02,r.threshold=0.6,p.threshold=0.05,method = "pearson",R = 10,ncpus = 1){
 
-  #--function to extract otu table and tax table#-----
-  vegan_otu <-  function(physeq){
-    OTU <-  otu_table(physeq)
-    if(taxa_are_rows(OTU)){
-      OTU <-  t(OTU)
-    }
-    return(as(OTU,"matrix"))
-  }
-
-
-  #-----Relative abundance conversion-------
   ps_rela  = transform_sample_counts(ps, function(x) x / sum(x) )
-  #--根据设定的阈值筛选应该包含otu#---------
   ps_sub = filter_taxa(ps_rela, function(x) mean(x ) > N , TRUE)
-
-  #output map table
-  # design = mapping= as.data.frame(sample_data(ps_sub))
-  # head(design)
-  #otuput otu table
   otu_table = as.data.frame(t(vegan_otu(ps_sub)))
   head(otu_table)
-
-  # # output tax table #-----
-  # tax_table = as.data.frame(vegan_tax(ps_sub ))
-  # head(tax_table)
+  if (method %in% c("pearson","spearman","kendall")) {
 
 
+    #--- use corr.test function to calculate relation#--------
+    occor = psych::corr.test(t(otu_table),use="pairwise",method=method,adjust="fdr",alpha=.05)
+    occor.r = occor$r
+    occor.p = occor$p
 
-  #--- use corr.test function to calculate relation#--------
-  occor = psych::corr.test(t(otu_table),use="pairwise",method=method,adjust="fdr",alpha=.05)
-  occor.r = occor$r
-  occor.p = occor$p
 
-  occor.r[occor.p > p.threshold|abs(occor.r)<r.threshold] = 0
+  }
 
+  if (method %in% c("sparcc")) {
+
+    result <- sparcc.micro(data = t(otu_table),R = R,ncpus = ncpus)
+
+    occor.r = result[[1]]
+    occor.p = result[[2]]
+
+  }
+  occor.r[occor.p > p.threshold & abs(occor.r)<r.threshold] = 0
 
   return(list(occor.r,method,ps_sub,occor.p))
 
 }
 
+
+
+
+
+get_lower_tri<-function(cormat){
+  cormat[upper.tri(cormat)] <- NA
+  return(cormat)
+}
+# Get upper triangle of the correlation matrix
+get_upper_tri <- function(cormat){
+  cormat[lower.tri(cormat)]<- NA
+  return(cormat)
+}
+
+reorder_cormat <- function(cormat){
+  # Use correlation between variables as distance
+  dd <- as.dist((1-cormat)/2)
+  hc <- hclust(dd)
+  cormat <-cormat[hc$order, hc$order]
+}
+
+reorder_cor_and_p <- function(cormat, pmat){
+  dd <- as.dist((1-cormat)/2)
+  hc <- hclust(dd)
+  cormat <-cormat[hc$order, hc$order]
+  pmat <- pmat[hc$order, hc$order]
+  list(r = cormat, p = pmat)
+}
+
+
+
+sparcc.micro <- function(
+  data = data,
+  R = 10,
+  ncpus = 1
+
+){
+  spmatrix <- SpiecEasi::sparcc(data)
+
+  tp0 <- proc.time()
+  sp.boot <- SpiecEasi::sparccboot(
+    data,
+    R = R,
+    ncpus = ncpus
+  )
+  tp1 <- proc.time()
+  tp1 - tp0
+
+
+  sp.p <- SpiecEasi::pval.sparccboot(sp.boot, sided = "both")
+
+
+
+  cors <- sp.p$cors
+  pvals <- sp.p$pvals
+  sparCCpcors <- diag(0.5, nrow = dim(spmatrix$Cor)[1], ncol = dim(spmatrix$Cor)[1])
+  sparCCpcors[upper.tri(sparCCpcors, diag=FALSE)] <- cors
+  sparCCpcors <- sparCCpcors + t(sparCCpcors)
+
+  sparCCpval <- diag(0.5, nrow = dim(spmatrix$Cor)[1], ncol = dim(spmatrix$Cor)[1])
+  sparCCpval[upper.tri(sparCCpval, diag=FALSE)] <- pvals
+  sparCCpval <- sparCCpval + t(sparCCpval)
+  dim(sparCCpval)
+
+  rownames(sparCCpcors) <- colnames(data)
+  colnames(sparCCpcors) <- colnames(data)
+  rownames(sparCCpval) <- colnames(data)
+  colnames(sparCCpval) <- colnames(data)
+
+
+
+  reordered_all_sparcc <- reorder_cor_and_p(sparCCpcors, sparCCpval)
+  occor.r <- reordered_all_sparcc$r
+  occor.p <- reordered_all_sparcc$p
+
+  return(list(occor.r,occor.p))
+
+}
 

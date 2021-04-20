@@ -9,7 +9,9 @@ corMicro(
   N = 0.02,
   r.threshold = 0.6,
   p.threshold = 0.05,
-  method = "pearson"
+  method = "pearson",
+  R = 10,
+  ncpus = 1
 )
 }
 \arguments{
@@ -22,7 +24,8 @@ of the correlation threshold is greater than 0.6. the value range of correlation
 
 \item{p.threshold}{The defult, p.threshold=0.05, it represents significance threshold below 0.05.}
 
-\item{method}{method for Correlation calculation,method="pearson" is the default value. The alternatives to be passed to cor are "spearman" and "kendall".}
+\item{method}{method for Correlation calculation,method="pearson" is the default value.
+The alternatives to be passed to cor are "spearman" and "kendall". recentliy "sparcc" added to method}
 }
 \value{
 list which contains OTU correlation matrix

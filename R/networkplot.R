@@ -113,6 +113,7 @@ network = function(otu = NULL,
     #-----计算边#--------
     edge = edgeBuild(cor = cor,plotcord = node)
     head(edge)
+    edge$weight
     colnames(edge)[8] = "cor"
     #-------output---edges and nodes--to Gephi --imput--
     edge_Gephi = data.frame(source = edge$OTU_1,target = edge$OTU_2,correlation =  edge$weight,direct= "undirected",cor =  edge$cor)
@@ -135,7 +136,7 @@ network = function(otu = NULL,
     nodeG = merge(nodes,nodepro,by = "row.names",all  =FALSE)
     row.names(nodeG) = nodeG$Row.names
     nodeG$Row.names = NULL
-
+    head(nodeG)
     pnet <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = cor),
                                     data = edge, size = 0.5,alpha = 0.3) +
       geom_point(aes(X1, X2,fill = !!sym(fill),size = !!sym(size)),pch = 21, data = nodeG) +
@@ -184,7 +185,7 @@ network = function(otu = NULL,
     plots1[[aa]] = pnet1
 
     # nodepro = node_properties(igraph)
-    if (zipi == TRUE) {
+    if (zipi == zipi) {
       #----culculate zi pi
       res = ZiPiPlot(igraph = igraph,method = clu_method)
       p <- res[[1]]
