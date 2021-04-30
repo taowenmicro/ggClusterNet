@@ -9,7 +9,7 @@ scale_micro(ps, method = "rela")
 \arguments{
 \item{ps}{phyloseq abject containg microbiome data}
 
-\item{method}{could be selected byy rela, sampling, log,TMM,RLE,upperquartile
+\item{method}{could be selected by rela, sampling, log,TMM,RLE,upperquartile
 et al}
 }
 \description{

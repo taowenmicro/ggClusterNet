@@ -195,7 +195,7 @@ Miccorplot <- function(data,
 
   # p <- p + geom_point(aes(x = x, y = y,size=r,fill=r),df0, shape=22,color='white')
   if (!is.null(numpoint) ) {
-    p <- p + geom_point(aes(x = x, y = y,size=r,fill=r),addat, shape=numpoint,color='white')
+    p <- p + geom_point(aes(x = x, y = y,size=r,fill=r),addat, shape=numpoint,color='black')
   }else if (!is.null(numsymbol) & is.null(numpoint)) {
     p <- p  + ggsymbol:: geom_symbol(data = addat,aes(x = x, y = y,size=r,fill = r),symbol = numsymbol)
   }

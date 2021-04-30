@@ -6,8 +6,9 @@
 \usage{
 corMicro(
   ps = ps,
-  N = 0.02,
+  N = 100,
   r.threshold = 0.6,
+  method.scale = "rela",
   p.threshold = 0.05,
   method = "pearson",
   R = 10,
@@ -22,10 +23,16 @@ corMicro(
 \item{r.threshold}{The defult, r.threshold=0.6, it represents the correlation that the absolute value
 of the correlation threshold is greater than 0.6. the value range of correlation threshold from 0 to 1.}
 
+\item{method.scale}{sacleing method for microbiome data, rela, log,TMM,RLC···}
+
 \item{p.threshold}{The defult, p.threshold=0.05, it represents significance threshold below 0.05.}
 
 \item{method}{method for Correlation calculation,method="pearson" is the default value.
 The alternatives to be passed to cor are "spearman" and "kendall". recentliy "sparcc" added to method}
+
+\item{R}{number of repeats for sparcc p value}
+
+\item{ncpus}{number of cpu for sparcc calculate p value}
 }
 \value{
 list which contains OTU correlation matrix

@@ -9,7 +9,7 @@ network(
   tax = NULL,
   map = NULL,
   ps = NULL,
-  N = 0.001,
+  N = 0,
   r.threshold = 0.6,
   p.threshold = 0.05,
   method = "spearman",
@@ -25,7 +25,9 @@ network(
   step = 100,
   yourmem = theme_void(),
   ncol = 3,
-  nrow = 1
+  nrow = 1,
+  R = 10,
+  ncpus = 1
 )
 }
 \arguments{
@@ -53,6 +55,10 @@ of the correlation threshold is greater than 0.6. the value range of correlation
 \item{zipi}{zipi Calculation}
 
 \item{step}{Random network sampling times}
+
+\item{R}{repeat number of p value calculate}
+
+\item{ncpus}{number of cpus used for sparcc}
 
 \item{lay}{layout which network show}
 }

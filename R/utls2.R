@@ -3,7 +3,7 @@
 #' @title scaling microbiome data
 #' @description will use many method for microbiome data scaling
 #' @param ps phyloseq abject containg microbiome data
-#' @param  method could be selected byy rela, sampling, log,TMM,RLE,upperquartile
+#' @param  method could be selected by rela, sampling, log,TMM,RLE,upperquartile
 #'  et al
 #' @examples
 #' scale_micro(ps = ps,method = "rela")
@@ -56,6 +56,48 @@ scale_micro <- function(ps,
 }
 
 
+#' filter_microbiome data
+#'
+#' @title filter microbiome data
+#' @description filter microbiome data
+#' @param ps phyloseq abject containg microbiome data
+#' @param  Top number of top abundance tax or OTU
+#' @examples
+#' data(ps)
+#' ps_sub = filter_OTU_ps(ps = ps,Top = 100)
+
+filter_OTU_ps <- function(ps = ps,Top = NULL
+
+){
+  if (!is.null(Top)&Top != 0) {
+    #相对丰富转换
+    ps_rela  = transform_sample_counts(ps, function(x) x / sum(x) )
+    # 提取otu表格
+    otu_table = as.data.frame(t(vegan_otu(ps_rela)))
+    otu_table$mean = rowMeans(otu_table)
+    otu_table$ID = row.names(otu_table)
+    head(otu_table)
+    #按照从大到小排序
+    otu_table<- arrange(otu_table, desc(mean))
+    subtab = head(otu_table,Top)
+    head(subtab)
+    row.names(subtab) =subtab$ID
+    subtab = subtab[,1:(dim(subtab)[2]-2)]
+    subtab = as.matrix(subtab)
+
+    otu_table(ps) = otu_table(subtab,taxa_are_rows = TRUE)
+    # #对phyloseq取子集
+    # ps1 <- phyloseq::phyloseq(otu_table(subtab, taxa_are_rows=TRUE),
+    #                 tax_table(ps),
+    #                 sample_data(ps),
+    #                 phyloseq::phy_tree(ps)
+    # )
+  } else if(Top == 0){
+    ps = ps
+  }
+
+  return(ps)
+}
 
 
 

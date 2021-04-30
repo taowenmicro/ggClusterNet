@@ -1,7 +1,7 @@
 #' Microbial related network
 #'
 #' @param ps phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.
-#' @param N filter OTU tables by abundance using otu table with all samples.The defult, N=0.001, extract the top 0.001 relative abundance of OTU.
+#' @param N filter OTU tables by abundance.The defult, N=0, extract the top N number relative abundance of OTU.
 #' @param r.threshold The defult, r.threshold=0.6, it represents the correlation that the absolute value
 #'  of the correlation threshold is greater than 0.6. the value range of correlation threshold from 0 to 1.
 #' @param p.threshold The defult, p.threshold=0.05, it represents significance threshold below 0.05.
@@ -14,6 +14,8 @@
 #' @param size node size
 #' @param zipi zipi Calculation
 #' @param step Random network sampling times
+#' @param R repeat number of p value calculate
+#' @param ncpus number of cpus used for sparcc
 #' @examples
 #' data(ps)
 #' result = network (ps = ps,N = 0.001,r.threshold=0.6,p.threshold=0.05,label = FALSE,path = path ,zipi = TRUE)
@@ -35,7 +37,7 @@ network = function(otu = NULL,
                    tax = NULL,
                    map = NULL,
                    ps = NULL,
-                   N = 0.001,
+                   N = 0,
                    r.threshold = 0.6,
                    p.threshold = 0.05,
                    method = "spearman",
@@ -51,7 +53,9 @@ network = function(otu = NULL,
                    step = 100,
                    yourmem = theme_void(),
                    ncol = 3,
-                   nrow = 1
+                   nrow = 1,
+                   R = 10,
+                   ncpus = 1
                    ){
 
 
@@ -67,10 +71,10 @@ network = function(otu = NULL,
   }
 
   mapping = as.data.frame(sample_data(ps))
-  ps_sub = phyloseq::filter_taxa(ps_rela, function(x) mean(x) > N , TRUE)
+  ps_sub = filter_OTU_ps(ps = ps,Top = N)
   y = matrix(1,nrow = 14,ncol = length(unique(mapping$Group)))
   #--transmit N
-  d = N
+  # d = N
 
   layouts = as.character(unique(mapping$Group))
   mapping$ID = row.names(mapping)
@@ -90,7 +94,7 @@ network = function(otu = NULL,
 
 
     print(layout)
-    result = corMicro (ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,method = method)
+    result = corMicro (ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,method = method,R = R,ncpus = ncpus)
     print("cor matrix culculating over")
     cor = result[[1]]    #Extract correlation matrix
 
@@ -133,9 +137,13 @@ network = function(otu = NULL,
     igraph  = igraph::graph_from_data_frame(nodeEdge(cor = cor)[[1]], directed = FALSE, vertices = nodeEdge(cor = cor)[[2]])
     nodepro = node_properties(igraph)
     write.csv(nodepro,paste(path,"/",layout,"_node_properties.csv",sep = ""),row.names = FALSE)
-    nodeG = merge(nodes,nodepro,by = "row.names",all  =FALSE)
+    nodeG = merge(nodes,nodepro,by = "row.names",all.x  = TRUE)
     row.names(nodeG) = nodeG$Row.names
     nodeG$Row.names = NULL
+
+    numna = (dim(nodeG)[2] - 3) : dim(nodeG)[2]
+    nodeG[,numna][is.na(nodeG[,numna])] = 0
+
     head(nodeG)
     pnet <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = cor),
                                     data = edge, size = 0.5,alpha = 0.3) +
@@ -185,7 +193,7 @@ network = function(otu = NULL,
     plots1[[aa]] = pnet1
 
     # nodepro = node_properties(igraph)
-    if (zipi == zipi) {
+    if (zipi ) {
       #----culculate zi pi
       res = ZiPiPlot(igraph = igraph,method = clu_method)
       p <- res[[1]]
@@ -248,6 +256,11 @@ network = function(otu = NULL,
   plotname = paste(path,"/network_all.pdf",sep = "")
   p  = ggpubr::ggarrange(plotlist = plots, common.legend = TRUE, legend="right",ncol = ncol,nrow = nrow)
   p1  = ggpubr::ggarrange(plotlist = plots1, common.legend = TRUE, legend="right",ncol = ncol,nrow = nrow)
+
+  if (length(layouts) == 1) {
+    p = pnet
+    p1 = pnet1
+  }
   return(list(p,y,p1))
 }
 

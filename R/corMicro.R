@@ -1,7 +1,8 @@
 #' Correlation network calculation of microbial community data
 #'
 #' @param ps phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.
-#' @param N filter OTU tables by abundance.The defult, N=0.02, extract the top 0.02 relative abundance of OTU.
+#' @param method.scale sacleing method for microbiome data, rela, log,TMM,RLC···
+#' @param N filter OTU tables by abundance.The defult, N=0, extract the top N number relative abundance of OTU.
 #' @param r.threshold The defult, r.threshold=0.6, it represents the correlation that the absolute value
 #'  of the correlation threshold is greater than 0.6. the value range of correlation threshold from 0 to 1.
 #' @param p.threshold The defult, p.threshold=0.05, it represents significance threshold below 0.05.
@@ -23,30 +24,32 @@
 #' Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 #' @export
 
-corMicro = function(ps = ps,N = 0.02,r.threshold=0.6,p.threshold=0.05,method = "pearson",R = 10,ncpus = 1){
+corMicro = function(ps = ps,N = 0,r.threshold=0.6,
+                    method.scale = "rela",
+                    p.threshold=0.05,method = "pearson",R = 10,ncpus = 1){
 
-  ps_rela  = transform_sample_counts(ps, function(x) x / sum(x) )
-  ps_sub = filter_taxa(ps_rela, function(x) mean(x ) > N , TRUE)
-  otu_table = as.data.frame(t(vegan_otu(ps_sub)))
-  head(otu_table)
+
+
   if (method %in% c("pearson","spearman","kendall")) {
-
-
+    # ps_rela  = transform_sample_counts(ps, function(x) x / sum(x) )
+    ps_rela  = scale_micro(ps = ps_rela,method = method.scale)
+    ps_sub = filter_OTU_ps(ps = ps_rela,Top = N)
+    otu_table = as.data.frame(t(vegan_otu(ps_sub)))
+    head(otu_table)
     #--- use corr.test function to calculate relation#--------
     occor = psych::corr.test(t(otu_table),use="pairwise",method=method,adjust="fdr",alpha=.05)
     occor.r = occor$r
     occor.p = occor$p
 
-
   }
 
   if (method %in% c("sparcc")) {
-
+    ps_sub = filter_OTU_ps(ps = ps,Top = N)
+    otu_table = as.data.frame(t(vegan_otu(ps_sub)))
+    head(otu_table)
     result <- sparcc.micro(data = t(otu_table),R = R,ncpus = ncpus)
-
     occor.r = result[[1]]
     occor.p = result[[2]]
-
   }
   occor.r[occor.p > p.threshold & abs(occor.r)<r.threshold] = 0
 
@@ -108,6 +111,7 @@ sparcc.micro <- function(
 
 
   cors <- sp.p$cors
+  sp.p$pvals[is.na(sp.p$pvals)] = 1
   pvals <- sp.p$pvals
   sparCCpcors <- diag(0.5, nrow = dim(spmatrix$Cor)[1], ncol = dim(spmatrix$Cor)[1])
   sparCCpcors[upper.tri(sparCCpcors, diag=FALSE)] <- cors
