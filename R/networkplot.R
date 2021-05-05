@@ -136,7 +136,7 @@ network = function(otu = NULL,
 
     igraph  = igraph::graph_from_data_frame(nodeEdge(cor = cor)[[1]], directed = FALSE, vertices = nodeEdge(cor = cor)[[2]])
     nodepro = node_properties(igraph)
-    write.csv(nodepro,paste(path,"/",layout,"_node_properties.csv",sep = ""),row.names = FALSE)
+    write.csv(nodepro,paste(path,"/",layout,"_node_properties.csv",sep = ""),row.names = TRUE)
     nodeG = merge(nodes,nodepro,by = "row.names",all.x  = TRUE)
     row.names(nodeG) = nodeG$Row.names
     nodeG$Row.names = NULL
