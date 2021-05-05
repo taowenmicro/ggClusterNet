@@ -6,7 +6,7 @@
 \usage{
 corMicro(
   ps = ps,
-  N = 100,
+  N = 0,
   r.threshold = 0.6,
   method.scale = "rela",
   p.threshold = 0.05,
@@ -18,7 +18,7 @@ corMicro(
 \arguments{
 \item{ps}{phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.}
 
-\item{N}{filter OTU tables by abundance.The defult, N=0.02, extract the top 0.02 relative abundance of OTU.}
+\item{N}{filter OTU tables by abundance.The defult, N=0, extract the top N number relative abundance of OTU.}
 
 \item{r.threshold}{The defult, r.threshold=0.6, it represents the correlation that the absolute value
 of the correlation threshold is greater than 0.6. the value range of correlation threshold from 0 to 1.}
