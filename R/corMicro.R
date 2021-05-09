@@ -51,8 +51,8 @@ corMicro = function(ps = ps,N = 0,r.threshold=0.6,
     occor.r = result[[1]]
     occor.p = result[[2]]
   }
-  occor.r[occor.p > p.threshold & abs(occor.r)<r.threshold] = 0
-
+  # occor.r[occor.p > p.threshold & abs(occor.r)<r.threshold] = 0
+  occor.r[occor.p > p.threshold | abs(occor.r)<r.threshold] = 0
   return(list(occor.r,method,ps_sub,occor.p))
 
 }
