@@ -6,7 +6,7 @@
 #' @param  method could be selected by rela, sampling, log,TMM,RLE,upperquartile
 #'  et al
 #' @examples
-#' scale_micro(ps = ps,method = "rela")
+#' scale_micro(ps = ps,method = "rela")# rela, sampling, log,TMM,RLE,upperquartile
 
 
 scale_micro <- function(ps,
