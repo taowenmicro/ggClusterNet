@@ -26,7 +26,7 @@ tax_glom_wt <- function(ps = ps,ranks = "Phylum") {
   }
   otu <- as.data.frame(t(vegan_otu(ps)))
   tax <- as.data.frame(vegan_tax(ps))
-
+  tax[[ranks]][tax[[ranks]] == ""] = "unknown"
   # building group
   split <- split(otu,tax[[ranks]])
   #calculate sum by group
@@ -37,6 +37,10 @@ tax_glom_wt <- function(ps = ps,ranks = "Phylum") {
   taxcon <- tax[1:match(ranks,colnames(tax))]
   taxcon <- taxcon[!duplicated(tax[[ranks]]),]
   #-tax name with NA wound be repeated with unknown
+
+  # taxcon[[ranks]][taxcon[[ranks]] == ""] = "unknown"
+
+
   taxcon[[ranks]][is.na(taxcon[[ranks]])] = "unknown"
   row.names(taxcon) <- taxcon[[ranks]]
 
