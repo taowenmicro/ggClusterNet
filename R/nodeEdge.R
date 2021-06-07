@@ -32,8 +32,8 @@
 #' Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 #' @export
 
-nodeEdge = function(cor = cor,zero = TRUE){
-  corr <-cor
+nodeEdge = function(corr = cor,zero = TRUE){
+
   # 构造边文件
   edges <- tibble::tibble(from = rep(row.names(corr), ncol(corr)),
                           to = rep(colnames(corr), each = nrow(corr)),
@@ -54,7 +54,6 @@ if (zero == TRUE) {
     edges <- dplyr::filter(edges,abs(r)> 0)
 
   }
-  library(tidyverse)
   colnames(edges)[3] = "weight"
   #---设置边的正负
   # E.color <- edges$weight

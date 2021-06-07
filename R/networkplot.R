@@ -133,7 +133,11 @@ network = function(otu = NULL,
     write.csv(node_Gephi,paste(path,"/",layout,"_Gephi_allnode.csv",sep = ""),row.names = FALSE)
     write.csv(node_Gephi1,paste(path,"/",layout,"_Gephi_edgenode.csv",sep = ""),row.names = FALSE)
 
-
+    # a = nodeEdge(cor = cor)[[1]]
+    # dim(a)
+    # head(a)
+    # a %>% filter(weight != 0)
+    # as.vector(lower.tri(cor))
     igraph  = igraph::graph_from_data_frame(nodeEdge(cor = cor)[[1]], directed = FALSE, vertices = nodeEdge(cor = cor)[[2]])
     nodepro = node_properties(igraph)
     write.csv(nodepro,paste(path,"/",layout,"_node_properties.csv",sep = ""),row.names = TRUE)
