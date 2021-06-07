@@ -28,8 +28,9 @@
 
 edgeBuild = function(cor = cor,plotcord = node){
   # cor <- cor[match( row.names(cor),node$elements),match( row.names(cor),node$elements)]
+  dim(cor)
 
-  cor <- cor[match( plotcord$elements,row.names(cor)),match(plotcord$elements, row.names(cor))]
+  # cor <- cor[match( plotcord$elements,row.names(cor)),match(plotcord$elements, row.names(cor))]
 
   #----Use correlation matrix to build network--network package to build network#-----
   g <- network::network(cor, directed=FALSE)
