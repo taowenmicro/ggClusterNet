@@ -90,6 +90,7 @@ network = function(otu = NULL,
                    tax_table(ps_sub),
                    sample_data(mapi )
                    )
+
     psi = filter_taxa(psi, function(x) sum(x ) > 0 , TRUE)
 
 
@@ -97,6 +98,11 @@ network = function(otu = NULL,
     result = corMicro (ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,method = method,R = R,ncpus = ncpus)
     print("cor matrix culculating over")
     cor = result[[1]]    #Extract correlation matrix
+
+    if (cor %>% as.vector() %>% max() == 0) {
+      stop("The connect value in cor matrix all was zone")
+    }
+
 
     result2 <- model_Gephi.2(cor = cor,
                              method = clu_method,

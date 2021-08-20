@@ -415,7 +415,7 @@ MetalTast <- function(env.dat,
     JC.beta = vegan::vegdist(t(otu), method="jaccard",binary=T)
     if (method == "metal") {
       for(i in 1:ncol(env.std)){
-        envdis =vegan::vegdist(env.std[,i],method = "euclidean", na.rm=T)
+        envdis =vegan::vegdist(env.std[i],method = "euclidean", na.rm=T)
         mantel.BC = vegan::mantel(envdis, BC.beta, na.rm=T)
         mantel.JC = vegan::mantel(envdis, JC.beta, na.rm=T)
         report = rbind(report,c(colnames(env.dat)[i], mantel.BC$statistic, mantel.BC$signif, mantel.JC$statistic, mantel.JC$signif))
