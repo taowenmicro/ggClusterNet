@@ -32,8 +32,8 @@ corMicro = function(ps = ps,N = 0,r.threshold=0.6,
 
   if (method %in% c("pearson","spearman","kendall")) {
     # ps_rela  = transform_sample_counts(ps, function(x) x / sum(x) )
-    ps_rela  = scale_micro(ps = ps,method = method.scale)
-    ps_sub = filter_OTU_ps(ps = ps_rela,Top = N)
+    # ps_rela  = scale_micro(ps = ps,method = method.scale)
+    ps_sub = filter_OTU_ps(ps = ps,Top = N)
     otu_table = as.data.frame(t(vegan_otu(ps_sub)))
     head(otu_table)
     #--- use corr.test function to calculate relation#--------

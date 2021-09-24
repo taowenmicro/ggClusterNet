@@ -81,11 +81,11 @@ filter_OTU_ps <- function(ps = ps,Top = NULL
     otu_table<- arrange(otu_table, desc(mean))
     subtab = head(otu_table,Top)
     head(subtab)
-    row.names(subtab) =subtab$ID
-    subtab = subtab[,1:(dim(subtab)[2]-2)]
-    subtab = as.matrix(subtab)
-
-    otu_table(ps) = otu_table(subtab,taxa_are_rows = TRUE)
+    # row.names(subtab) =subtab$ID
+    # subtab = subtab[,1:(dim(subtab)[2]-2)]
+    # subtab = as.matrix(subtab)
+    otu_table2 = as.data.frame(t(vegan_otu(ps)))
+    otu_table(ps) = otu_table(as.matrix(otu_table2[subtab$ID,]),taxa_are_rows = TRUE)
     # #对phyloseq取子集
     # ps1 <- phyloseq::phyloseq(otu_table(subtab, taxa_are_rows=TRUE),
     #                 tax_table(ps),

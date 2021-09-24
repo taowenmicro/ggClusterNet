@@ -38,7 +38,7 @@
 
 
 
-PolygonRrClusterG = function(cor = cor,nodeGroup =netClu,zoom = 1,zoom2 = 1 ){
+PolygonRrClusterG = function(cor = cor,nodeGroup =netClu,zoom = 1,zoom2 = 1,bio = F){
 
   #
   num = length(levels(nodeGroup$group))
@@ -48,16 +48,20 @@ PolygonRrClusterG = function(cor = cor,nodeGroup =netClu,zoom = 1,zoom2 = 1 ){
   r = xs$Freq/10 *zoom
 
   # Calculate angle according to group
-  arg = seq(0,360,360/(length(r)))
+  arg = seq(0,360,360/(length(r))) - 180
   # i = 1
   rsum = sum(r)
   x= rep(0,length(r))
   y = rep(0,length(r))
   for (i in 1:length(r)) {
-
     x[i] = (rsum + r[i])* sin(arg[i]* 3.14/180)
-
     y[i] = (rsum + r[i])* cos(arg[i]* 3.14/180)
+  }
+  if (bio == T) {
+    for (i in 1:length(r)) {
+      x[i] = 0
+      y[i] = 0
+    }
   }
 
   da = data.frame(x = x,y = y)
