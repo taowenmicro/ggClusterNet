@@ -1,3 +1,4 @@
+
 #' Microbial related network
 #'
 #' @param ps phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.
@@ -273,7 +274,6 @@ network = function(otu = NULL,
   }
   return(list(p,y,p1))
 }
-
 
 
 

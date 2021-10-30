@@ -1,3 +1,4 @@
+
 #' Construct igraph and tidygraph object
 #'
 #' @param cor Correlation matrix
@@ -74,9 +75,6 @@ if (zero == TRUE) {
 
   return(list(edges,node))
 }
-
-
-
 
 
 

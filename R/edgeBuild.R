@@ -66,4 +66,3 @@ edgeBuild = function(cor = cor,plotcord = node){
 
   return(edges)
 }
-

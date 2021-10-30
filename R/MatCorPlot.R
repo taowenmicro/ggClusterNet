@@ -246,7 +246,6 @@ Miccorplot <- function(data,
   return(list(p,lindat))
 }
 
-# linx <- NULL
 
 
 cor_link <- function(data,

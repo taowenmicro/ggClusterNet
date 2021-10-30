@@ -1,3 +1,4 @@
+
 #' Combine microbiome data by classification level
 #'
 #' @param ps phyloseq object
@@ -79,7 +80,6 @@ tax_glom_wt <- function(ps = ps,ranks = "Phylum") {
 #
 #   return(pscon)
 # }
-
 
 
 

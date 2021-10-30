@@ -1,3 +1,4 @@
+
 #' scale_microbiome data
 #'
 #' @title scaling microbiome data
@@ -161,5 +162,4 @@ selectlayout <- function(m,layout = "fruchtermanreingold"){
 
   return(plotcord)
 }
-
 

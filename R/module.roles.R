@@ -258,6 +258,7 @@ assign_module_roles <- function(zp){
 
 }
 
+
 plot_roles <- function(node.roles, roles.colors=NULL){
 
   x1<- c(0, 0.05, 0.62, 0.8, 0, 0.30, 0.75)
@@ -282,3 +283,29 @@ plot_roles <- function(node.roles, roles.colors=NULL){
   return(p)
 }
 
+
+plot_roles2 = function(node.roles, roles.colors=NULL){
+
+  x1<- c(0, 0.62,0,0.62)
+  x2<- c( 0.62,1,0.62,1)
+  y1<- c(-Inf,2.5,2.5,-Inf)
+  y2 <- c(2.5,Inf,Inf,2.5)
+  #
+  lab <- c("peripheral",'Connectors','Module hubs','Network hubs')
+  #
+  if(is.null(roles.colors)){roles.colors <- c("#E6E6FA", "#DCDCDC","#F5FFFA", "#FAEBD7")}
+
+  p <- ggplot() + geom_rect(data=NULL,
+                            mapping=aes(xmin=x1, xmax=x2,ymin=y1,ymax=y2,fill = lab))
+  p
+  p <- p + guides(fill=guide_legend(title="Topological roles"))
+
+  p  <- p + scale_fill_manual(values = roles.colors)
+
+  p <- p + geom_point(data=node.roles, aes(x=p, y=z,color=module)) + theme_bw()
+
+  p<-p+theme(strip.background = element_rect(fill = "white"))+
+    xlab("Participation Coefficient")+ylab(" Within-module connectivity z-score")
+
+  return(p)
+}
