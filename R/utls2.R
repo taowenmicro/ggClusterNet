@@ -79,7 +79,7 @@ filter_OTU_ps <- function(ps = ps,Top = NULL
     otu_table$ID = row.names(otu_table)
     head(otu_table)
     #按照从大到小排序
-    otu_table<- arrange(otu_table, desc(mean))
+    otu_table<- dplyr::arrange(otu_table, desc(mean))
     subtab = head(otu_table,Top)
     head(subtab)
     # row.names(subtab) =subtab$ID
@@ -163,3 +163,31 @@ selectlayout <- function(m,layout = "fruchtermanreingold"){
   return(plotcord)
 }
 
+
+
+
+mergePs_Top_micro <- function(psm = psP,
+                              Top = 10,
+                              j = NULL){
+  otu = otu_table(psm)
+  tax = tax_table(psm)
+
+  if (is.null(j)) {
+    j = ncol(tax)
+  }
+
+  for (i in 1:dim(tax)[1]) {
+    if (row.names(tax)[i] %in% names(sort(rowSums(otu), decreasing = TRUE)[1:Top])) {
+
+      tax[i,j] =tax[i,j]
+    } else {
+      tax[i,j]= "others"
+    }
+  }
+  tax_table(psm)= tax
+
+  res <- psm %>%
+    ggClusterNet::tax_glom_wt(ranks = j)
+
+  return(res)
+}

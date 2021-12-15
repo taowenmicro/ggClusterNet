@@ -17,18 +17,17 @@
 #' Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 #' @export
 
+
 tax_glom_wt <- function(ps = ps,ranks = "Phylum") {
 
-  if (is.numeric(ranks)) {
-    ranks <- rank_names(ps)[ranks]
-  }
-  if (is.character(ranks)) {
-    ranks <- ranks
-  }
+
   otu <- as.data.frame(t(vegan_otu(ps)))
   tax <- as.data.frame(vegan_tax(ps))
-  tax[[ranks]][tax[[ranks]] == ""] = "unknown"
+
   # building group
+  tax[[ranks]][is.na(tax[[ranks]])] = "Unknown"
+  tax[[ranks]][tax[[ranks]] == ""] = "Unknown"
+  tax[[ranks]][tax[[ranks]] == "NA"] = "Unknown"
   split <- split(otu,tax[[ranks]])
   #calculate sum by group
   apply <- lapply(split,function(x)colSums(x[]))
@@ -38,10 +37,6 @@ tax_glom_wt <- function(ps = ps,ranks = "Phylum") {
   taxcon <- tax[1:match(ranks,colnames(tax))]
   taxcon <- taxcon[!duplicated(tax[[ranks]]),]
   #-tax name with NA wound be repeated with unknown
-
-  # taxcon[[ranks]][taxcon[[ranks]] == ""] = "unknown"
-
-
   taxcon[[ranks]][is.na(taxcon[[ranks]])] = "unknown"
   row.names(taxcon) <- taxcon[[ranks]]
 
@@ -53,33 +48,3 @@ tax_glom_wt <- function(ps = ps,ranks = "Phylum") {
   )
   return(pscon)
 }
-
-# tax_glom_wt <- function(ps = ps,ranks = "Phylum") {
-#
-#
-#   otu <- as.data.frame(t(vegan_otu(ps)))
-#   tax <- as.data.frame(vegan_tax(ps))
-#
-#   # building group
-#   split <- split(otu,tax[[ranks]])
-#   #calculate sum by group
-#   apply <- lapply(split,function(x)colSums(x[]))
-#   # result chack
-#   otucon <- do.call(rbind,apply)
-#   taxcon <- tax[1:match(ranks,colnames(tax))]
-#   taxcon <- taxcon[!duplicated(tax[[ranks]]),]
-#   row.names(taxcon) <- taxcon[[ranks]]
-#
-#   pscon <- phyloseq(
-#     otu_table( as.matrix(otucon),taxa_are_rows = TRUE),
-#     tax_table(as.matrix(taxcon)),
-#     sample_data(ps)
-#   )
-#
-#   pscon
-#
-#   return(pscon)
-# }
-
-
-
