@@ -19,5 +19,5 @@ will use many method for microbiome data scaling
 scale_microbiome data
 }
 \examples{
-scale_micro(ps = ps,method = "rela")
+scale_micro(ps = ps,method = "rela")# rela, sampling, log,TMM,RLE,upperquartile
 }

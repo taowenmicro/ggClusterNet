@@ -4,12 +4,12 @@
 \alias{nodeEdge}
 \title{Construct igraph and tidygraph object}
 \usage{
-nodeEdge(cor = cor, zero = TRUE)
+nodeEdge(corr = cor, zero = TRUE)
 }
 \arguments{
-\item{cor}{Correlation matrix}
-
 \item{zero}{TRUE or FALSE. If the edge-to-edge correlation is 0, FALSE preserves the output.}
+
+\item{cor}{Correlation matrix}
 }
 \value{
 list Documents required for drawing

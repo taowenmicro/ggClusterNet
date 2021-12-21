@@ -138,7 +138,6 @@ model_Gephi.2 <- function(cor = cor,method = "cluster_fast_greedy",seed = 2){
     }
 
   }
-  dim(dat)
   row.names(dat) = row.names(cor)
   dat$elements = row.names(cor)
   colnames(dat)[1:2] = c("X1","X2")

@@ -28,8 +28,6 @@
 
 edgeBuild = function(cor = cor,plotcord = node){
   # cor <- cor[match( row.names(cor),node$elements),match( row.names(cor),node$elements)]
-  dim(cor)
-
   cor <- cor[match( plotcord$elements,row.names(cor)),match(plotcord$elements, row.names(cor))]
   # colnames(cor)
   #----Use correlation matrix to build network--network package to build network#-----
@@ -61,8 +59,8 @@ edgeBuild = function(cor = cor,plotcord = node){
   colnames(edges) <- c("X1", "Y1","OTU_1", "X2", "Y2","OTU_2","weight","wei_label")
   edges$midX <- (edges$X1 + edges$X2)/2
   edges$midY <- (edges$Y1 + edges$Y2)/2
- head(edges)
- edges = edges %>% filter(wei_label != "a")
+ edges = edges %>%
+   dplyr::filter(wei_label != "a")
 
   return(edges)
 }
