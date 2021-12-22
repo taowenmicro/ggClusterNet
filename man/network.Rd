@@ -10,6 +10,7 @@ network(
   map = NULL,
   ps = NULL,
   N = 0,
+  select_layout = FALSE,
   r.threshold = 0.6,
   p.threshold = 0.05,
   method = "spearman",

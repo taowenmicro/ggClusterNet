@@ -39,6 +39,7 @@
 
 
 ArtifCluster = function(cor = cor,nodeGroup =netClu,r = r,da =da){
+  nodeGroup$group = as.factor(nodeGroup$group)
   for (i in 1:length(levels(nodeGroup$group))) {
     #--Extract all otu in this group
     as = dplyr::filter(nodeGroup, group == levels(nodeGroup$group)[i])

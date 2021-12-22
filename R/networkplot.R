@@ -17,6 +17,8 @@
 #' @param step Random network sampling times
 #' @param R repeat number of p value calculate
 #' @param ncpus number of cpus used for sparcc
+#' @param layout_net select layout from ggClusterNet
+#' @param big TRUE or FALSE the number of micro data was so many (> 300),you can chose TREU
 #' @examples
 #' data(ps)
 #' result = network (ps = ps,N = 0.001,r.threshold=0.6,p.threshold=0.05,label = FALSE,path = path ,zipi = TRUE)
@@ -39,6 +41,9 @@ network = function(otu = NULL,
                    map = NULL,
                    ps = NULL,
                    N = 0,
+                   big = TRUE,
+                   select_layout = FALSE,
+                   layout_net = "model_maptree",
                    r.threshold = 0.6,
                    p.threshold = 0.05,
                    method = "spearman",
@@ -66,7 +71,6 @@ network = function(otu = NULL,
   #transform to relative abundance
   if (scale == TRUE) {
     ps_rela  = scale_micro(ps = ps,method = "rela")
-
   } else {
     ps_rela <- ps
   }
@@ -86,6 +90,7 @@ network = function(otu = NULL,
   # layout = layouts[1]
   aa = 1
   for (layout in layouts) {
+
     mapi <- mapping[mapping$Group ==  layout,]
     psi = phyloseq(otu_table(ps_sub),
                    tax_table(ps_sub),
@@ -93,29 +98,43 @@ network = function(otu = NULL,
                    )
 
     psi = filter_taxa(psi, function(x) sum(x ) > 0 , TRUE)
-
-
     print(layout)
+
+
+  if (big == TRUE) {
+    result= cor_Big_micro(ps = ps,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,method = method,scale = FALSE)
+    a = 2
+  } else if(big == FALSE){
     result = corMicro (ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,method = method,R = R,ncpus = ncpus)
+    a = 1
+  }
+
+
     print("cor matrix culculating over")
     cor = result[[1]]    #Extract correlation matrix
-
     if (cor %>% as.vector() %>% max() == 0) {
       stop("The connect value in cor matrix all was zone")
     }
 
+    if (select_layout == TRUE) {
+      node = culculate_node_axis(
+        cor.matrix = cor,
+        layout = layout_net,
+        seed = 1,
+        group = NULL,
+        model = FALSE,
+        method = clu_method)
+    }else if(select_layout == FALSE) {
+      result2 <- model_Gephi.2(cor = cor,
+                               method = clu_method,
+                               seed = 12
+      )
+      node = result2[[1]]
+    }
 
-    result2 <- model_Gephi.2(cor = cor,
-                             method = clu_method,
-                             seed = 12
-    )
-    node = result2[[1]]
-    dim(node)
 
-    ps_net = result[[3]]
+    ps_net = psi
     otu_table = as.data.frame(t(vegan_otu(ps_net)))
-
-
     tax_table = as.data.frame(vegan_tax(ps_net))
     #---node节点注释#-----------
     nodes = nodeadd(plotcord =node,otu_table = otu_table,tax_table = tax_table)
@@ -195,11 +214,11 @@ network = function(otu = NULL,
 
     plotname = paste(path,"/network",layout,".pdf",sep = "")
     # ggsave(plotname, pnet, width = 16 * dim(nodeG)[1]/200, height = 14*dim(nodeG)[1]/200)
-    ggsave(plotname, pnet, width = 16 , height = 14)
+    ggsave(plotname, pnet, width = 16*a , height = 14*a)
 
     plotname = paste(path,"/network",layout,"_cover.pdf",sep = "")
     # ggsave(plotname, pnet, width = 16 * dim(nodeG)[1]/200, height = 14*dim(nodeG)[1]/200)
-    ggsave(plotname, pnet1, width = 16 , height = 14)
+    ggsave(plotname, pnet1, width = 16*a , height = 14*a)
     plots[[aa]] = pnet
     plots1[[aa]] = pnet1
 
@@ -212,49 +231,17 @@ network = function(otu = NULL,
       ZiPi <- res[[2]]
       write.csv(ZiPi ,paste(path,"/",layout,"ZiPi.csv",sep = ""),row.names = FALSE)
     }
-
-    #----
-    rand.g<- erdos.renyi.game(length(V(igraph)), length(E(igraph)),type = c("gnm"))
-    # degree_distribution
-
-    ## We compare the degree of random network and this network
-    data1 = data.frame(network= degree_distribution(igraph, cumulative = FALSE),group = "E–R network",ID = c(1:length(degree_distribution(igraph, cumulative = FALSE))))
-    data2 = data.frame(network = degree_distribution(rand.g, cumulative = FALSE) ,group = "network",ID = c(1:length(degree_distribution(rand.g, cumulative = FALSE) )))
-    data = rbind(data1,data2)
-    p1 <- ggplot(data) +geom_point(aes(x = ID,y = network,group =group,fill = group),pch = 21,size = 2) +
-      geom_smooth(aes(x = ID,y = network,group =group,color = group))+
-      theme_bw() + theme(
-        plot.margin=unit(c(0,0,0,0), "cm")
-      )
-    plotname = paste(path,"/Power_law_distribution_",layout,".pdf",sep = "")
-    ggsave(plotname, p1, width = 8, height =6)
-
-    #---------------------
-
-    rand.g.netpro_result<-c()
-    for (i in 1:step){
-      #####random null model
-      rand.g<- erdos.renyi.game(length(V(igraph)), length(E(igraph)),type = c("gnm"))
-      tem_netpro_result<-net_properties(rand.g)
-      rand.g.netpro_result<-cbind(rand.g.netpro_result,tem_netpro_result)
-    }
-    #--------计算step次的结果
-    # rand.g.netpro_result
-
-    # --简化结果--------对随机矩阵结果求均值和sd值
-    result_summary<-cbind(rowMeans(rand.g.netpro_result),apply(rand.g.netpro_result,1,sd))
-    colnames(result_summary)<-c("Means","SD")
-    head(result_summary)
-
-
-    ###网络边的赋值及其设置
-    igraph.weight <- E(igraph)$weight# 将igraph weight属性赋值到igraph.weight,用于后边做图
-    # E(igraph)$weight <- NA
-    # igraph<-remove.edge.attribute(igraph,"weight")#把边值删除
     netpro_result<- net_properties(igraph)
     colnames(netpro_result)<-layout
 
-    sum_net = cbind(netpro_result,result_summary)
+
+    result = random_Net_compate(igraph = igraph, type = "gnm", step = 100, netName = layout)
+    p1 = result[[1]]
+    sum_net = result[[4]]
+
+    plotname = paste(path,"/Power_law_distribution_",layout,".pdf",sep = "")
+    ggsave(plotname, p1, width = 8, height =6)
+
     write.csv(sum_net,paste(path,"/",layout,"_net_VS_erdos_properties.csv",sep = ""),row.names = TRUE)
 
     y = as.data.frame(y)
@@ -274,6 +261,90 @@ network = function(otu = NULL,
   }
   return(list(p,y,p1))
 }
+
+
+
+
+
+
+# data(igraph)
+# result = random_Net_compate(igraph = igraph, type = "gnm", step = 100, netName = "KO")
+# p1 = result[[1]]
+# sum_net = result[[4]]
+
+
+random_Net_compate = function(
+  igraph = igraph,
+  type = "gnm",
+  step = 100,
+  netName = "KO"
+){
+  #--
+  res = random_Net(igraph = igraph,type = "gnm")
+  p = res[[1]]
+
+  data = grobal_pro_compare(igraph = igraph,type = "gnm", step = 100, netName = "KO")
+
+  return(list(p,plotdata = res[[2]],randomigraph = res[[3]],pro_compare = data ))
+}
+
+
+#--make random network compared with actral network
+random_Net = function(
+  igraph = igraph,
+  type = "gnm"
+){
+  rand.g<- erdos.renyi.game(length(V(igraph)), length(E(igraph)),type = c(type))
+  # degree_distribution
+
+  ## We compare the degree of random network and this network
+  data1 = data.frame(network= degree_distribution(igraph, cumulative = FALSE),group = "E–R network",ID = c(1:length(degree_distribution(igraph, cumulative = FALSE))))
+  data2 = data.frame(network = degree_distribution(rand.g, cumulative = FALSE) ,group = "network",ID = c(1:length(degree_distribution(rand.g, cumulative = FALSE) )))
+  data = rbind(data1,data2)
+  p1 <- ggplot(data) +geom_point(aes(x = ID,y = network,group =group,fill = group),pch = 21,size = 2) +
+    geom_smooth(aes(x = ID,y = network,group =group,color = group))+
+    theme_bw() + theme(
+      plot.margin=unit(c(0,0,0,0), "cm")
+    )
+  return(list(p1,plotdata = data,randomigraph = rand.g))
+}
+
+# plotname = paste(path,"/Power_law_distribution_",layout,".pdf",sep = "")
+# ggsave(plotname, p1, width = 8, height =6)
+
+
+
+grobal_pro_compare = function(
+  igraph = igraph,
+  type = "gnm",
+  step = 100,
+  netName = "KO"
+
+){
+  rand.g.netpro_result<-c()
+  for (i in 1:step){
+    #####random null model
+    rand.g <- erdos.renyi.game(length(V(igraph)), length(E(igraph)),type = c(type))
+    tem_netpro_result<-net_properties(rand.g)
+    rand.g.netpro_result<-cbind(rand.g.netpro_result,tem_netpro_result)
+  }
+
+  result_summary<-cbind(rowMeans(rand.g.netpro_result),apply(rand.g.netpro_result,1,sd))
+  colnames(result_summary)<-c("Means","SD")
+  head(result_summary)
+  netpro_result<- net_properties(igraph)
+  colnames(netpro_result)<- netName
+  sum_net = cbind(netpro_result,result_summary)
+  return(sum_net)
+}
+
+
+
+
+
+
+
+
 
 
 
