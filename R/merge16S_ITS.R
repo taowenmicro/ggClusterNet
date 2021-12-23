@@ -1,5 +1,10 @@
-merge16S_ITS <- function(ps16s = ps16s,
-                         psITS = psITS,
+
+
+
+
+
+merge16S_ITS <- function(ps16s = ps16,
+                         psITS = psIT,
                          N16s = 100,
                          NITS = 100,
                          scale = TRUE,
@@ -31,8 +36,8 @@ merge16S_ITS <- function(ps16s = ps16s,
     tax_table_16s$filed = rep(dat1.lab,length(row.names(tax_table_16s)))
   }
   if (!is.null(psITS)) {
-    ps_ITS = phyloseq::filter_taxa(psITS, function(x) mean(x) > NITS , TRUE)#select OTUs according to  relative abundance
-    ps_ITS = filter_OTU_ps(ps = psITS,Top = NIS)
+    # ps_ITS = phyloseq::filter_taxa(psITS, function(x) mean(x) > NITS , TRUE)#select OTUs according to  relative abundance
+    ps_ITS = filter_OTU_ps(ps = psITS,Top = NITS)
     otu_table_ITS = as.data.frame(t(vegan_otu(ps_ITS)))
     row.names(otu_table_ITS) = paste(dat2.lab,row.names(otu_table_ITS ),sep = "_")
     tax_table_ITS = as.data.frame(vegan_tax(ps_ITS))

@@ -41,7 +41,7 @@ network = function(otu = NULL,
                    map = NULL,
                    ps = NULL,
                    N = 0,
-                   big = TRUE,
+                   big = FALSE,
                    select_layout = FALSE,
                    layout_net = "model_maptree",
                    r.threshold = 0.6,
@@ -102,7 +102,7 @@ network = function(otu = NULL,
 
 
   if (big == TRUE) {
-    result= cor_Big_micro(ps = ps,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,method = method,scale = FALSE)
+    result= cor_Big_micro(ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,method = method,scale = FALSE)
     a = 2
   } else if(big == FALSE){
     result = corMicro (ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,method = method,R = R,ncpus = ncpus)

@@ -25,7 +25,7 @@
 
 
 
-div_network = function(ps,group = "Group",flour = TRUE){
+div_network = function(ps,group = "Group",flour = TRUE,N = 0.5){
   mapping = as.data.frame(sample_data(ps))
   mapping = mapping[,group]
   colnames(mapping[,group]) <- "Group"

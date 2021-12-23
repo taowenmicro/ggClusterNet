@@ -21,6 +21,11 @@
 tax_glom_wt <- function(ps = ps,ranks = "Phylum") {
 
 
+  if (  is.numeric(ranks)) {
+    ranks <- rank.names(ps)[ranks]
+  }
+
+
   otu <- as.data.frame(t(vegan_otu(ps)))
   tax <- as.data.frame(vegan_tax(ps))
 

@@ -65,7 +65,7 @@ PolygonRrClusterG = function(cor = cor,nodeGroup =netClu,zoom = 1,zoom2 = 1,bio 
   }
 
   da = data.frame(x = x,y = y)
-
+  nodeGroup$group = as.factor(nodeGroup$group)
   for (i in 1:length(levels(nodeGroup$group))) {
 
     # Extract all otu in this group
@@ -107,9 +107,6 @@ PolygonRrClusterG = function(cor = cor,nodeGroup =netClu,zoom = 1,zoom2 = 1,bio 
 
     }
 
-
-
-    head(data)
 
     # ggplot(data) + geom_point(aes(x = X1,y = X2))
 
