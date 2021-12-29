@@ -4,7 +4,7 @@
 \alias{div_network}
 \title{Calculate a bipartite network for microbiome data}
 \usage{
-div_network(ps, group = "Group", flour = TRUE)
+div_network(ps, group = "Group", flour = TRUE, N = 0.5)
 }
 \arguments{
 \item{ps}{phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.}

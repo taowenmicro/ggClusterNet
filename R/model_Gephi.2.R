@@ -88,19 +88,24 @@ model_Gephi.2 <- function(cor = cor,method = "cluster_fast_greedy",seed = 2){
   colnames(igraph.degree) = "degree"
   igraph.degree$ID = row.names(igraph.degree)
   dim(igraph.degree)
-  netClu <- netClu %>% left_join(igraph.degree,na_matches = "never")
+  netClu <- netClu %>%
+    dplyr::left_join(igraph.degree,na_matches = "never")
   netClu$degree[is.na(netClu$degree)] = 0
-  netClu <- netClu %>% arrange(desc(degree))
+  netClu <- netClu %>%
+    dplyr::arrange(desc(degree))
   sumtav <- netClu %>% dplyr::group_by(group) %>%
     dplyr::summarise(sum(degree))
   colnames(sumtav) = c("group","degree")
-  tab0 <- sumtav %>% arrange(desc(degree))
+  tab0 <- sumtav %>%
+    dplyr::arrange(desc(degree))
   tab0$group = as.character(tab0$group)
 
-  tab1 = as.data.frame(table(netClu$group)) %>% arrange(desc(Freq))
+  tab1 = as.data.frame(table(netClu$group)) %>%
+    dplyr::arrange(desc(Freq))
   colnames(tab1)[1] = "group"
   tab1$group = as.character(tab1$group)
-  tab3 <- tab0 %>% left_join(tab1,by = "group")
+  tab3 <- tab0 %>%
+    dplyr::left_join(tab1,by = "group")
 
   num.node <- dim(cor)[1]
 

@@ -31,6 +31,8 @@ module.roles <- function(comm_graph){
 
   z <- zscore(wmd)
 
+  z$z[is.nan(z$z)] = 0
+
   amd <- among_module_connectivity(comm_graph)
 
   pc <- participation_coeffiecient(amd, td)

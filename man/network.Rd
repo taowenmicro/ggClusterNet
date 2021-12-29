@@ -10,7 +10,9 @@ network(
   map = NULL,
   ps = NULL,
   N = 0,
+  big = FALSE,
   select_layout = FALSE,
+  layout_net = "model_maptree",
   r.threshold = 0.6,
   p.threshold = 0.05,
   method = "spearman",
@@ -35,6 +37,12 @@ network(
 \item{ps}{phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.}
 
 \item{N}{filter OTU tables by abundance.The defult, N=0, extract the top N number relative abundance of OTU.}
+
+\item{big}{TRUE or FALSE the number of micro data was so many (> 300),you can chose TREU}
+
+\item{select_layout}{TURE or FALSE}
+
+\item{layout_net}{select layout from ggClusterNet}
 
 \item{r.threshold}{The defult, r.threshold=0.6, it represents the correlation that the absolute value
 of the correlation threshold is greater than 0.6. the value range of correlation threshold from 0 to 1.}

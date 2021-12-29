@@ -12,9 +12,7 @@ cor_Big_micro = function(
   scale = FALSE,
   method = "spearman"
   ){
-  # library(igraph)
-  # library(dplyr)
-  # library(Hmisc)
+
   if (scale == TRUE) {
     ps = ps %>%
       ggClusterNet::scale_micro(method = "TMM")
@@ -31,8 +29,7 @@ cor_Big_micro = function(
   occor.p<-matrix(adpcor,dim(t(x)/colSums(x))[2])
   ## R value
   occor.r<-occor$cor
-  diag(occor.r) <- 0
-
+  # diag(occor.r) <- 0
   # occor.r[occor.p > 0.05|abs(occor.r)<0.4] = 0
 
   occor.r[occor.p > p.threshold | abs(occor.r)< r.threshold] = 0

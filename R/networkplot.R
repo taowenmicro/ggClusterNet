@@ -6,6 +6,9 @@
 #' @param r.threshold The defult, r.threshold=0.6, it represents the correlation that the absolute value
 #'  of the correlation threshold is greater than 0.6. the value range of correlation threshold from 0 to 1.
 #' @param p.threshold The defult, p.threshold=0.05, it represents significance threshold below 0.05.
+#' @param big culculate big network TURE or FALSE
+#' @param select_layout  TURE or FALSE
+#' @param layout_net defult "model_maptree"
 #' @param method method for Correlation calculation,method="pearson" is the default value. The alternatives to be passed to cor are "spearman" and "kendall".
 #' @param label Whether to add node label.
 #' @param group Separate Group.
@@ -112,6 +115,8 @@ network = function(otu = NULL,
 
     print("cor matrix culculating over")
     cor = result[[1]]    #Extract correlation matrix
+
+
     if (cor %>% as.vector() %>% max() == 0) {
       stop("The connect value in cor matrix all was zone")
     }
@@ -136,15 +141,31 @@ network = function(otu = NULL,
     ps_net = psi
     otu_table = as.data.frame(t(vegan_otu(ps_net)))
     tax_table = as.data.frame(vegan_tax(ps_net))
-    #---node节点注释#-----------
+    #---node  ann # -----------
     nodes = nodeadd(plotcord =node,otu_table = otu_table,tax_table = tax_table)
-    head(nodes)
+    #-----culculate edge #--------
+    # edge = edgeBuild(cor = cor,plotcord = node)
+    tem1 = cor %>%
+      tidyfst::mat_df() %>%
+      filter(row != col) %>%
 
-    #-----计算边#--------
-    edge = edgeBuild(cor = cor,plotcord = node)
-    head(edge)
-    edge$weight
+      rename(OTU_1 = row,OTU_2 = col,weight = value ) %>%
+      filter(weight != 0)
+    head(tem1)
+
+    tem2 = tem1 %>% left_join(node,by = c("OTU_1" = "elements")) %>%
+      rename(Y1 = X2)
+    head(tem2)
+    tem3 = node %>%
+      rename(Y2 = X2,X2 = X1) %>%
+      right_join(tem2,by = c("elements" = "OTU_2")) %>%
+      rename(OTU_2 = elements)
+
+    edge = tem3 %>% mutate(
+      cor = ifelse(weight > 0,"+","-")
+    )
     colnames(edge)[8] = "cor"
+
     #-------output---edges and nodes--to Gephi --imput--
     edge_Gephi = data.frame(source = edge$OTU_1,target = edge$OTU_2,correlation =  edge$weight,direct= "undirected",cor =  edge$cor)
     # building node table
@@ -251,9 +272,12 @@ network = function(otu = NULL,
     row.names(y) = row.names(netpro_result)
     aa = aa+1
   }
+
   plotname = paste(path,"/network_all.pdf",sep = "")
-  p  = ggpubr::ggarrange(plotlist = plots, common.legend = TRUE, legend="right",ncol = ncol,nrow = nrow)
-  p1  = ggpubr::ggarrange(plotlist = plots1, common.legend = TRUE, legend="right",ncol = ncol,nrow = nrow)
+  p  = ggpubr::ggarrange(plotlist = plots,
+                         common.legend = TRUE, legend="right",ncol = ncol,nrow = nrow)
+  p1  = ggpubr::ggarrange(plotlist = plots1,
+                          common.legend = TRUE, legend="right",ncol = ncol,nrow = nrow)
 
   if (length(layouts) == 1) {
     p = pnet

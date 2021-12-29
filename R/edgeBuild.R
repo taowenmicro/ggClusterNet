@@ -4,7 +4,7 @@
 #' @param node Node file, containing calculated node coordinates
 #' @examples
 #' data(ps)
-#' result = corMicro (ps = ps,N = 0.02,r.threshold=0.8,p.threshold=0.05,method = "pearson")
+#' result = corMicro (ps = ps,N = 120,r.threshold=0.8,p.threshold=0.05,method = "pearson")
 #' #Extract correlation matrix
 #' cor = result[[1]]
 #' # building the node group
@@ -25,22 +25,19 @@
 #' @export
 
 
-
 edgeBuild = function(cor = cor,plotcord = node){
-  # cor <- cor[match( row.names(cor),node$elements),match( row.names(cor),node$elements)]
   cor <- cor[match( plotcord$elements,row.names(cor)),match(plotcord$elements, row.names(cor))]
-  # colnames(cor)
   #----Use correlation matrix to build network--network package to build network#-----
   g <- network::network(cor, directed=FALSE)
-  g
-
   #---Correlation matrix converted to 0-1
-  # origm  <- network::as.matrix.network.adjacency(g)  # get sociomatrix
-  edglist <- as.matrix.network.edgelist(g)
+  edglist <- network::as.matrix.network.edgelist(g)
+
   edglist = as.data.frame(edglist)
   #Add weight#---
-  set.edge.value(g,"weigt",cor)
+  network::set.edge.value(g,"weigt",cor)
+
   edglist$weight = as.numeric(network::get.edge.attribute(g,"weigt"))
+
   edges <- data.frame(plotcord[edglist[, 1], ], plotcord[edglist[, 2], ])
   edges$weight = as.numeric(network::get.edge.attribute(g,"weigt"))
 
