@@ -44,7 +44,7 @@
 nodeadd = function(plotcord =node,otu_table = otu_table,tax_table = tax_table){
 
 
-  res = merge(plotcord,tax_table,by = "row.names",all = F)
+  res = base::merge(plotcord,tax_table,by = "row.names",all.x = TRUE)
   dim(res)
   head(res)
   row.names(res) = res$Row.names
@@ -53,7 +53,7 @@ nodeadd = function(plotcord =node,otu_table = otu_table,tax_table = tax_table){
 
   xx = data.frame(mean  =rowMeans(otu_table))
   head(xx)
-  plotcord = merge(plotcord,xx,by = "row.names",all = FALSE)
+  plotcord =  base::merge(plotcord,xx,by = "row.names",all.x = TRUE)
   head(plotcord)
   # plotcord$Phylum
   row.names(plotcord) = plotcord$Row.names

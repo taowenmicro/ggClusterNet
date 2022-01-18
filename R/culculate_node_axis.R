@@ -9,7 +9,6 @@
 #   method = "cluster_fast_greedy")
 
 
-
 culculate_node_axis = function(
   cor.matrix = cor,
   layout = "model_Gephi.2",
@@ -21,32 +20,22 @@ culculate_node_axis = function(
 
   if (is.null(group)) {
     #--total layout
-    node = total_layout(layout =layout,method = "cluster_fast_greedy" )
-
-  } else{
-
-    #--make groups
-    if (model == TURE) {
-      netClu  = modulGroup( cor = cor,cut = 3,method = method )
-    } else if(model != TURE){
-      netClu = group
-    }
-
-    #group layout
-    node = group_layout(layout =layout,
+    node = total_layout(cor = cor.matrix,layout =layout,method = "cluster_fast_greedy" )
+  }else{ if (model) {
+      netClu  = modulGroup( cor = cor.matrix,cut = 3,method = method )}else{
+      netClu = group}
+    node = group_layout(
+      cor = cor.matrix,
+      layout =layout,
                             netClu = netClu,
                             sna_layout = "circle"
     )
 
-
-
   }
-
   return(node)
-
 }
 
-total_layout = function(layout =layout,method = "cluster_fast_greedy" ){
+total_layout = function(cor = cor,layout =layout,method = "cluster_fast_greedy" ){
 
   #--1
   if (layout == "model_Gephi.2") {
@@ -79,7 +68,9 @@ total_layout = function(layout =layout,method = "cluster_fast_greedy" ){
 }
 
 
-group_layout = function(layout =layout,
+group_layout = function(
+  cor = cor,
+  layout =layout,
                         netClu = netClu,
                         sna_layout = "circle"
                         ){

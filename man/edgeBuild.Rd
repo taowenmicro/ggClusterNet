@@ -4,7 +4,7 @@
 \alias{edgeBuild}
 \title{Construct edge files, add weights, positive and negative correlation and other basic information}
 \usage{
-edgeBuild(cor = cor, plotcord = node)
+edgeBuild(cor = cor, node = node)
 }
 \arguments{
 \item{cor}{Correlation matrix}

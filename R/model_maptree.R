@@ -84,7 +84,8 @@ model_maptree = function(
   igraph.degree$ID = row.names(igraph.degree)
   netClu <- netClu %>% left_join(igraph.degree,na_matches = "never")
   netClu$degree[is.na(netClu$degree)] = 0
-  netClu <- netClu %>% arrange(desc(degree))
+  netClu <- netClu %>%
+    dplyr::arrange(desc(degree))
   head(netClu)
 
   edge =  data.frame(model = paste("model_",netClu$group,sep = ""),OTU = netClu$ID)
@@ -104,7 +105,7 @@ model_maptree = function(
   head(data)
 
   node = data %>% dplyr::filter(leaf == TRUE ) %>%
-    select(x,y,name)
+    dplyr::select(x,y,name)
   colnames(node) = c("X1","X2", "elements")
   row.names(node) = node$elements
   return(node)

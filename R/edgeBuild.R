@@ -25,39 +25,28 @@
 #' @export
 
 
-edgeBuild = function(cor = cor,plotcord = node){
-  cor <- cor[match( plotcord$elements,row.names(cor)),match(plotcord$elements, row.names(cor))]
-  #----Use correlation matrix to build network--network package to build network#-----
-  g <- network::network(cor, directed=FALSE)
-  #---Correlation matrix converted to 0-1
-  edglist <- network::as.matrix.network.edgelist(g)
+edgeBuild = function(cor = cor,node = node){
+  tem1 = cor %>%
+    tidyfst::mat_df() %>%
+    dplyr::filter(row != col) %>%
 
-  edglist = as.data.frame(edglist)
-  #Add weight#---
-  network::set.edge.value(g,"weigt",cor)
+    dplyr::rename(OTU_1 = row,OTU_2 = col,weight = value ) %>%
+    dplyr::filter(weight != 0)
+  head(tem1)
 
-  edglist$weight = as.numeric(network::get.edge.attribute(g,"weigt"))
+  tem2 = tem1 %>% dplyr::left_join(node,by = c("OTU_1" = "elements")) %>%
+    dplyr::rename(Y1 = X2)
+  head(tem2)
+  tem3 = node %>%
+    dplyr::rename(Y2 = X2,X2 = X1) %>%
+    dplyr::right_join(tem2,by = c("elements" = "OTU_2")) %>%
+    dplyr::rename(OTU_2 = elements)
 
-  edges <- data.frame(plotcord[edglist[, 1], ], plotcord[edglist[, 2], ])
-  edges$weight = as.numeric(network::get.edge.attribute(g,"weigt"))
+  edge = tem3 %>%
+    dplyr::mutate(
+      cor = ifelse(weight > 0,"+","-")
+    )
+  colnames(edge)[8] = "cor"
 
-  #Here, the edge weights are divided into two categories according to positive and negative
-  aaa = rep("a",length(edges$weight))
-  for (i in 1:length(edges$weight)) {
-    if (edges$weight[i]> 0) {
-      aaa[i] = "+"
-    }
-    if (edges$weight[i]< 0) {
-      aaa[i] = "-"
-    }
-  }
-  #add to dges
-  edges$wei_label = as.factor(aaa)
-  colnames(edges) <- c("X1", "Y1","OTU_1", "X2", "Y2","OTU_2","weight","wei_label")
-  edges$midX <- (edges$X1 + edges$X2)/2
-  edges$midY <- (edges$Y1 + edges$Y2)/2
- edges = edges %>%
-   dplyr::filter(wei_label != "a")
-
-  return(edges)
+  return(edge)
 }
