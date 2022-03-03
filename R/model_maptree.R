@@ -108,6 +108,6 @@ model_maptree = function(
     dplyr::select(x,y,name)
   colnames(node) = c("X1","X2", "elements")
   row.names(node) = node$elements
-  return(node)
+  return(list(node,netClu))
 }
 

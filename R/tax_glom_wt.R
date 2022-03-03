@@ -22,7 +22,7 @@ tax_glom_wt <- function(ps = ps,ranks = "Phylum") {
 
 
   if (  is.numeric(ranks)) {
-    ranks <- rank.names(ps)[ranks]
+    ranks <- phyloseq::rank.names(ps)[ranks]
   }
 
 
@@ -46,10 +46,10 @@ tax_glom_wt <- function(ps = ps,ranks = "Phylum") {
   row.names(taxcon) <- taxcon[[ranks]]
 
 
-  pscon <- phyloseq(
-    otu_table( as.matrix(otucon),taxa_are_rows = TRUE),
-    tax_table(as.matrix(taxcon)),
-    sample_data(ps)
+  pscon <- phyloseq::phyloseq(
+    phyloseq::otu_table( as.matrix(otucon),taxa_are_rows = TRUE),
+    phyloseq::tax_table(as.matrix(taxcon)),
+    phyloseq::sample_data(ps)
   )
   return(pscon)
 }

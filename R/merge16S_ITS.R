@@ -58,14 +58,15 @@ merge16S_ITS <- function(ps16s = ps16,
       tax_table = data.frame(filed = c(tax_table_16s$filed,tax_table_ITS$filed),row.names = row.names(otu_table),id = row.names(otu_table))
     }
     #on of map table as final map table
-    mapping = as.data.frame(sample_data(ps_16s))
+
+    mapping = as.data.frame( phyloseq::sample_data(ps_16s))
     head(mapping)
     # mapping$Group4 = "all_sample"
     # mapping$Group4 = as.factor(mapping$Group4)
     ##merge all abject of phyloseq
-    pallps <- phyloseq(otu_table(as.matrix(otu_table),taxa_are_rows = T),
-                       sample_data(mapping),
-                       tax_table(as.matrix(tax_table)))
+    pallps <-  phyloseq::phyloseq( phyloseq::otu_table(as.matrix(otu_table),taxa_are_rows = T),
+                                   phyloseq::sample_data(mapping),
+                                   phyloseq::tax_table(as.matrix(tax_table)))
 
 
   } else if(is.null(psITS) & !is.null(ps16s) ) {
@@ -83,9 +84,9 @@ merge16S_ITS <- function(ps16s = ps16,
     # mapping$Group4 = "all_sample"
     # mapping$Group4 = as.factor(mapping$Group4)
     ##merge all abject of phyloseq
-    pallps <- phyloseq(otu_table(as.matrix(otu_table),taxa_are_rows = T),
-                       sample_data(mapping),
-                       tax_table(as.matrix(tax_table)))
+    pallps <-  phyloseq::phyloseq( phyloseq::otu_table(as.matrix(otu_table),taxa_are_rows = T),
+                                   phyloseq::sample_data(mapping),
+                                   phyloseq::tax_table(as.matrix(tax_table)))
 
 
   } else if (!is.null(psITS) & is.null(ps16s)){
@@ -98,14 +99,14 @@ merge16S_ITS <- function(ps16s = ps16,
       tax_table = data.frame(filed = c(tax_table_ITS$filed),row.names = row.names(otu_table),id = row.names(otu_table))
     }
     #on of map table as final map table
-    mapping = as.data.frame(sample_data(psITS))
+    mapping = as.data.frame( phyloseq::sample_data(psITS))
     head(mapping)
     # mapping$Group4 = "all_sample"
     # mapping$Group4 = as.factor(mapping$Group4)
     ##merge all abject of phyloseq
-    pallps <- phyloseq(otu_table(as.matrix(otu_table),taxa_are_rows = T),
-                       sample_data(mapping),
-                       tax_table(as.matrix(tax_table)))
+    pallps <-  phyloseq::phyloseq( phyloseq::otu_table(as.matrix(otu_table),taxa_are_rows = T),
+                                   phyloseq::sample_data(mapping),
+                                   phyloseq::tax_table(as.matrix(tax_table)))
 
   }
   return(pallps)

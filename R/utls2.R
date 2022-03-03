@@ -30,7 +30,7 @@ scale_micro <- function(ps,
 
   if (method %in% c("TMM","RLE","upperquartile")) {
     count = t(vegan_otu(ps))
-    map <- as.data.frame(sample_data(ps))
+    map <- as.data.frame(phyloseq::sample_data(ps))
     map$Group <- as.factor(map$Group)
     # create DGE list
     d = edgeR::DGEList(counts=count,group = map$Group)
@@ -46,9 +46,9 @@ scale_micro <- function(ps,
     otu = as.matrix(fit$fitted.values)
     head(otu)
 
-    ps1 <- phyloseq(otu_table(as.matrix(otu),taxa_are_rows = TRUE),
-                   tax_table(ps),
-                   sample_data(ps)
+    ps1 <- phyloseq::phyloseq(phyloseq::otu_table(as.matrix(otu),taxa_are_rows = TRUE),
+                              phyloseq::tax_table(ps),
+                              phyloseq::sample_data(ps)
     )
   }
 
@@ -66,33 +66,22 @@ scale_micro <- function(ps,
 #' @examples
 #' data(ps)
 #' ps_sub = filter_OTU_ps(ps = ps,Top = 100)
-
+# library(ggClusterNet)
 filter_OTU_ps <- function(ps = ps,Top = NULL
 
 ){
   if (!is.null(Top)&Top != 0) {
-    #相对丰富转换
-    ps_rela  = transform_sample_counts(ps, function(x) x / sum(x) )
-    # 提取otu表格
+    #
+    ps_rela  = phyloseq::transform_sample_counts(ps, function(x) x / sum(x) )
+    # otu table
     otu_table = as.data.frame(t(vegan_otu(ps_rela)))
     otu_table$mean = rowMeans(otu_table)
     otu_table$ID = row.names(otu_table)
-    head(otu_table)
-    #按照从大到小排序
+
     otu_table<- dplyr::arrange(otu_table, desc(mean))
     subtab = head(otu_table,Top)
-    head(subtab)
-    # row.names(subtab) =subtab$ID
-    # subtab = subtab[,1:(dim(subtab)[2]-2)]
-    # subtab = as.matrix(subtab)
     otu_table2 = as.data.frame(t(vegan_otu(ps)))
-    otu_table(ps) = otu_table(as.matrix(otu_table2[subtab$ID,]),taxa_are_rows = TRUE)
-    # #对phyloseq取子集
-    # ps1 <- phyloseq::phyloseq(otu_table(subtab, taxa_are_rows=TRUE),
-    #                 tax_table(ps),
-    #                 sample_data(ps),
-    #                 phyloseq::phy_tree(ps)
-    # )
+    phyloseq::otu_table(ps) = phyloseq::otu_table(as.matrix(otu_table2[subtab$ID,]),taxa_are_rows = TRUE)
   } else if(Top == 0){
     ps = ps
   }
@@ -184,7 +173,7 @@ mergePs_Top_micro <- function(psm = psP,
       tax[i,j]= "others"
     }
   }
-  tax_table(psm)= tax
+  phyloseq::tax_table(psm)= tax
 
   res <- psm %>%
     ggClusterNet::tax_glom_wt(ranks = j)

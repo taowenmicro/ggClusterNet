@@ -59,7 +59,7 @@ total_layout = function(cor = cor,layout =layout,method = "cluster_fast_greedy" 
                              method = method,
                              seed = 12
     )
-    node = result2
+    node = result2[[1]]
   }
 
  return(node)

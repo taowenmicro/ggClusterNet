@@ -26,7 +26,7 @@
 
 
 div_network = function(ps,group = "Group",flour = TRUE,N = 0.5){
-  mapping = as.data.frame(sample_data(ps))
+  mapping = as.data.frame(phyloseq::sample_data(ps))
   mapping = mapping[,group]
   colnames(mapping[,group]) <- "Group"
   sample_data(ps) = mapping
@@ -38,7 +38,7 @@ div_network = function(ps,group = "Group",flour = TRUE,N = 0.5){
   count = aa
   countA = count
   dim(count)
-  sub_design <- as.data.frame(sample_data(ps))
+  sub_design <- as.data.frame(phyloseq::sample_data(ps))
 
 
   ##########这里的操作为提取三个分组
@@ -54,9 +54,9 @@ div_network = function(ps,group = "Group",flour = TRUE,N = 0.5){
   # 组合结果
   iris.combine <- do.call(rbind,iris.apply)
   ven2 = t(iris.combine)
-  for (i in 1:length(unique(sample_data(ps)$Group))) {
-    aa <- as.data.frame(table(sample_data(ps)$Group))[i,1]
-    bb =  as.data.frame(table(sample_data(ps)$Group))[i,2]
+  for (i in 1:length(unique(phyloseq::sample_data(ps)$Group))) {
+    aa <- as.data.frame(table(phyloseq::sample_data(ps)$Group))[i,1]
+    bb =  as.data.frame(table(phyloseq::sample_data(ps)$Group))[i,2]
     ven2[,aa] = ven2[,aa]/bb
   }
 
@@ -66,10 +66,6 @@ div_network = function(ps,group = "Group",flour = TRUE,N = 0.5){
   ven2 = as.data.frame(ven2)
 
 
-  # head(ven2)
-  # ven2[ven2 < pick_val_num]  = 0
-  # ven2[ven2 >=pick_val_num]  = 1
-  # ven2 = as.data.frame(ven2)
 
 
   ven3 = as.list(ven2)
@@ -126,17 +122,17 @@ div_network = function(ps,group = "Group",flour = TRUE,N = 0.5){
   #Kingdom+ Phylum + Class+ Order+ Family +Genus+Species+2Mmean+2MNPKmean +CKmean +MNPKmean + NPKmean ,value.var = "Abundance"
   # otu_net2$Label = NULL
   head(otu_net2)
-  if (length(colnames(tax_table(ps))) == 6) {
+  if (length(colnames(phyloseq::tax_table(ps))) == 6) {
     net_all = reshape2::melt(otu_net2, id=c("ID","Kingdom","Phylum" ,"Class", "Order","Family" ,"Genus",
                                             paste(unique(mapping$Group),"mean",sep = "")))
   }
 
 
-  if (length(colnames(tax_table(ps))) == 7) {
+  if (length(colnames(phyloseq::tax_table(ps))) == 7) {
     net_all = reshape2::melt(otu_net2, id=c("ID","Kingdom","Phylum" ,"Class", "Order","Family" ,"Genus","Species",
                                             paste(unique(mapping$Group),"mean",sep = "")))
   }
-  if (length(colnames(tax_table(ps))) != 7|length(colnames(tax_table(ps))) != 6 ) {
+  if (length(colnames(phyloseq::tax_table(ps))) != 7|length(colnames(phyloseq::tax_table(ps))) != 6 ) {
 
     net_all = reshape2::melt(otu_net2, id=c("ID",rank_names(ps),
                                             paste(unique(mapping$Group),"mean",sep = "")))
@@ -156,18 +152,4 @@ div_network = function(ps,group = "Group",flour = TRUE,N = 0.5){
 
   return(list(net_fal,point_label,ven2))
 
-}
-
-vegan_otu <-  function(physeq){
-  OTU <-  otu_table(physeq)
-  if(taxa_are_rows(OTU)){
-    OTU <-  t(OTU)
-  }
-  return(as(OTU,"matrix"))
-}
-
-vegan_tax <-  function(physeq){
-  tax <-  tax_table(physeq)
-
-  return(as(tax,"matrix"))
 }

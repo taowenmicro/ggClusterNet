@@ -22,11 +22,11 @@ node_properties<-function(igraph,outdir){
   # Nodal degree
   igraph.degree<-igraph::degree(igraph)
   # Nodal centrality
-  igraph.cen.degree<-centralization.degree(igraph)$res
+  igraph.cen.degree<- igraph::centralization.degree(igraph)$res
   #
-  igraph.betweenness<-centralization.betweenness(igraph)$res
+  igraph.betweenness<-igraph::centralization.betweenness(igraph)$res
   #
-  igraph.closeness<-centralization.closeness(igraph)$res
+  igraph.closeness<-igraph::centralization.closeness(igraph)$res
 
   igraph.node.pro <- cbind(igraph.degree,igraph.closeness,igraph.betweenness,igraph.cen.degree)
   colnames(igraph.node.pro)<-c("igraph.degree","igraph.closeness","igraph.betweenness","igraph.cen.degree")
