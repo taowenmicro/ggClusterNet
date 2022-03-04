@@ -109,5 +109,12 @@ merge16S_ITS <- function(ps16s = ps16,
                                    phyloseq::tax_table(as.matrix(tax_table)))
 
   }
+
+  tax = pallps %>% vegan_tax() %>%
+    as.data.frame() %>% dplyr::select(filed,everything())
+  phyloseq::tax_table(pallps) = as.matrix(tax)
+
+
   return(pallps)
 }
+

@@ -9,7 +9,8 @@ corBionetwork(
   tax = NULL,
   map = NULL,
   ps = NULL,
-  N = 0.001,
+  lab = NULL,
+  N = 0,
   r.threshold = 0.6,
   p.threshold = 0.05,
   label = FALSE,
@@ -22,14 +23,15 @@ corBionetwork(
   fill = "Phylum",
   size = "igraph.degree",
   scale = TRUE,
-  bio = FALSE,
+  bio = TRUE,
   zipi = FALSE,
   step = 100,
-  width = 8,
-  height = 6,
-  allnode = TRUE,
-  ncol = 3,
-  nrow = 1
+  width = 20,
+  height = 20,
+  big = TRUE,
+  select_layout = TRUE,
+  layout_net = "model_maptree",
+  clu_method = "cluster_fast_greedy"
 )
 }
 \arguments{
