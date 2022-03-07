@@ -24,17 +24,17 @@
 
 
 corBiostripeBig = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.threshold=0.05,method = "spearman"){
-  
+
   if (is.null(data)&is.null(group)&!is.null(ps)) {
     # otu_table = as.data.frame(t(vegan_otu(ps)))
- 
+
     x = ps %>%
       # filter_OTU_ps(Top = N) %>%
       # scale_micro(method = "TMM") %>%
       vegan_otu() %>%
       t() %>%
       as.data.frame()
-    
+
     occor<-WGCNA::corAndPvalue(t(x)/colSums(x),method = method)
     mtadj<-multtest::mt.rawp2adjp(unlist(occor$p),proc='BH')
     adpcor<-mtadj$adjp[order(mtadj$index),2]
@@ -55,10 +55,10 @@ corBiostripeBig = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p
       occor.r[a,a] = 0
       occor.p[a,a] = 1
     }
-    
+
   }
-  
-  
+
+
   if (is.null(ps)&!is.null(data)&!is.null(group)) {
     cordata <- t(data[-1])
     colnames(cordata) =data[[1]]
@@ -66,7 +66,7 @@ corBiostripeBig = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p
     # occor = psych::corr.test(cordata,use="pairwise",method=method,adjust="fdr",alpha=.05)
     # occor.r = occor$r
     # occor.p = occor$p
-    
+
     x = cordata %>% t()
     occor<-WGCNA::corAndPvalue(t(x)/colSums(x),method = method)
     mtadj<-multtest::mt.rawp2adjp(unlist(occor$p),proc='BH')
@@ -74,53 +74,53 @@ corBiostripeBig = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p
     occor.p<-matrix(adpcor,dim(t(x)/colSums(x))[2])
     ## R value
     occor.r<-occor$cor
-    
-    
+
+
     #-filter--cor value
     occor.r[occor.p > p.threshold|abs(occor.r)<r.threshold] = 0
-    
+
     #--biostripe network filter
     A <- levels(as.factor(group$Group))
-    
-    
-    
+
+
+
     for (i in 1:length(A)) {
       fil <- intersect(row.names(occor.r),as.character(group[[1]][group$Group == A[i]]))
       a <- row.names(occor.r) %in% fil
       occor.r[a,a] = 0
       occor.p[a,a] = 1
     }
-    
+
   }
-  
-  
+
+
   if (!is.null(ps)&!is.null(data)&!is.null(group)) {
     otu_table = as.data.frame(t(vegan_otu(ps)))
     cordata <- (data[-1])
     row.names(cordata) = data[[1]]
-    
+
     if (!is.na(match(colnames(otu_table) , data[[1]]))) {
       cordata = t(cordata)
     }
     dim(cordata)
     dim(otu_table)
     finaldata <- rbind(otu_table,cordata)
-    
-    
+
+
     #--- use corr.test function to calculate relation#--------
     # occor = psych::corr.test(t(finaldata),use="pairwise",method= method ,adjust="fdr",alpha=.05)
     # occor.r = occor$r
     # occor.p = occor$p
     # occor.r[occor.p > p.threshold|abs(occor.r)<r.threshold] = 0
-    
+
     x = finaldata
     occor<-WGCNA::corAndPvalue(t(x)/colSums(x),method = method)
     mtadj<-multtest::mt.rawp2adjp(unlist(occor$p),proc='BH')
     adpcor<-mtadj$adjp[order(mtadj$index),2]
     occor.p<-matrix(adpcor,dim(t(x)/colSums(x))[2])
-    
-    
-    
+    occor.r<-occor$cor
+
+
     tax = as.data.frame((vegan_tax(ps)))
     head(tax)
     if (length(tax$filed) != 0) {
@@ -129,7 +129,7 @@ corBiostripeBig = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p
       A2 <- levels(as.factor(group[[2]]))
       A2
       A = c(A1,A2)
-      
+
       group2 <- data.frame(SampleID = row.names(tax),Group = tax$filed)
     } else {
       A1 = "OTU"
@@ -138,23 +138,23 @@ corBiostripeBig = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p
       A = c(A1,A2)
       group2 <- data.frame(SampleID = row.names(tax),Group = "OTU")
     }
-    
-    
-    
+
+
+
     # i = 5
     colnames(group) = c("SampleID","Group")
     finalgru = rbind(group,group2)
-    
+
     for (i in 1:length(A)) {
       fil <- intersect(row.names(occor.r),as.character(as.character(finalgru$SampleID)[as.character(finalgru$Group) == A[i]]))
       a <- row.names(occor.r) %in% fil
       occor.r[a,a] = 0
       occor.p[a,a] = 1
     }
-    
+
   }
   return(list(occor.r, method, occor.p, A))
-  
+
 }
 
 
