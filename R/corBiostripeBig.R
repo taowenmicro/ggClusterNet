@@ -102,10 +102,10 @@ corBiostripeBig = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p
     if (!is.na(match(colnames(otu_table) , data[[1]]))) {
       cordata = t(cordata)
     }
-    dim(cordata)
+    str(cordata)
     dim(otu_table)
     finaldata <- rbind(otu_table,cordata)
-
+    cordata[is.na(cordata)]
 
     #--- use corr.test function to calculate relation#--------
     # occor = psych::corr.test(t(finaldata),use="pairwise",method= method ,adjust="fdr",alpha=.05)
@@ -114,6 +114,9 @@ corBiostripeBig = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p
     # occor.r[occor.p > p.threshold|abs(occor.r)<r.threshold] = 0
 
     x = finaldata
+    # x = apply(x, 2, as.numeric)
+    # head(x)
+    # x[is.na(x)] = 0
     occor<-WGCNA::corAndPvalue(t(x)/colSums(x),method = method)
     mtadj<-multtest::mt.rawp2adjp(unlist(occor$p),proc='BH')
     adpcor<-mtadj$adjp[order(mtadj$index),2]

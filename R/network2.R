@@ -252,7 +252,7 @@ network.2 = function(
     p = pnet
     p1 = pnet1
   }
-  return(list(p,y,p1))
+  return(list(p,y,p1,cor))
 }
 
 
