@@ -6,15 +6,15 @@
 # tax = NULL
 # map = NULL
 # ps = ps.merge
-# lab = data
+# lab = NULL
 # N = 0
 # r.threshold = 0.6# 相关阈值
 # p.threshold = 0.05
 #
 # label = FALSE
 # group = "Group"
-# env = NULL
-# # envGroup = Gru
+# env = data1
+# envGroup = Gru
 # method = "spearman"
 # layout = "fruchtermanreingold"
 # path = Envnetplot
@@ -236,7 +236,7 @@ corBionetwork = function(otu = NULL,
     head( nodeG)
     p0 <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = as.factor(cor)),
                                     data = edges, size = 0.3,alpha = 0.5) +
-      geom_point(aes(x = X1, y = X2,size = igraph.degree,fill = filed),pch = 21, data =  nodeG) +
+      geom_point(aes(x = X1, y = X2,size = igraph.degree,fill = group),pch = 21, data =  nodeG) +
       scale_colour_brewer(palette = "Set1") +
       scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
       labs( title = paste(layout,"network",sep = "_")) + theme_void()
