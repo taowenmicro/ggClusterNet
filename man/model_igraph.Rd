@@ -20,7 +20,7 @@ data.frame
 Enter correlation matrix, calculate network modules, and Calculate the coordinates of the node.
 }
 \details{
-# The algorithm iigraph network layout. while, it saves time and the calculation speed is faster,This is the upgraded version.
+# The algorithm igraph network layout. while, it saves time and the calculation speed is faster,This is the upgraded version.
 
 
 By default, returns a list
@@ -33,7 +33,7 @@ By default, returns a list
 }
 \examples{
 data(ps)
-result = corMicro (ps = ps,N = 0.02,r.threshold=0.8,p.threshold=0.05,method = "pearson")
+result = corMicro (ps = ps,N = 100,r.threshold=0.8,p.threshold=0.05,method = "pearson")
 #Extract correlation matrix
 cor = result[[1]]
 # building the node group

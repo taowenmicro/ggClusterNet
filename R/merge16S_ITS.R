@@ -1,8 +1,4 @@
 
-
-
-
-
 merge16S_ITS <- function(ps16s = ps16,
                          psITS = psIT,
                          N16s = 100,

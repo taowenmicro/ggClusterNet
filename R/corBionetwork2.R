@@ -1,35 +1,75 @@
+#' Microbial related bipartite network analysis
+#'
+#' @param ps phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.
+#' @param N filter OTU tables by abundance.The defult, N=0.001, extract the top 0.001 relative abundance of OTU.
+#' @param r.threshold The defult, r.threshold=0.6, it represents the correlation that the absolute value
+#'  of the correlation threshold is greater than 0.6. the value range of correlation threshold from 0 to 1.
+#' @param p.threshold The defult, p.threshold=0.05, it represents significance threshold below 0.05.
+#' @param method method for Correlation calculation,method="pearson" is the default value. The alternatives to be passed to cor are "spearman" and "kendall".
+#' @param label Whether to add node label.
+#' @param group Separate Group.
+#' @param env Environmental factor index table which do network analysis with the microbiome.
+#' @param envGroup group of env table.
+#' @param lay layout which network show.
+#' @param path save path of all of network analyse.
+#' @param fill fill coulor of node.
+#' @param size node size.
+#' @param scale Whether relative abundance standardization is required.
+#' @param bio Do you need to do a binary network.
+#' @param zipi zipi Calculation.
+#' @param step Random network sampling times.
+#' @param width Save the width of the picture settings.
+#' @param height Save the height of the picture setting.
+#' @examples
+#' path = "./netowrk/"
+#' data(ps)
+#' ps16s = ps %>% ggClusterNet::scale_micro()
+#' psITS = NULL
+#' library(phyloseq)
+#' ps.merge <- ggClusterNet::merge16S_ITS(ps16s = ps16s,
+#'                                        psITS = NULL,
+#'                                        N16s = 100)
+#' map =  phyloseq::sample_data(ps.merge)
+#' head(map)
+#' map$Group = "one"
+#' phyloseq::sample_data(ps.merge) <- map
+#' data(env1)
+#' data1 = env1
+#' data1$id = row.names(data1)
+#' data1 = data1 %>% select(id,everything())
+#' envRDA.s = vegan::decostand(env1,"hellinger")
+#' data1[,-1] = envRDA.s
+#' Gru = data.frame(ID = colnames(data1)[-1],group = "env" )
+#' head(Gru)
+#' corBionetwork(ps = ps.merge,
+#'                             N = 0,
+#'                             r.threshold = 0.4, # 相关阈值
+#'                             p.threshold = 0.05,
+#'                             big = T,
+#'                             group = "Group",
+#'                             env = data1, # 环境指标表格
+#'                             envGroup = Gru,# 环境因子分组文件表格
+#'                             # layout = "fruchtermanreingold",
+#'                             path = path,# 结果文件存储路径
+#'                             fill = "Phylum", # 出图点填充颜色用什么值
+#'                             size = "igraph.degree", # 出图点大小用什么数据
+#'                             scale = TRUE, # 是否要进行相对丰度标准化
+#'                             bio = TRUE, # 是否做二分网络
+#'                             zipi = F, # 是否计算ZIPI
+#'                             step = 100, # 随机网络抽样的次数
+#'                             width = 18,
+#'                             label = TRUE,
+#'                             height = 10
+#' )
+#' @return list which contains OTU correlation matrix
+#' @author Contact: Tao Wen \email{2018203048@@njau.edu.cn} Jun Yuan \email{junyuan@@njau.edu.cn} Penghao Xie \email{2019103106@@njau.edu.cn}
+#' @references
+#'
+#' Yuan J, Zhao J, Wen T, Zhao M, Li R, Goossens P, Huang Q, Bai Y, Vivanco JM, Kowalchuk GA, Berendsen RL, Shen Q
+#' Root exudates drive the soil-borne legacy of aboveground pathogen infection
+#' Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
+#' @export
 
-
-#-今日攻克巨大函数环境因子和微生物群落互作关系
-
-# otu = NULL
-# tax = NULL
-# map = NULL
-# ps = ps.merge
-# lab = NULL
-# N = 0
-# r.threshold = 0.6# 相关阈值
-# p.threshold = 0.05
-#
-# label = FALSE
-# group = "Group"
-# env = data1
-# envGroup = Gru
-# method = "spearman"
-# layout = "fruchtermanreingold"
-# path = Envnetplot
-# fill = "Phylum"# 出图点填充颜色用什么值
-# size = "igraph.degree" # 出图点大小用什么数据
-# scale = TRUE # 是否要进行相对丰度标准化
-# bio = T # 是否做二分网络
-# zipi = FALSE # 是否计算ZIPI
-# step = 100
-# width = 8
-# height = 6
-# big = TRUE
-# select_layout = TRUE
-# layout_net = "model_maptree"
-# clu_method = "cluster_fast_greedy"
 
 
 
@@ -120,7 +160,6 @@ corBionetwork = function(otu = NULL,
         }
 
 
-        result <- ggClusterNet::corBiostripe(data =  env_sub,group = envGroup,ps = ps_sub,r.threshold = r.threshold, p.threshold = p.threshold, method = method)
         #-- extract cor matrix
         occor.r = result[[1]]
         tax = as.data.frame((ggClusterNet::vegan_tax(ps_sub)))

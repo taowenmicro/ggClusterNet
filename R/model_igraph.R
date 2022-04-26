@@ -1,4 +1,4 @@
-#' # The algorithm iigraph network layout. while, it saves time and the calculation speed is faster,This is the upgraded version.
+#' # The algorithm igraph network layout. while, it saves time and the calculation speed is faster,This is the upgraded version.
 #'
 #' @title This is the upgraded version.model_Gephi.2:The algorithm imitate Gephi's network layout. while, it saves time and the calculation speed is faster
 #' @description Enter correlation matrix, calculate network modules, and Calculate the coordinates of the node.
@@ -15,7 +15,7 @@
 #' }
 #' @examples
 #' data(ps)
-#' result = corMicro (ps = ps,N = 0.02,r.threshold=0.8,p.threshold=0.05,method = "pearson")
+#' result = corMicro (ps = ps,N = 100,r.threshold=0.8,p.threshold=0.05,method = "pearson")
 #' #Extract correlation matrix
 #' cor = result[[1]]
 #' # building the node group

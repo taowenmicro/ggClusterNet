@@ -79,7 +79,11 @@ Microbial related network
 }
 \examples{
 data(ps)
-result = network (ps = ps,N = 0.001,r.threshold=0.6,p.threshold=0.05,label = FALSE,path = path ,zipi = TRUE)
+path = "./netowrk/"
+dir.create(path)
+result = network.2(ps = ps,N = 100,r.threshold=0.6,big = T,
+                   select_layout = T,
+                   p.threshold=0.05,label = FALSE,path = path ,zipi = F)
 result[[1]]
 result[[2]]
 }

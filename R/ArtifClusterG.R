@@ -6,7 +6,7 @@
 #' @param da The coordinates of each submodule
 #' @examples
 #' data(ps)
-#' result = corMicro (ps = ps,N = 0.02,r.threshold=0.8,p.threshold=0.05,method = "pearson")
+#' result = corMicro (ps = ps,N = 100,r.threshold=0.8,p.threshold=0.05,method = "pearson")
 #' #Extract correlation matrix
 #' cor = result[[1]]
 #' # Extract taxonomy table
@@ -14,6 +14,8 @@
 #' # set group of experimental
 #' netClu = data.frame(ID = row.names(tax_table),group =rep(1:5,length(row.names(tax_table)))[1:length(row.names(tax_table))] )
 #' netClu$group = as.factor(netClu$group)
+#' tax_table = ps_net %>% vegan_tax() %>%
+#' as.data.frame()
 #' xs = as.data.frame(table(netClu$group))
 #' # set the radicus
 #' r = rep(4,length(xs$Freq))

@@ -122,7 +122,8 @@ corBiostripeBig = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p
     adpcor<-mtadj$adjp[order(mtadj$index),2]
     occor.p<-matrix(adpcor,dim(t(x)/colSums(x))[2])
     occor.r<-occor$cor
-
+    #-filter--cor value
+    occor.r[occor.p > p.threshold|abs(occor.r)<r.threshold] = 0
 
     tax = as.data.frame((vegan_tax(ps)))
     head(tax)
@@ -156,6 +157,8 @@ corBiostripeBig = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p
     }
 
   }
+
+
   return(list(occor.r, method, occor.p, A))
 
 }

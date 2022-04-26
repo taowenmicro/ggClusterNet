@@ -19,7 +19,7 @@ Construct igraph and tidygraph object
 }
 \examples{
 data(ps)
-result = corMicro (ps = ps,N = 0.02,r.threshold=0.8,p.threshold=0.05,method = "pearson")
+result = corMicro (ps = ps,N = 100,r.threshold=0.8,p.threshold=0.05,method = "pearson")
 #Extract correlation matrix
 cor = result[[1]]
 # nodeEdge function generates nodes and edge files

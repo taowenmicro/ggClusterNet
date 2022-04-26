@@ -6,7 +6,6 @@
 #' @param r.threshold The defult, r.threshold=0.6, it represents the correlation that the absolute value
 #'  of the correlation threshold is greater than 0.6. the value range of correlation threshold from 0 to 1.
 #' @param p.threshold The defult, p.threshold=0.05, it represents significance threshold below 0.05.
-#' @param big culculate big network TURE or FALSE
 #' @param select_layout  TURE or FALSE
 #' @param layout_net defult "model_maptree"
 #' @param method method for Correlation calculation,method="pearson" is the default value. The alternatives to be passed to cor are "spearman" and "kendall".
@@ -24,7 +23,11 @@
 #' @param big TRUE or FALSE the number of micro data was so many (> 300),you can chose TREU
 #' @examples
 #' data(ps)
-#' result = network (ps = ps,N = 0.001,r.threshold=0.6,p.threshold=0.05,label = FALSE,path = path ,zipi = TRUE)
+#' path = "./netowrk/"
+#' dir.create(path)
+#' result = network.2(ps = ps,N = 100,r.threshold=0.6,big = T,
+#'                    select_layout = T,
+#'                    p.threshold=0.05,label = FALSE,path = path ,zipi = F)
 #' result[[1]]
 #' result[[2]]
 #' @return list which contains OTU correlation matrix
@@ -114,7 +117,7 @@ network.2 = function(
         model = FALSE,
         method = clu_method)
 
-    }else if(select_layout) {
+    }else {
       result2 <- model_Gephi.2(cor = cor,
                                method = clu_method,
                                seed = 12

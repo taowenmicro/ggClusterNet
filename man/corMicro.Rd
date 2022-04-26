@@ -42,7 +42,7 @@ Correlation network calculation of microbial community data
 }
 \examples{
 data(ps)
-result <- corMicro(ps = ps,N = 0.02,r.threshold=0.6,p.threshold=0.05,method = "pearson")
+result <- corMicro(ps = ps,N = 100,r.threshold=0.6,p.threshold=0.05,method = "pearson")
 # extract cor matrix
 cor = result[[1]]
 }

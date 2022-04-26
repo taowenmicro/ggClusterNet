@@ -22,17 +22,9 @@ Add annotation information to network nodes
 \examples{
 data(ps)
 # Calculate the correlation network of microbial community data.Generate 4 lists
-result = corMicro (ps = ps,N = 0.02,r.threshold=0.8,p.threshold=0.05,method = "pearson")
+result = corMicro (ps = ps,N = 100,r.threshold=0.8,p.threshold=0.05,method = "pearson")
 # Extract phyloseq object from result
 ps_net = result[[3]]
-# Extract otu_table from ps_net
-vegan_otu <-  function(physeq){
-OTU <-  otu_table(physeq)
-if(taxa_are_rows(OTU)){
-  OTU <-  t(OTU)
-}
-return(as(OTU,"matrix"))
-}
 otu_table = as.data.frame(t(vegan_otu(ps_net)))
 Extract tax_table from ps_net
 vegan_tax <-  function(physeq){
