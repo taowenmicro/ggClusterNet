@@ -15,6 +15,7 @@ network.2(
   layout_net = "model_maptree",
   r.threshold = 0.6,
   p.threshold = 0.05,
+  maxnode = 2,
   method = "spearman",
   label = FALSE,
   lab = "elements",

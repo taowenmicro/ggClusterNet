@@ -53,6 +53,7 @@ network.2 = function(
                    layout_net = "model_maptree",
                    r.threshold = 0.6,
                    p.threshold = 0.05,
+  maxnode = 2,
                    method = "spearman",
                    label = FALSE,
                    lab = "elements",
@@ -169,7 +170,7 @@ network.2 = function(
       # geom_text_repel(aes(X1, X2,label = elements),pch = 21, data = nodeG) +
       # geom_text(aes(X1, X2,label = elements),pch = 21, data = nodeG) +
       scale_colour_manual(values = c("#6D98B5","#D48852")) +
-      scale_size(range = c(0.8, 2)) +
+      scale_size(range = c(0.8, maxnode)) +
       scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
       theme(panel.background = element_blank(),
             plot.title = element_text(hjust = 0.5)
@@ -188,7 +189,7 @@ network.2 = function(
       # geom_text_repel(aes(X1, X2,label = elements),pch = 21, data = nodeG) +
       # geom_text(aes(X1, X2,label = elements),pch = 21, data = nodeG) +
       scale_colour_manual(values = c("#6D98B5","#D48852")) +
-      scale_size(range = c(0.8,2)) +
+      scale_size(range = c(0.8,maxnode)) +
       scale_x_continuous(breaks = NULL) +
       scale_y_continuous(breaks = NULL) +
       theme(panel.background = element_blank(),
