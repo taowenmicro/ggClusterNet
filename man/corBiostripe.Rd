@@ -38,10 +38,10 @@ result <- corMicro(ps = ps,N = 0.02,r.threshold=0.6,p.threshold=0.05,method = "p
 cor = result[[1]]
 }
 \references{
-Yuan J, Zhao J, Wen T, Zhao M, Li R, Goossens P, Huang Q, Bai Y, Vivanco JM, Kowalchuk GA, Berendsen RL, Shen Q
-Root exudates drive the soil-borne legacy of aboveground pathogen infection
-Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
+Tao Wen#, Penghao Xie#, Shengdie Yang, Guoqing Niu, Xiaoyu Liu, Zhexu Ding, Chao Xue, Yong-Xin Liu *, Qirong Shen, Jun Yuan*
+ggClusterNet: an R package for microbiome network analysis and modularity-based multiple network layouts
+iMeta 2022,DOI: \url{doi: 10.1002/imt2.32}
 }
 \author{
-Contact: Tao Wen \email{2018203048@njau.edu.cn} Jun Yuan \email{junyuan@njau.edu.cn} Penghao Xie \email{2019103106@njau.edu.cn}
+Contact: Tao Wen \email{taowen@njau.edu.cn} Penghao Xie \email{2019103106@njau.edu.cn} yongxin liu \email{yxliu@genetics.ac.cn} Jun Yuan \email{junyuan@njau.edu.cn}
 }

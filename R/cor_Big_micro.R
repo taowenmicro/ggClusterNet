@@ -1,7 +1,26 @@
 
-
-
-# result= cor_Big_micro(ps = ps,N = 0,p.threshold = 0.05,r.threshold = 0.9,scale = FALSE)
+#' Correlation network calculation of big microbial community data
+#'
+#' @param ps phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.
+#' @param N filter OTU tables by abundance.The defult, N=0, extract the top N number relative abundance of OTU.
+#' @param r.threshold The defult, r.threshold=0.6, it represents the correlation that the absolute value
+#'  of the correlation threshold is greater than 0.6. the value range of correlation threshold from 0 to 1.
+#' @param p.threshold The defult, p.threshold=0.05, it represents significance threshold below 0.05.
+#' @param method method for Correlation calculation,method="pearson" is the default value.
+#' The alternatives to be passed to cor are "spearman" and "kendall".
+#' @examples
+#' data(ps)
+#' result <- cor_Big_micro(ps = ps,N = 0,p.threshold = 0.05,r.threshold = 0.9,scale = FALSE)
+#' # extract cor matrix
+#' cor = result[[1]]
+#' @return list which contains OTU correlation matrix
+#' @author Contact: Tao Wen \email{taowen@@njau.edu.cn} Penghao Xie \email{2019103106@@njau.edu.cn} yongxin liu \email{yxliu@@genetics.ac.cn} Jun Yuan \email{junyuan@@njau.edu.cn}
+#' @references
+#'
+#' Tao Wen#, Penghao Xie#, Shengdie Yang, Guoqing Niu, Xiaoyu Liu, Zhexu Ding, Chao Xue, Yong-Xin Liu *, Qirong Shen, Jun Yuan*
+#' ggClusterNet: an R package for microbiome network analysis and modularity-based multiple network layouts
+#' iMeta 2022,DOI: \url{doi: 10.1002/imt2.32}
+#' @export
 
 
 cor_Big_micro = function(
