@@ -31,7 +31,9 @@ corBionetwork(
   big = TRUE,
   select_layout = TRUE,
   layout_net = "model_maptree",
-  clu_method = "cluster_fast_greedy"
+  clu_method = "cluster_fast_greedy",
+  minsize = 4,
+  maxsize = 14
 )
 }
 \arguments{

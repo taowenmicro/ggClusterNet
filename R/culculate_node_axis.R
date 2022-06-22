@@ -62,6 +62,14 @@ total_layout = function(cor = cor,layout =layout,method = "cluster_fast_greedy" 
     node = result2[[1]]
   }
 
+  if (layout == "model_maptree2") {
+    result2 <- model_maptree2(cor = cor,
+                             method = method,
+                             seed = 12
+    )
+    node = result2[[1]]
+  }
+
  return(node)
 
 
@@ -71,10 +79,8 @@ total_layout = function(cor = cor,layout =layout,method = "cluster_fast_greedy" 
 group_layout = function(
   cor = cor,
   layout =layout,
-                        netClu = netClu,
-                        sna_layout = "circle"
-                        ){
-
+  netClu = netClu,
+  sna_layout = "circle"){
   if (layout == "randomClusterG") {
     result2 = randomClusterG (cor = cor,nodeGroup =netClu )
     node = result2[[1]]
@@ -109,6 +115,28 @@ group_layout = function(
     node = result2[[1]]
     head(node)
   }
+  if (layout == "model_filled_circle") {
+    #-实心圆2
+    result2 = model_filled_circle(cor = cor,
+                                  culxy =TRUE,
+                                  da = NULL,# 数据框，包含x,和y列
+                                  nodeGroup =netClu,
+                                  mi.size = 1,# 最小圆圈的半径，越大半径越大
+                                  zoom = 0.3# 不同模块之间距离
+                                  )
+    node = result2[[1]]
+    head(node)
+  }
+
+  if (layout == "model_maptree_group") {
+    result2 = model_maptree_group (
+      cor = cor,
+      nodeGroup =netClu,
+      seed = 12)
+    node = result2[[1]]
+    head(node)
+  }
+
   return(node)
 
 }

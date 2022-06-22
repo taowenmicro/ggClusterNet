@@ -99,7 +99,9 @@ corBionetwork = function(otu = NULL,
                          big = TRUE,
                          select_layout = TRUE,
                          layout_net = "model_maptree",
-                         clu_method = "cluster_fast_greedy"
+                         clu_method = "cluster_fast_greedy",
+                         minsize = 4,
+                         maxsize = 14
 
                          ){
   dir.create(path)
@@ -277,6 +279,7 @@ corBionetwork = function(otu = NULL,
                                     data = edges, size = 0.3,alpha = 0.5) +
       geom_point(aes(x = X1, y = X2,size = igraph.degree,fill = group),pch = 21, data =  nodeG) +
       scale_colour_brewer(palette = "Set1") +
+      scale_size(range = c(minsize, maxsize)) +
       scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
       labs( title = paste(layout,"network",sep = "_")) + theme_void()
     p0

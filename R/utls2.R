@@ -180,3 +180,37 @@ mergePs_Top_micro <- function(psm = psP,
 
   return(res)
 }
+
+make_igraph = function(cor){
+  corr <- cor
+  # Construct Edge File
+  edges <- data.frame(from = rep(row.names(corr), ncol(corr)),
+                      to = rep(colnames(corr), each = nrow(corr)),
+                      r = as.vector(corr)
+  )
+  # Extract half of the matrix, and remove the diagonal correlation (self related to yourself)
+  edges <- dplyr::filter(edges, as.vector(lower.tri(corr)))
+  colnames(edges)[3] = "weight"
+
+  edges = edges %>% dplyr::filter(weight != 0)
+  #---Set the sign of the edge
+  # E.color <- edges$weight
+  edges$direction <- ifelse(edges$weight>0, "pp",ifelse(edges$weight<0, "np","ns"))
+  node = data.frame(name = unique(c(as.character(edges$from),as.character( edges$to))))
+  row.names(node) = node$name
+  # Output igraph object
+  igraph  = igraph::graph_from_data_frame(edges, directed = FALSE, vertices = node)
+  return(igraph)
+}
+
+
+remove_rankID = function(taxtab){
+  taxtab$Kingdom = gsub("d__","",taxtab$Kingdom)
+  taxtab$Phylum = gsub("p__","",taxtab$Phylum)
+  taxtab$Class = gsub("c__","",taxtab$Class)
+  taxtab$Order = gsub("o__","",taxtab$Order)
+  taxtab$Family = gsub("f__","",taxtab$Family)
+  taxtab$Genus = gsub("g__","",taxtab$Genus)
+  taxtab$Species = gsub("s__","",taxtab$Species)
+  return(taxtab)
+}

@@ -52,9 +52,9 @@ ZiPiPlot = function(igraph = igraph,method = "cluster_fast_greedy"){
 
   taxa.roles <- na.omit(taxa.roles)   # remove NA values
   taxa.roles[which(taxa.roles$z < 2.5 & taxa.roles$p < 0.62),'roles'] <- 'Peripherals'
-  taxa.roles[which(taxa.roles$z < 2.5 & taxa.roles$p > 0.62),'roles'] <- 'Connectors'
-  taxa.roles[which(taxa.roles$z > 2.5 & taxa.roles$p < 0.62),'roles'] <- 'Module hubs'
-  taxa.roles[which(taxa.roles$z > 2.5 & taxa.roles$p > 0.62),'roles'] <- 'Network hubs'
+  taxa.roles[which(taxa.roles$z < 2.5 & taxa.roles$p >= 0.62),'roles'] <- 'Connectors'
+  taxa.roles[which(taxa.roles$z >= 2.5 & taxa.roles$p < 0.62),'roles'] <- 'Module hubs'
+  taxa.roles[which(taxa.roles$z >= 2.5 & taxa.roles$p >= 0.62),'roles'] <- 'Network hubs'
 
 
   head(taxa.roles)
