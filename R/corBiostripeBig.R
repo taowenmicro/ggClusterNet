@@ -98,8 +98,9 @@ corBiostripeBig = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p
     otu_table = as.data.frame(t(vegan_otu(ps)))
     cordata <- (data[-1])
     row.names(cordata) = data[[1]]
-
-    if (!is.na(match(colnames(otu_table) , data[[1]]))) {
+    tem = !is.na(match(colnames(otu_table) , data[[1]]))
+    tem = tem %>% unique()
+    if (tem) {
       cordata = t(cordata)
     }
     str(cordata)
