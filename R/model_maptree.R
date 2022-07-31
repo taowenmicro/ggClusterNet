@@ -55,20 +55,21 @@ model_maptree = function(
   node = data.frame(name = unique(c(as.character(edges$from),as.character( edges$to))))
   row.names(node) = node$name
   # Output igraph object
+  # igraph  = make_igraph(corr)
   igraph  = igraph::graph_from_data_frame(edges, directed = FALSE, vertices = node)
-
+  igraph::E(igraph)
   if (method == "cluster_walktrap" ) {
-    fc <- cluster_walktrap(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- cluster_walktrap(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
 
   if (method == "cluster_edge_betweenness" ) {
-    fc <- cluster_edge_betweenness(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- cluster_edge_betweenness(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
   if (method == "cluster_fast_greedy" ) {
-    fc <- cluster_fast_greedy(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- cluster_fast_greedy(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
   if (method == "cluster_spinglass" ) {
-    fc <- cluster_spinglass(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- cluster_spinglass(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
 
   modularity <- modularity(igraph,membership(fc))

@@ -76,7 +76,7 @@ network.2 = function(
   ps = inputMicro(otu,tax,map,tree,ps,group  = group)
   if (scale ) {ps_rela  = scale_micro(ps = ps,method = "rela")} else {ps_rela <- ps}
   mapping = as.data.frame(sample_data(ps_rela))
-  y = matrix(1,nrow = 14,ncol = length(unique(mapping$Group)))
+  y = matrix(1,nrow = 16,ncol = length(unique(mapping$Group)))
   layouts = as.character(unique(mapping$Group))
   mapping$ID = row.names(mapping)
   plots = list()
@@ -225,7 +225,7 @@ network.2 = function(
       ZiPi <- res[[2]]
       write.csv(ZiPi ,paste(path,"/",layout,"ZiPi.csv",sep = ""),row.names = FALSE)
     }
-    netpro_result<- net_properties(igraph)
+    netpro_result<- net_properties.2(igraph)
     colnames(netpro_result)<-layout
 
 
@@ -318,18 +318,25 @@ grobal_pro_compare = function(
   netName = "KO"
 
 ){
+
   rand.g.netpro_result<-c()
+
   for (i in 1:step){
     #####random null model
     rand.g <- erdos.renyi.game(length(V(igraph)), length(E(igraph)),type = c(type))
-    tem_netpro_result<-net_properties(rand.g)
+    tem_netpro_result<-net_properties.2(rand.g)
+    tem_netpro_result[16,1] = 0
+    tem_netpro_result = as.data.frame(tem_netpro_result)
+    tem_netpro_result$value = as.numeric(tem_netpro_result$value)
+    tem_netpro_result = as.matrix(tem_netpro_result)
     rand.g.netpro_result<-cbind(rand.g.netpro_result,tem_netpro_result)
   }
+
 
   result_summary<-cbind(rowMeans(rand.g.netpro_result),apply(rand.g.netpro_result,1,sd))
   colnames(result_summary)<-c("Means","SD")
   head(result_summary)
-  netpro_result<- net_properties(igraph)
+  netpro_result<- net_properties.2(igraph)
   colnames(netpro_result)<- netName
   sum_net = cbind(netpro_result,result_summary)
   return(sum_net)

@@ -50,8 +50,9 @@ corBiostripe = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.th
 
 
   if (is.null(ps)&!is.null(data)&!is.null(group)) {
+    colnames(cordata) = data[[1]]
     cordata <- t(data[-1])
-    colnames(cordata) =data[[1]]
+
     #--- use corr.test function to calculate relation#--------
     occor = psych::corr.test(cordata,use="pairwise",method=method,adjust="fdr",alpha=.05)
     occor.r = occor$r

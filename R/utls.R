@@ -119,4 +119,19 @@ inputMicro = function(otu = NULL,tax = NULL,map = NULL,tree = NULL ,ps = NULL,gr
 }
 
 
+#@
+remove_decimal = function(ps = ps){
+  re = ps %>% vegan_otu()
+  # t()
+  #-保留小数点位数达到取整目的
+  for (i in 1:dim(re)[2]) {
+    re[,i] = round(re[,i],0)
+  }
+  #--将空缺值填充为0
+  re[is.na(re)] <- 0
+  otu_table(ps) = otu_table(as.matrix(t(re)),taxa_are_rows = TRUE)
+  return(ps)
+}
+
+
 

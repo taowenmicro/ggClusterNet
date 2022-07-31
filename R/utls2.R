@@ -90,6 +90,47 @@ filter_OTU_ps <- function(ps = ps,Top = NULL
 }
 
 
+#' filter_microbiome data upper
+#'
+#' @title filter microbiome data
+#' @description filter microbiome data
+#' @param ps phyloseq abject containg microbiome data
+#' @param  filter number or percent of tax or OTU
+#' @examples
+#' data(ps)
+#' ps_sub = filter_OTU_ps2(ps = ps,filter = 100)
+# library(ggClusterNet)
+
+# library(ggClusterNet)
+# data(ps)
+filter_OTU_ps2 <- function(ps = ps,filter = NULL
+){
+  if (!is.null(filter)&filter != 0& filter > 1) {
+    ps_rela  = phyloseq::transform_sample_counts(ps, function(x) x / sum(x) )
+    # otu table
+    otu_table = as.data.frame(t(vegan_otu(ps_rela)))
+    otu_table$mean = rowMeans(otu_table)
+    otu_table$ID = row.names(otu_table)
+
+    otu_table<- dplyr::arrange(otu_table, desc(mean))
+    subtab = head(otu_table,filter)
+    otu_table2 = as.data.frame(t(vegan_otu(ps)))
+    phyloseq::otu_table(ps) = phyloseq::otu_table(as.matrix(otu_table2[subtab$ID,]),taxa_are_rows = TRUE)
+  } else if(filter == 0){
+    ps = ps
+  } else if (filter>0 & filter < 1){
+    tem = ps %>%
+      phyloseq::transform_sample_counts(function(x) x / sum(x) ) %>%
+      filter_taxa(function(x) sum(x ) > filter , TRUE) %>%
+      vegan_otu() %>%
+      t()
+    phyloseq::otu_table(ps) =
+      phyloseq::otu_table(as.matrix(otu_table2[row.names(tem),]),taxa_are_rows = TRUE)
+
+  }
+
+  return(ps)
+}
 
 selectlayout <- function(m,layout = "fruchtermanreingold"){
   if (layout == "fruchtermanreingold") {
@@ -203,9 +244,22 @@ make_igraph = function(cor){
   return(igraph)
 }
 
+# library(ggClusterNet)
+# library(phyloseq)
+# library(tidyverse)
+# data(ps)
+#
+# tax = ps %>% vegan_tax() %>%
+#   as.data.frame()
+# head(tax)
+#
+# tax = remove_rankID(tax)
+# tax_table(ps) = tax
+
 
 remove_rankID = function(taxtab){
   taxtab$Kingdom = gsub("d__","",taxtab$Kingdom)
+  taxtab$Kingdom = gsub("k__","",taxtab$Kingdom)
   taxtab$Phylum = gsub("p__","",taxtab$Phylum)
   taxtab$Class = gsub("c__","",taxtab$Class)
   taxtab$Order = gsub("o__","",taxtab$Order)
