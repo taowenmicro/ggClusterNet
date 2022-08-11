@@ -57,10 +57,11 @@ ZiPiPlot = function(igraph = igraph,method = "cluster_fast_greedy"){
   taxa.roles[which(taxa.roles$z >= 2.5 & taxa.roles$p >= 0.62),'roles'] <- 'Network hubs'
 
 
-  head(taxa.roles)
 
-  library(ggrepel)
-  p <- plot_roles2(taxa.roles) + ggrepel::geom_text_repel(data = taxa.roles, aes(x = p, y = z, color = module,label=taxa.roles$label),size=4)#
+  p <- plot_roles2(taxa.roles) +
+    ggrepel::geom_text_repel(data = taxa.roles,
+                             aes(x = p, y = z, color = module,label=taxa.roles$label),size=4)#
+  p
   #geom_text(data = taxa.roles, aes(x = p, y = z, color = module,label=taxa.roles$label),size=4)
   # print(p)
 

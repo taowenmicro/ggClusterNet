@@ -336,5 +336,5 @@ plot_roles2 = function(node.roles, roles.colors=NULL){
   #p <- p + geom_point(data=node.roles, aes(x=p, y=z)) + theme_bw()
   p<-p+theme(strip.background = element_rect(fill = "white"))+
     xlab("Participation Coefficient")+ylab(" Within-module connectivity z-score")
-  return(list(p, taxa.roles))
+  return(p)
 }

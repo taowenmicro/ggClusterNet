@@ -199,8 +199,12 @@ selectlayout <- function(m,layout = "fruchtermanreingold"){
 mergePs_Top_micro <- function(psm = psP,
                               Top = 10,
                               j = NULL){
-  otu = otu_table(psm)
-  tax = tax_table(psm)
+
+  res <- psm %>%
+    ggClusterNet::tax_glom_wt(ranks = j)
+
+  otu = otu_table(res)
+  tax = tax_table(res)
 
   if (is.null(j)) {
     j = ncol(tax)
@@ -214,12 +218,12 @@ mergePs_Top_micro <- function(psm = psP,
       tax[i,j]= "others"
     }
   }
-  phyloseq::tax_table(psm)= tax
-
-  res <- psm %>%
+  phyloseq::tax_table(res)= tax
+  res2 <- res %>%
     ggClusterNet::tax_glom_wt(ranks = j)
 
-  return(res)
+
+  return(res2)
 }
 
 make_igraph = function(cor){

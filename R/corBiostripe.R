@@ -27,6 +27,7 @@ corBiostripe = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.th
 
   if (is.null(data)&is.null(group)&!is.null(ps)) {
     otu_table = as.data.frame(t(vegan_otu(ps)))
+    tem = otu_table
     #--- use corr.test function to calculate relation#--------
     occor = psych::corr.test(t(otu_table),use="pairwise",method=method,adjust="fdr",alpha=.05)
     occor.r = occor$r
@@ -52,7 +53,7 @@ corBiostripe = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.th
   if (is.null(ps)&!is.null(data)&!is.null(group)) {
     colnames(cordata) = data[[1]]
     cordata <- t(data[-1])
-
+    tem = cordata
     #--- use corr.test function to calculate relation#--------
     occor = psych::corr.test(cordata,use="pairwise",method=method,adjust="fdr",alpha=.05)
     occor.r = occor$r
@@ -87,7 +88,7 @@ corBiostripe = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.th
     dim(otu_table)
     finaldata <- rbind(otu_table,cordata)
 
-
+    tem = t(finaldata) %>% as.data.frame()
     #--- use corr.test function to calculate relation#--------
     occor = psych::corr.test(t(finaldata),use="pairwise",method= method ,adjust="fdr",alpha=.05)
     occor.r = occor$r
@@ -126,7 +127,7 @@ corBiostripe = function(data = NULL, group = NULL,ps = NULL,r.threshold=0.6,p.th
     }
 
   }
-  return(list(occor.r, method, occor.p, A))
+  return(list(occor.r, method, occor.p, A,tem))
 
 }
 

@@ -13,7 +13,7 @@
 #' #Calculate node location
 #' result2 = PolygonRrClusterG(cor = cor,nodeGroup = netClu )
 #' node = result2[[1]]
-#' edge = edgeBuild(cor = cor,plotcord = node)
+#' edge = edgeBuild(cor = cor,node = node)
 #'
 #' @return edge which contains OTU and its coordinates, the correlation of edge between nodes
 #' @author Contact: Tao Wen \email{2018203048@@njau.edu.cn} Jun Yuan \email{junyuan@@njau.edu.cn} Penghao Xie \email{2019103106@@njau.edu.cn}
