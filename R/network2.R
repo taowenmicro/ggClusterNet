@@ -50,10 +50,10 @@ network.2 = function(
                    N = 0,
                    big = FALSE,
                    select_layout = FALSE,
-                   layout_net = "model_maptree",
+                   layout_net = "model_maptree2",
                    r.threshold = 0.6,
                    p.threshold = 0.05,
-  maxnode = 2,
+                    maxnode = 2,
                    method = "spearman",
                    label = FALSE,
                    lab = "elements",
@@ -204,8 +204,8 @@ network.2 = function(
 
 
     if (label == TRUE ) {
-      pnet <- pnet +  geom_text_repel(aes(X1, X2,label=!!sym(lab)),size=4, data = nodeG)
-      pnet1 <- pnet1 +  geom_text_repel(aes(X1, X2,label=!!sym(lab)),size=4, data = nodeG)
+      pnet <- pnet +  ggrepel::geom_text_repel(aes(X1, X2,label=!!sym(lab)),size=4, data = nodeG)
+      pnet1 <- pnet1 +  ggrepel::geom_text_repel(aes(X1, X2,label=!!sym(lab)),size=4, data = nodeG)
     }
 
     plotname = paste(path,"/network",layout,".pdf",sep = "")

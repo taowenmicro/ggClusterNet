@@ -1,4 +1,4 @@
-
+# igraph = tem.g
 net_properties.2 <-function(igraph, n.hub = FALSE
 ){
   # igraph.weight <- E(igraph)$weight
@@ -76,7 +76,7 @@ net_properties.2 <-function(igraph, n.hub = FALSE
     modularity <- modularity(net,membership(fc))
     return(modularity)
   }
-
+  # net = igraph
   mod1 = modularity_igraph(igraph,method = "cluster_walktrap")
   rand.g <- erdos.renyi.game(length(V(igraph)), length(E(igraph)),type = "gnm")
   mod2 = modularity_igraph(rand.g,method = "cluster_walktrap")

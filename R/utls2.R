@@ -272,3 +272,117 @@ remove_rankID = function(taxtab){
   taxtab$Species = gsub("s__","",taxtab$Species)
   return(taxtab)
 }
+
+# ps0 = change.OTU.name.ps(ps0)
+change.OTU.name.ps = function(ps0 = ps){
+  otu = ps0 %>% vegan_otu() %>% t() %>%
+    as.data.frame()
+  head(otu)
+  rep = row.names(otu)
+  row.names(otu) = paste("ASV_",1:nrow(otu),sep = "")
+
+  tax = ps0 %>% vegan_tax() %>%
+    as.data.frame()
+  row.names(tax) = paste("ASV_",1:nrow(tax),sep = "")
+  head(tax)
+  library(Biostrings)
+
+  tree = phy_tree(ps0)
+  match(tree$tip.label,rep)
+
+  tree$tip.label =  paste("ASV_",1:length(tree$tip.label),sep = "")
+
+  ps = phyloseq(
+    otu_table(as.matrix(otu),taxa_are_rows =TRUE),
+    tax_table(as.matrix(tax)),
+    sample_data(ps0),
+    phy_tree(tree)
+  )
+  return(ps)
+}
+
+
+
+
+# library(ggClusterNet)
+# data(ps)
+# subset_samples.wt( ps = ps, Group = "Group",id = c("KO"))
+
+subset_samples.wt = function(
+    ps,
+    Group,
+    id,
+    opst = F
+){
+
+  map = phyloseq::sample_data(ps)
+  tem = map[,Group][[1]]
+  tem2 = match(map[,Group][[1]],id) == 1
+  if (opst == FALSE) {
+    map1 = map[!is.na(tem2),]
+  } else if(opst ==TRUE) {
+    map1 = map[is.na(tem2),]
+  }
+
+  sample_data(ps) = map1
+  return(ps)
+}
+
+# subset_taxa.wt(ps = ps,rank = "OTU",id = "ASV_1")
+
+subset_taxa.wt = function(
+    ps,
+    rank,
+    id,
+    opst = F
+){
+
+
+
+  if (opst == FALSE) {
+    if (rank %in% colnames(phyloseq::tax_table(ps))) {
+
+      tax = ps %>%
+        ggClusterNet::vegan_tax() %>%
+        as.data.frame()
+
+      tem = tax[,rank]
+      tem2 = match(tax[,rank],id) == 1
+      tax1 = tax[!is.na(tem2),]
+      phyloseq::tax_table(ps) = phyloseq::tax_table(as.matrix(tax1))
+    } else if(rank %in% c("ASV","OTU","Zotu","ZOTU")){
+      otu = ps %>% vegan_otu() %>% t() %>% as.data.frame()
+      otu = otu[id,]
+      otu1 = otu[row.names(otu) != "NA",]
+      phyloseq::otu_table(ps) =  phyloseq::otu_table(as.matrix(otu1),taxa_are_rows = TRUE)
+    } else {
+      print("No action")
+    }
+  } else if(opst ==TRUE) {
+    # opst
+    if (rank %in% colnames(phyloseq::tax_table(ps))) {
+
+      tax = ps %>%
+        ggClusterNet::vegan_tax() %>%
+        as.data.frame()
+
+      tem = tax[,rank]
+      tem2 = match(tax[,rank],id) == 1
+      tax1 = tax[is.na(tem2),]
+      phyloseq::tax_table(ps) = phyloseq::tax_table(as.matrix(tax1))
+    } else if(rank %in% c("ASV","OTU","Zotu","ZOTU")){
+      otu = ps %>% vegan_otu() %>% t() %>% as.data.frame()
+      otu = otu[id,]
+      otu1 = otu[row.names(otu) == "NA",]
+      phyloseq::otu_table(ps) =  phyloseq::otu_table(as.matrix(otu1),taxa_are_rows = TRUE)
+    } else {
+      print("No action")
+    }
+
+  }
+
+  return(ps)
+}
+
+
+
