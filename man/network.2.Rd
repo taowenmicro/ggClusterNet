@@ -12,7 +12,7 @@ network.2(
   N = 0,
   big = FALSE,
   select_layout = FALSE,
-  layout_net = "model_maptree",
+  layout_net = "model_maptree2",
   r.threshold = 0.6,
   p.threshold = 0.05,
   maxnode = 2,

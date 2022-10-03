@@ -28,7 +28,7 @@ netClu$group = as.factor(netClu$group)
 #Calculate node location
 result2 = PolygonRrClusterG(cor = cor,nodeGroup = netClu )
 node = result2[[1]]
-edge = edgeBuild(cor = cor,plotcord = node)
+edge = edgeBuild(cor = cor,node = node)
 
 }
 \references{
