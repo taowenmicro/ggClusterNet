@@ -125,6 +125,17 @@ model_maptree2 = function(
     dplyr::select(x,y,name)
   colnames(node) = c("X1","X2", "elements")
   row.names(node) = node$elements
-  return(list(node,netClu2))
+
+  branch = data %>% dplyr::filter(leaf != TRUE ) %>%
+    dplyr::select(x,y,name)
+  colnames(branch) = c("X1","X2", "elements")
+  row.names(branch) = branch$elements
+  colnames(branch)[1:2] = c("x","y")
+  branch$elements = gsub("model_","",branch$elements)
+  row.names(branch) = branch$elements
+
+
+
+  return(list(node,netClu2,branch))
 }
 
