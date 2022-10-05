@@ -385,4 +385,12 @@ subset_taxa.wt = function(
 }
 
 
+change.rank.name = function(ps){
+  tax = ps %>% vegan_tax() %>%
+    as.data.frame()
+  colnames(tax) =  c("Kingdom","Phylum","Class","Order","Family","Genus","Species")
+  tax_table(ps) = as.matrix(tax)
+  return(ps)
+}
+
 
