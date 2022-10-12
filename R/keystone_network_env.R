@@ -62,10 +62,10 @@ net_properties.4 <-function(igraph, n.hub = FALSE
   # igraph.weight <- E(igraph)$weight
   # network property
   # The size of the graph (number of edges)
-  num.edges <- length(E(igraph))
+  num.edges <- length(igraph::E(igraph))
   num.edges
   #  Order (number of vertices) of a graph
-  num.vertices <- length(V(igraph))# length(diversity(igraph, weights = NULL, vids = 	V(igraph)))
+  num.vertices <- length(igraph::V(igraph))# length(diversity(igraph, weights = NULL, vids = 	V(igraph)))
   num.vertices
 
   connectance <- edge_density(igraph,loops=FALSE)
@@ -74,9 +74,9 @@ net_properties.4 <-function(igraph, n.hub = FALSE
   average.degree <- mean(igraph::degree(igraph))# 或者为2M/N,其中M 和N 分别表示网络的边数和节点数。
   average.degree
   # (Average path length)
-  if (!is.null(E(igraph)$weight)) {
-    igraph.weight <- E(igraph)$weight
-    E(igraph)$weight = abs(E(igraph)$weight)
+  if (!is.null(igraph::E(igraph)$weight)) {
+    igraph.weight <- igraph::E(igraph)$weight
+    igraph::E(igraph)$weight = abs(igraph::E(igraph)$weight)
   }
 
   average.path.length <- average.path.length(igraph) # 同mean_distance(igraph) # mean_distance calculates the average path length in a graph
@@ -87,8 +87,8 @@ net_properties.4 <-function(igraph, n.hub = FALSE
   diameter
 
 
-  if (!is.null(E(igraph)$weight)) {
-    E(igraph)$weight = igraph.weight
+  if (!is.null(igraph::E(igraph)$weight)) {
+    igraph::E(igraph)$weight = igraph.weight
   }
   #  edge connectivity / group adhesion
   edge.connectivity <- edge_connectivity(igraph)
@@ -108,7 +108,7 @@ net_properties.4 <-function(igraph, n.hub = FALSE
   # (Closeness centralization)
   centralization.closeness <- centralization.closeness(igraph)$centralization
   centralization.closeness
-  if (!is.null(E(igraph)$weight)) {
+  if (!is.null(igraph::E(igraph)$weight)) {
     num.pos.edges<-sum(igraph.weight>0)# number of postive correlation
     num.neg.edges<-sum(igraph.weight<0)# number of negative correlation
   }else{
@@ -136,7 +136,7 @@ net_properties.4 <-function(igraph, n.hub = FALSE
   }
 
   mod1 = modularity_igraph(igraph,method = "cluster_walktrap")
-  rand.g <- erdos.renyi.game(length(V(igraph)), length(E(igraph)),type = "gnm")
+  rand.g <- erdos.renyi.game(length(igraph::V(igraph)), length(igraph::E(igraph)),type = "gnm")
   mod2 = modularity_igraph(rand.g,method = "cluster_walktrap")
 
   RM = (mod1-mod2)/mod2
@@ -181,6 +181,7 @@ net_properties.4 <-function(igraph, n.hub = FALSE
   colnames(igraph.network.pro)<- "value"
   return(igraph.network.pro)
 }
+
 
 
 

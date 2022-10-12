@@ -1,5 +1,22 @@
+# library(tidyfst)
 
-#--模块比较
+
+# result = model_similar(ps = ps,
+#                        r.threshold= 0.8,
+#                        p.threshold=0.05,
+#                        Top = 500,
+#                        method = "rela",
+#                        cls.med = "cluster_fast_greedy",
+#                        rm.num = 3,
+#                        padj = F)
+#
+# dat1 = result[[1]]
+# head(dat1)
+#
+# dat2 = result[[2]]
+# head(dat2)
+
+
 
 # res = module.compare.m(
 #   ps = ps,
@@ -41,7 +58,7 @@ module.compare.m = function(
   head(tax)
 
 
-  #-判断相同模块#----
+
   i= 1
 
   for (i in 1:length(id)) {
@@ -84,7 +101,7 @@ module.compare.m = function(
   node_table2  = dat
   head(node_table2)
   node_table2$Group %>% table()
-  library(tidyfst)
+
   dat2 = model_compare(
     node_table2 = dat,
     n = n,
