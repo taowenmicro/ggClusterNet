@@ -41,6 +41,7 @@ net.property.module.env = function(
     as.data.frame() %>%
     dplyr::arrange(desc(Freq))
   colnames(tem) = c("Model","OTU.num")
+
   # head(tem)
   if (length(select.mod) == 1 & is.numeric(select.mod)) {
     select.mod.name = tem$Model[1:select.mod]
@@ -107,6 +108,7 @@ net.property.module.env = function(
   subenv = env %>% dplyr::select(id,everything()) %>% dplyr::select(id,select.env )
   # head(data)
   tab = data %>% left_join(subenv,by = "id")
+  modenv = tab
   # head(tab)
   # library(reshape2)
   mtcars2 = reshape2::melt(tab, id.vars=c(select.env,"group","id"))
@@ -133,6 +135,7 @@ net.property.module.env = function(
   mtcars2 = reshape2::melt(tab, id.vars=c(select.env,"id"))
   lab = mean(mtcars2[,select.env])
   # head(mtcars2)
+  preoptab = tab
 
   p0_1 = ggplot2::ggplot(mtcars2,aes(x= value,!!sym(select.env), colour=variable)) +
     ggplot2::geom_point() +
@@ -143,7 +146,12 @@ net.property.module.env = function(
     theme_classic()
 
   # p0_1
-  return(list(p1_1,p0_1,dat.f))
+  plotdat = list(
+    model.env = modenv,
+    preopertites.env = preoptab
+
+  )
+  return(list(p1_1,p0_1,dat.f,plotdat))
 }
 
 
@@ -360,7 +368,7 @@ module_alpha = function(
   )
   index = c("Shannon","Inv_Simpson","Pielou_evenness","Simpson_evenness" ,"Richness" ,"Chao1","ACE" )
   #--多种组合alpha分析和差异分析出图
-  alp = alpha(ps = pst.3,inde="Shannon",group = "Group",Plot = TRUE,
+  alp = ggClusterNet::alpha(ps = pst.3,inde="Shannon",group = "Group",Plot = TRUE,
               sampling = FALSE
   )
   index= alp
@@ -389,6 +397,11 @@ module_alpha = function(
 
   p1_1
 
+  plotdat = list(
+    alpha = data,
+    sigtab = result
+  )
+
 
   #如何升级展示-提取数据用小提琴图展示
   p1_2 = result1[[2]] %>% ggplot(aes(x=group , y=dd )) +
@@ -405,7 +418,7 @@ module_alpha = function(
     )
   p1_2
 
-  return(list(p1_1,p1_2,pst.3))
+  return(list(p1_1,p1_2,pst.3,plotdat))
 }
 
 
@@ -484,6 +497,8 @@ module_composition = function(
     scale_fill_hue() + theme_classic()
   p4_2
 
+  tem1 = result[[2]]
+
   result = barMainplot(ps = pst.2,
                        tran = T,
                        j = j,
@@ -497,11 +512,18 @@ module_composition = function(
   p3_2  <- result[[3]]  +
     scale_fill_hue() + theme_classic()
   p3_2
-
+  tem2 = result[[2]]
   library(patchwork)
   p00 = p4_1|p3_1
   p01 = p4_2|p3_2
-  return(list(p00,p01,pst.2))
+
+  plotdat = list(
+    bundance = tem1,
+    relaabundance = tem2
+
+  )
+
+  return(list(p00,p01,pst.2,plotdat = plotdat))
 }
 
 

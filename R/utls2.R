@@ -372,8 +372,9 @@ subset_taxa.wt = function(
       phyloseq::tax_table(ps) = phyloseq::tax_table(as.matrix(tax1))
     } else if(rank %in% c("ASV","OTU","Zotu","ZOTU")){
       otu = ps %>% vegan_otu() %>% t() %>% as.data.frame()
-      otu = otu[id,]
-      otu1 = otu[row.names(otu) == "NA",]
+      # otu = otu[id,]
+      # otu1 = otu[row.names(otu) != "NA",]
+      otu1 = otu[!row.names(otu) %in% id,]
       phyloseq::otu_table(ps) =  phyloseq::otu_table(as.matrix(otu1),taxa_are_rows = TRUE)
     } else {
       print("No action")
