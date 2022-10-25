@@ -52,6 +52,15 @@ total_layout = function(cor = cor,layout =layout,method = "cluster_fast_greedy" 
     )
     node = result2[[1]]
   }
+
+  if (layout == "model_igraph2") {
+    result2 <- model_igraph2(cor = cor,
+                            method = method,
+                            seed = 12
+    )
+    node = result2[[1]]
+  }
+
   #3
   if (layout == "model_maptree") {
     result2 <- model_maptree(cor = cor,
