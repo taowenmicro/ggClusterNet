@@ -8,6 +8,9 @@
 #' @param p.threshold The defult, p.threshold=0.05, it represents significance threshold below 0.05.
 #' @param method method for Correlation calculation,method="pearson" is the default value.
 #' The alternatives to be passed to cor are "spearman" and "kendall".
+#' @param scale Whether to standardize microbiome data; TRUE or FALSE need selected.
+#' @param p.adj A vector of character strings containing the names of the multiple testing procedures for which adjusted p-values are to be computed. This vector should include any of the following: "Bonferroni", "Holm", "Hochberg", "SidakSS", "SidakSD", "BH", "BY", "ABH", "TSBH".
+#' @param met.scale Microbiome data normalization methods; could be selected by rela, sampling, log,TMM,RLE,upperquartile et al
 #' @examples
 #' data(ps)
 #' result <- cor_Big_micro(ps = ps,N = 0,p.threshold = 0.05,r.threshold = 0.9,scale = FALSE)
@@ -29,12 +32,14 @@ cor_Big_micro2 = function(
     p.threshold = 0.05,
     r.threshold = 0.9,
     scale = FALSE,
-    method = "spearman"
+    method = "spearman",
+    met.scale = "TMM",
+    p.adj = "BH"
 ){
 
   if (scale == TRUE) {
     ps = ps %>%
-      ggClusterNet::scale_micro(method = "TMM")
+      ggClusterNet::scale_micro(method =  met.scale)
   }
   x = ps %>%
     filter_OTU_ps(Top = N) %>%
@@ -48,8 +53,6 @@ cor_Big_micro2 = function(
   ## R value
   occor.r<-occor$cor
   diag(occor.r) <- 0
-  # occor.r[occor.p > 0.05|abs(occor.r)<0.4] = 0
-
   occor.r[occor.p > p.threshold | abs(occor.r)< r.threshold] = 0
   occor.r[is.na(occor.r)]=0
 

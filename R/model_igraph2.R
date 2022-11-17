@@ -42,15 +42,15 @@ model_igraph2 = function(
 
 ){
 
-  igraph <-  graph.adjacency(cor, weighted = TRUE, mode = 'undirected')
+  igraph <-  igraph::graph.adjacency(cor, weighted = TRUE, mode = 'undirected')
   # 删除自相关
-  igraph <- simplify(igraph)
+  igraph <- igraph::simplify(igraph)
   # 删除孤立节点
-  igraph <- delete.vertices(igraph, which(degree(igraph)==0) )
+  igraph <- igraph::delete.vertices(igraph, which(igraph::degree(igraph)==0) )
   # igraph = g1
 
   # 删除自相关
-  igraph <- simplify(igraph)
+  igraph <- igraph::simplify(igraph)
   # # 删除孤立节点
   # g <- delete.vertices(g, which(degree(g)==0) )
   col_g <- "#C1C1C1"
@@ -76,42 +76,42 @@ model_igraph2 = function(
     fc <- cluster_spinglass(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
 
-  V(igraph)$modularity <- membership(fc)
-  V(igraph)$label <- V(igraph)$name
+  V(igraph)$modularity <- igraph::membership(fc)
+  V(igraph)$label <- igraph::V(igraph)$name
   V(igraph)$label <- NA
-  modu_sort <- V(igraph)$modularity %>% table() %>% sort(decreasing = T)
+  modu_sort <- igraph::V(igraph)$modularity %>% table() %>% sort(decreasing = T)
   top_num <- Top_M
   modu_name <- names(modu_sort[1:Top_M])
   modu_cols <- cols[1:length(modu_name)]
   names(modu_cols) <- modu_name
-  V(igraph)$color <- V(igraph)$modularity
-  V(igraph)$color[!(V(igraph)$color %in% modu_name)] <- col_g
-  V(igraph)$color[(V(igraph)$color %in% modu_name)] <- modu_cols[match(V(igraph)$color[(V(igraph)$color %in% modu_name)],modu_name)]
-  V(igraph)$frame.color <- V(igraph)$color
+  igraph::V(igraph)$color <- igraph::V(igraph)$modularity
+  igraph::V(igraph)$color[!(igraph::V(igraph)$color %in% modu_name)] <- col_g
+  igraph::V(igraph)$color[(igraph::V(igraph)$color %in% modu_name)] <- modu_cols[match(igraph::V(igraph)$color[(igraph::V(igraph)$color %in% modu_name)],modu_name)]
+  igraph::V(igraph)$frame.color <- igraph::V(igraph)$color
 
   E(igraph)$color <- col_g
   for ( i in modu_name){
     col_edge <- cols[which(modu_name==i)]
-    otu_same_modu <-V(igraph)$name[which(V(igraph)$modularity==i)]
-    E(igraph)$color[(data.frame(as_edgelist(igraph))$X1 %in% otu_same_modu)&(data.frame(as_edgelist(igraph))$X2 %in% otu_same_modu)] <- col_edge
+    otu_same_modu <-igraph::V(igraph)$name[which(igraph::V(igraph)$modularity==i)]
+    igraph::E(igraph)$color[(data.frame(igraph::as_edgelist(igraph))$X1 %in% otu_same_modu)&(data.frame(igraph::as_edgelist(igraph))$X2 %in% otu_same_modu)] <- col_edge
   }
 
 
 
   # 计算 layout
-  sub_net_layout <- layout_with_fr(igraph, niter=999,grid = 'nogrid')
+  sub_net_layout <- igraph::layout_with_fr(igraph, niter=999,grid = 'nogrid')
   data = as.data.frame(sub_net_layout)
   data$OTU = igraph::get.vertex.attribute(igraph)$name
   colnames(data) = c("X1","X2","elements")
 
-  tem =  V(igraph)$modularity
+  tem =  igraph::V(igraph)$modularity
   tem[!tem %in% modu_name] = "mini_model"
   tem[tem %in% modu_name] = paste("model_",tem[tem %in% modu_name],sep = "")
 
   row.names(data) = data$elements
-  dat = data.frame(orig_model = V(igraph)$modularity,
+  dat = data.frame(orig_model = igraph::V(igraph)$modularity,
                    model = tem,
-                   color = V(igraph)$color,
+                   color = igraph::V(igraph)$color,
                    OTU = igraph::get.vertex.attribute(igraph)$name,
                    X1 = data$X1,
                    X2 = data$X2

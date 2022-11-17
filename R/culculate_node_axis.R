@@ -1,12 +1,21 @@
 
-# node = culculate_node_axis(
-#   cor.matrix = cor,
-#   layout = "model_Gephi.2",
-#   seed = 1,
-#   group = NULL,
-#   model = FALSE,
-#   method = "cluster_fast_greedy")
 
+
+#' Call the network layout algorithm for coordinate calculation
+#'
+#' @title use layout calculated the axis a and y
+#' @description filter microbiome data
+#' @param cor.matrix Correlation matrix
+#' @param  layout network layout algorithm in ggClusterNet
+#' @examples
+#' data(cor)
+#'node = culculate_node_axis(
+#'  cor.matrix = cor,
+#'  layout = "model_Gephi.2",
+#'  seed = 1,
+#'  group = NULL,
+#'  model = FALSE,
+#'  method = "cluster_fast_greedy")
 
 culculate_node_axis = function(
   cor.matrix = cor,

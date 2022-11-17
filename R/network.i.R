@@ -1,5 +1,5 @@
 
-#' Microbial related network
+#' Microbial network only with igraph2 layout
 #'
 #' @param ps phyloseq Object, contains OTU tables, tax table and map table, represented sequences,phylogenetic tree.
 #' @param N filter OTU tables by abundance.The defult, N=0, extract the top N number relative abundance of OTU. e.g 100
@@ -21,11 +21,12 @@
 #' @param ncpus number of cpus used for sparcc
 #' @param layout_net select layout from ggClusterNet
 #' @param big TRUE or FALSE the number of micro data was so many (> 300),you can chose TREU
+#' @param order orders of Groups
 #' @examples
 #' data(ps)
 #' path = "./netowrk/"
 #' dir.create(path)
-#' result = network.2(ps = ps,N = 100,r.threshold=0.6,big = T,
+#' result = network.i(ps = ps,N = 100,r.threshold=0.6,big = T,
 #'                    select_layout = T,
 #'                    p.threshold=0.05,label = FALSE,path = path ,zipi = F)
 #' result[[1]]
@@ -69,7 +70,8 @@ network.i = function(
     ncol = 3,
     nrow = 1,
     R = 10,
-    ncpus = 1
+    ncpus = 1,
+    order = NULL
 ){
 
   #--imput data ---------
@@ -77,7 +79,14 @@ network.i = function(
   if (scale ) {ps_rela  = scale_micro(ps = ps,method = "rela")} else {ps_rela <- ps}
   mapping = as.data.frame(sample_data(ps_rela))
   y = matrix(1,nrow = 16,ncol = length(unique(mapping$Group)))
-  layouts = as.character(unique(mapping$Group))
+
+  if (is.null(order)) {
+    layouts = as.character(unique(mapping$Group))
+  } else{
+    layouts = order
+  }
+
+
   mapping$ID = row.names(mapping)
   plots = list()
   plots1 = list()
@@ -194,7 +203,10 @@ network.i = function(
         theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
         theme(legend.background = element_rect(colour = NA)) +
         theme(panel.background = element_rect(fill = "white",  colour = NA)) +
-        theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank())
+        theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank()) +
+        labs(title = paste(layout,"links:",dim(edge2)[1],"nodes:",dim(dat)[1],sep = ""))
+
+
       p2
 
       plotname = paste(path,"/network_igraph2",layout,".pdf",sep = "")

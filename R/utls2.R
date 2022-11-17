@@ -1,4 +1,3 @@
-
 #' scale_microbiome data
 #'
 #' @title scaling microbiome data
@@ -8,7 +7,6 @@
 #'  et al
 #' @examples
 #' scale_micro(ps = ps,method = "rela")# rela, sampling, log,TMM,RLE,upperquartile
-
 
 scale_micro <- function(ps,
                         method = "rela"
@@ -66,7 +64,7 @@ scale_micro <- function(ps,
 #' @examples
 #' data(ps)
 #' ps_sub = filter_OTU_ps(ps = ps,Top = 100)
-# library(ggClusterNet)
+
 filter_OTU_ps <- function(ps = ps,Top = NULL
 
 ){
@@ -101,8 +99,6 @@ filter_OTU_ps <- function(ps = ps,Top = NULL
 #' ps_sub = filter_OTU_ps2(ps = ps,filter = 100)
 # library(ggClusterNet)
 
-# library(ggClusterNet)
-# data(ps)
 filter_OTU_ps2 <- function(ps = ps,filter = NULL
 ){
   if (!is.null(filter)&filter != 0& filter > 1) {
@@ -386,12 +382,176 @@ subset_taxa.wt = function(
 }
 
 
+
+subset_taxa.wt2 = function(
+    ps,
+    rank,
+    id,
+    opst = F
+){
+
+
+
+  if (opst == FALSE) {
+
+    if (is.null(ps@tax_table)) {
+      otu = ps %>%
+        ggClusterNet::vegan_otu() %>% t() %>%
+        as.data.frame()
+      tax = data.frame(row.names = row.names(otu),ID = row.names(otu) )
+      tax_table(ps) = as.matrix(tax)
+    }
+
+
+    if (rank %in% colnames(phyloseq::tax_table(ps))) {
+
+      tax = ps %>%
+        ggClusterNet::vegan_tax() %>%
+        as.data.frame()
+
+      tem = tax[,rank]
+      tem2 = match(tax[,rank],id) == 1
+      tax1 = tax[!is.na(tem2),]
+      phyloseq::tax_table(ps) = phyloseq::tax_table(as.matrix(tax1))
+    } else if(rank %in% c("ASV","OTU","Zotu","ZOTU")){
+      otu = ps %>% vegan_otu() %>% t() %>% as.data.frame()
+      otu = otu[id,]
+      otu1 = otu[row.names(otu) != "NA",]
+      phyloseq::otu_table(ps) =  phyloseq::otu_table(as.matrix(otu1),taxa_are_rows = TRUE)
+    } else {
+      print("No action")
+    }
+  } else if(opst ==TRUE) {
+    # opst
+    if (rank %in% colnames(phyloseq::tax_table(ps))) {
+
+      tax = ps %>%
+        ggClusterNet::vegan_tax() %>%
+        as.data.frame()
+
+      tem = tax[,rank]
+      tem2 = match(tax[,rank],id) == 1
+      tax1 = tax[is.na(tem2),]
+      phyloseq::tax_table(ps) = phyloseq::tax_table(as.matrix(tax1))
+    } else if(rank %in% c("ASV","OTU","Zotu","ZOTU")){
+      otu = ps %>% vegan_otu() %>% t() %>% as.data.frame()
+      # otu = otu[id,]
+      # otu1 = otu[row.names(otu) != "NA",]
+      otu1 = otu[!row.names(otu) %in% id,]
+      phyloseq::otu_table(ps) =  phyloseq::otu_table(as.matrix(otu1),taxa_are_rows = TRUE)
+    } else {
+      print("No action")
+    }
+
+  }
+
+  return(ps)
+}
+
+
+
 change.rank.name = function(ps){
   tax = ps %>% vegan_tax() %>%
     as.data.frame()
   colnames(tax) =  c("Kingdom","Phylum","Class","Order","Family","Genus","Species")
   tax_table(ps) = as.matrix(tax)
   return(ps)
+}
+
+
+# ps.f = random.add.ps(ps = ps)
+
+random.add.ps = function(ps = ps,add= 6,zoom = 0.3,
+                         addid = "_add"
+                         ){
+  map = sample_data(ps)
+  id = map$Group %>% unique() %>% as.character()
+  A = c()
+  for (i in 1:length(id)){
+    ps.t = ps %>% subset_samples.wt("Group",id[i]) %>%
+      filter_taxa(function(x) sum(x ) > 0 , TRUE)
+    tab = phyloseq::sample_sums(ps.t) %>% mean() %>% round()
+    otu  = phyloseq::rarefy_even_depth(ps.t,sample.size = tab * zoom) %>%
+      filter_taxa(function(x) sum(x ) > 0 , TRUE) %>% vegan_otu() %>% t() %>%
+      as.data.frame()
+
+    head(otu)
+
+    if (dim(otu)[2] >= add) {
+      tab.d = otu[,1:add] %>% rownames_to_column("ID")
+    }
+
+    A[1:add] = id[i]
+
+    if (i == 1) {
+      dat = tab.d
+      B = A
+    } else{
+      dat = dat %>% full_join(tab.d,by = "ID")
+      B = c(B,A)
+    }
+
+    dat2 = dat %>%
+      column_to_rownames("ID")
+  }
+
+  colnames(dat2) = paste(colnames(dat2),addid,sep = "")
+
+  mapadd = data.frame(
+    row.names = colnames(dat2),
+    ID = colnames(dat2),
+    Group = B
+  )
+
+  head(mapadd)
+  head(dat2)
+
+  ps.f = phyloseq(
+    otu_table(as.matrix(dat2),taxa_are_rows = TRUE),
+    sample_data(mapadd),
+    tax_table(ps)
+  )
+  return(ps.f)
+}
+
+
+#--合并ps对象
+# psf = merge_amp.dat(ps.a = ps,
+#                     ps.m = ps.f,
+#                     rank = "OTU")
+
+merge_amp.dat = function(
+    ps.a = ps,
+    ps.m = ps.f,
+    method = "rela",
+    rank = "OTU"
+){
+  #--merge
+  otu1 = ps.a %>% vegan_otu() %>% t() %>%
+    as.data.frame() %>% rownames_to_column("id")
+  head(otu1)
+
+  otu2 = ps.m %>% vegan_otu() %>% t() %>%
+    as.data.frame()%>% rownames_to_column("id")
+  head(otu2)
+
+  otu3 = otu1 %>% inner_join(otu2,by = "id") %>% column_to_rownames("id")
+  head(otu3)
+
+  map1 = ps.a %>% sample_data() %>% as.tibble() %>%
+    select(ID,Group) %>% as.data.frame()
+  map2 = ps.m%>% sample_data() %>% as.tibble() %>%
+    select(ID,Group) %>% as.data.frame()
+  map3 = rbind(map1,map2)
+  row.names(map3) = map3$ID
+  tax3 = ps.a %>% vegan_tax() %>% as.data.frame()
+
+  ps3 = phyloseq::phyloseq(
+    otu_table(as.matrix(as.matrix(otu3)),taxa_are_rows = TRUE) ,
+    tax_table(as.matrix(tax3)),
+    sample_data(map3)
+  )
+  return(ps3)
 }
 
 

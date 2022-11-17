@@ -2,7 +2,7 @@
 % Please edit documentation in R/network.i.R
 \name{network.i}
 \alias{network.i}
-\title{Microbial related network}
+\title{Microbial network only with igraph2 layout}
 \usage{
 network.i(
   otu = NULL,
@@ -31,7 +31,8 @@ network.i(
   ncol = 3,
   nrow = 1,
   R = 10,
-  ncpus = 1
+  ncpus = 1,
+  order = NULL
 )
 }
 \arguments{
@@ -70,19 +71,21 @@ of the correlation threshold is greater than 0.6. the value range of correlation
 
 \item{ncpus}{number of cpus used for sparcc}
 
+\item{order}{orders of Groups}
+
 \item{lay}{layout which network show}
 }
 \value{
 list which contains OTU correlation matrix
 }
 \description{
-Microbial related network
+Microbial network only with igraph2 layout
 }
 \examples{
 data(ps)
 path = "./netowrk/"
 dir.create(path)
-result = network.2(ps = ps,N = 100,r.threshold=0.6,big = T,
+result = network.i(ps = ps,N = 100,r.threshold=0.6,big = T,
                    select_layout = T,
                    p.threshold=0.05,label = FALSE,path = path ,zipi = F)
 result[[1]]
