@@ -156,16 +156,6 @@ net.property.module.env = function(
 
 
 
-
-
-
-
-
-
-
-
-
-
 # dat.f = netproperties.sample(pst = pst,cor = cor)
 
 netproperties.sample = function(
@@ -319,6 +309,8 @@ module_abundance = function(
 #     mod1 = mod1)
 # res[[1]]
 # res[[2]]
+
+
 module_alpha = function(
     ps =ps,
     mod1 = mod1

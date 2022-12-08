@@ -464,7 +464,8 @@ negative.correlation.ratio = function(
   dat = data.frame(ID = id,ratio = B)
 
   p = ggplot(dat) + geom_bar(aes(x = ID,y = ratio,fill = ID),stat =
-                               "identity")
+                               "identity",width = .5) +
+    geom_text(aes(x = ID,y = ratio,label = round(ratio,2)))
   return(list(p,dat))
 }
 
@@ -521,14 +522,13 @@ community.stability = function(
       A[i]= paste("Zeta",tem[1,i],tem[2,i],sep = "_")
     }
     names(tem2) = A
-
     zeta.lev = rep(2,length(A))
-
+    year.windows = list()
+    year.windows[[1]] = tem2
+    names(year.windows) = "2"
   }
 
-  year.windows = list()
-  year.windows[[1]] = tem2
-  names(year.windows) = "2"
+
 
   year.windows
 

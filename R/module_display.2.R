@@ -39,7 +39,8 @@ module_display.2 = function(
     p.threshold=0.05,
     select.mod = c("model_1","model_2","model_3"),
     num = 5,
-    leg.col = 4
+    leg.col = 4,
+    method.clu = "cluster_walktrap"
 ){
 
   pst = pst %>%
@@ -57,7 +58,7 @@ module_display.2 = function(
   head(cor)
 
   #-计算模块
-  result = model_maptree2(cor = cor, method = "cluster_walktrap" )
+  result = model_maptree2(cor = cor, method =  method.clu)
   node = result[[1]]
   netClu = result[[2]]
 

@@ -12,7 +12,7 @@ scale_micro <- function(ps,
                         method = "rela"
                         ){
   if (method == "rela") {
-    ps1  = phyloseq::transform_sample_counts(ps, function(x) x / sum(x) )
+    ps1  = phyloseq::transform_sample_counts(ps, function(x) x / sum(x,na.rm =TRUE) )
 
   }
 
