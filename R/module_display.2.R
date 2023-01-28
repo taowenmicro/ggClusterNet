@@ -210,10 +210,10 @@ module_display.2 = function(
   tab$color
 
   tem = edge %>% left_join(net.s,by = c("OTU_1" = "ID")) %>%
-    rename(group1 = group) %>%
-    select(-degree) %>%
-    left_join(net.s,by = c("OTU_2" = "ID")) %>%
-    rename(group2 = group)
+    dplyr::rename(group1 = group) %>%
+    dplyr::select(-degree) %>%
+    dplyr::left_join(net.s,by = c("OTU_2" = "ID")) %>%
+    dplyr::rename(group2 = group)
   head(tem)
 
   edge2 = tem %>% mutate(color1 = ifelse(group1 == group2,as.character(group1),"acorss")) %>%
