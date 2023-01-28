@@ -25,7 +25,7 @@ ZS.net.module = function(
 ){
 
   result = cor_Big_micro(ps = pst,
-                         N = 0,
+                         N = Top,
                          r.threshold= r.threshold,
                          p.threshold= p.threshold,
                          method = "spearman")
