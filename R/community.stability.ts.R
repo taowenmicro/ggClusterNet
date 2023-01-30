@@ -53,7 +53,12 @@ community.stability.ts = function(
 
   tem1 = treat[,g1] %>% as.matrix() %>% as.vector()
   tem2 = treat[,g2] %>% as.matrix() %>% as.vector()
-  tem3 = treat[,g3] %>% as.matrix() %>% as.vector()
+
+  if (!is.null(g3)) {
+    tem3 = treat[,g3] %>% as.matrix() %>% as.vector()
+  } else{
+    tem3 = NULL
+  }
 
   tem4 = paste(tem3,tem2,tem1,sep = ".")
   tem5 = tem4 %>% table() %>%as.data.frame() %>% .$Freq %>% unique() %>% length()

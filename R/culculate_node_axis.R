@@ -28,7 +28,7 @@ culculate_node_axis = function(
 
   if (is.null(group)) {
     #--total layout
-    node = total_layout(cor = cor.matrix,layout =layout,method = "cluster_fast_greedy" )
+    node = total_layout(cor = cor.matrix,layout =layout,method = method )
   }else{ if (model) {
       netClu  = modulGroup( cor = cor.matrix,cut = 3,method = method )}else{
       netClu = group}
