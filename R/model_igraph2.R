@@ -76,7 +76,7 @@ model_igraph2 = function(
     fc <- igraph::cluster_spinglass(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
 
-  igraph::V(igraph)$modularity <- igraph::membership(fc)
+  igraph::V(igraph)$modularity <- igraph::membership(fc) %>% as.numeric()
   igraph::V(igraph)$label <- igraph::V(igraph)$name
   igraph::V(igraph)$label <- NA
   modu_sort <- igraph::V(igraph)$modularity %>% table() %>% sort(decreasing = T)
@@ -100,7 +100,7 @@ model_igraph2 = function(
 
   # 计算 layout
   sub_net_layout <- igraph::layout_with_fr(igraph, niter=999,grid = 'nogrid')
-  data = as.data.frame(sub_net_layout)
+  data = base::as.data.frame(sub_net_layout)
   data$OTU = igraph::get.vertex.attribute(igraph)$name
   colnames(data) = c("X1","X2","elements")
 
