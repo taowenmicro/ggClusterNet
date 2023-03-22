@@ -57,28 +57,28 @@ model_igraph2 = function(
 
   cols <-  colorRampPalette(RColorBrewer::brewer.pal(11,"Spectral"))(Top_M)
   ## 设置网络的weight，为计算模块性做准备
-  E(igraph)$correlation <- E(igraph)$weight
-  E(igraph)$weight <- abs(E(igraph)$weight)
+  igraph::E(igraph)$correlation <- igraph::E(igraph)$weight
+  igraph::E(igraph)$weight <- abs(igraph::E(igraph)$weight)
 
   ## 计算网络模块
   set.seed(seed)
   if (method == "cluster_walktrap" ) {
-    fc <- cluster_walktrap(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- cluster_walktrap(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
 
   if (method == "cluster_edge_betweenness" ) {
-    fc <- cluster_edge_betweenness(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- cluster_edge_betweenness(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
   if (method == "cluster_fast_greedy" ) {
-    fc <- cluster_fast_greedy(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- cluster_fast_greedy(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
   if (method == "cluster_spinglass" ) {
-    fc <- cluster_spinglass(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- cluster_spinglass(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
 
-  V(igraph)$modularity <- igraph::membership(fc)
-  V(igraph)$label <- igraph::V(igraph)$name
-  V(igraph)$label <- NA
+  igraph::V(igraph)$modularity <- igraph::membership(fc)
+  igraph::V(igraph)$label <- igraph::V(igraph)$name
+  igraph::V(igraph)$label <- NA
   modu_sort <- igraph::V(igraph)$modularity %>% table() %>% sort(decreasing = T)
   top_num <- Top_M
   modu_name <- names(modu_sort[1:Top_M])
