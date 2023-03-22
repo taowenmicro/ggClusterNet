@@ -63,17 +63,17 @@ model_igraph2 = function(
   ## 计算网络模块
   set.seed(seed)
   if (method == "cluster_walktrap" ) {
-    fc <- cluster_walktrap(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- igraph::cluster_walktrap(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
 
   if (method == "cluster_edge_betweenness" ) {
-    fc <- cluster_edge_betweenness(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- igraph::cluster_edge_betweenness(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
   if (method == "cluster_fast_greedy" ) {
-    fc <- cluster_fast_greedy(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- igraph::cluster_fast_greedy(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
   if (method == "cluster_spinglass" ) {
-    fc <- cluster_spinglass(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+    fc <- igraph::cluster_spinglass(igraph,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
 
   igraph::V(igraph)$modularity <- igraph::membership(fc)
@@ -89,7 +89,7 @@ model_igraph2 = function(
   igraph::V(igraph)$color[(igraph::V(igraph)$color %in% modu_name)] <- modu_cols[match(igraph::V(igraph)$color[(igraph::V(igraph)$color %in% modu_name)],modu_name)]
   igraph::V(igraph)$frame.color <- igraph::V(igraph)$color
 
-  E(igraph)$color <- col_g
+  igraph::E(igraph)$color <- col_g
   for ( i in modu_name){
     col_edge <- cols[which(modu_name==i)]
     otu_same_modu <-igraph::V(igraph)$name[which(igraph::V(igraph)$modularity==i)]
