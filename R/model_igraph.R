@@ -70,7 +70,7 @@ model_igraph = function(
     fc <- cluster_spinglass(igraph,weights =  abs(E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
   }
 
-  V(igraph)$modularity <- membership(fc)
+  V(igraph)$modularity <- membership(fc)%>% as.numeric()
   V(igraph)$label <- V(igraph)$name
   V(igraph)$label <- NA
   modu_sort <- V(igraph)$modularity %>% table() %>% sort(decreasing = T)

@@ -184,8 +184,9 @@ network.i = function(
                               manual = ifelse(model1 == model2,as.character(color1),"#C1C1C1")
       )
       head(edge2)
-      col_edge = edge2 %>% dplyr::distinct(color, .keep_all = TRUE)  %>%
-        select(color,manual)
+      col_edge = edge2 %>% as.tibble() %>%
+        dplyr::distinct(color, .keep_all = TRUE)  %>%
+        dplyr::select(color,manual)
       col0 = col_edge$manual
       names(col0) = col_edge$color
 
