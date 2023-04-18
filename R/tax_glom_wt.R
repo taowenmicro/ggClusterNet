@@ -41,6 +41,12 @@ tax_glom_wt <- function(ps = ps,ranks = "Phylum") {
 
   taxcon <- tax[1:match(ranks,colnames(tax))]
   taxcon <- taxcon[!duplicated(tax[[ranks]]),]
+
+  if (is.vector(taxcon)) {
+    taxcon = data.frame(row.names = taxcon,ranks = taxcon)
+    colnames(taxcon) = ranks
+  }
+
   #-tax name with NA wound be repeated with unknown
   taxcon[[ranks]][is.na(taxcon[[ranks]])] = "unknown"
   row.names(taxcon) <- taxcon[[ranks]]

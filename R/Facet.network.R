@@ -31,7 +31,7 @@ Facet.network = function(
     ord.g2 = NULL ,# 排序顺序
     ord.g3 = NULL ,# 排序顺序
     order = "space", # 出图每行代表的变量
-    fill = "phylum",
+    fill = "Phylum",
     size = "igraph.degree",
     method = "spearman",
     clu_method = "cluster_fast_greedy",
@@ -149,8 +149,8 @@ Facet.network = function(
 
   tax = ps.all %>% vegan_tax() %>% as.data.frame() %>%
     rownames_to_column("ID")
-
-  node.1 = node %>% rownames_to_column("ID") %>% left_join(tax,by = "ID")
+  node$ID = node$elements
+  node.1 = node  %>% left_join(tax,by = "ID")
   head(node.1)
 
   node.1$Group = sapply(strsplit(node.1$group, "[.]"), `[`, 3)

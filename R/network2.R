@@ -295,8 +295,8 @@ random_Net = function(
   # degree_distribution
 
   ## We compare the degree of random network and this network
-  data1 = data.frame(network= degree_distribution(igraph, cumulative = FALSE),group = "E–R network",ID = c(1:length(degree_distribution(igraph, cumulative = FALSE))))
-  data2 = data.frame(network = degree_distribution(rand.g, cumulative = FALSE) ,group = "network",ID = c(1:length(degree_distribution(rand.g, cumulative = FALSE) )))
+  data1 = data.frame(network= degree_distribution(igraph, cumulative = FALSE),group = "network",ID = c(1:length(degree_distribution(igraph, cumulative = FALSE))))
+  data2 = data.frame(network = degree_distribution(rand.g, cumulative = FALSE) ,group = "E–R network",ID = c(1:length(degree_distribution(rand.g, cumulative = FALSE) )))
   data = rbind(data1,data2)
   p1 <- ggplot(data) +geom_point(aes(x = ID,y = network,group =group,fill = group),pch = 21,size = 2) +
     geom_smooth(aes(x = ID,y = network,group =group,color = group))+
