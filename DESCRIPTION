@@ -22,7 +22,8 @@ Imports:
 	ggrepel,
 	reshape2,
 	packcircles,
-	ggpubr
+	ggpubr,
+	ggalluvial
 URL: https://github.com/taowenmicro/ggClusterNet
 BugReports: https://github.com/taowenmicro/ggClusterNet/issues
 Depends: 

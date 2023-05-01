@@ -323,8 +323,8 @@ grobal_pro_compare = function(
 
   for (i in 1:step){
     #####random null model
-    rand.g <- erdos.renyi.game(length(V(igraph)), length(E(igraph)),type = c(type))
-    tem_netpro_result<-net_properties.2(rand.g)
+    rand.g <- erdos.renyi.game(length(igraph::V(igraph)), length(igraph::E(igraph)),type = c(type))
+    tem_netpro_result<-net_properties.2.rm(rand.g)
     tem_netpro_result[16,1] = 0
     tem_netpro_result = as.data.frame(tem_netpro_result)
     tem_netpro_result$value = as.numeric(tem_netpro_result$value)

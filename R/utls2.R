@@ -568,3 +568,51 @@ remove_decimal = function(ps = ps){
   return(ps)
 }
 
+
+# ps = readRDS("./ps_GC.rds")
+# ps1 = rm.low.area(ps = ps,threshold = 10000)
+# 用于将低于某一个阈值的丰度修改为0，代谢组开发
+rm.low.area = function(
+    ps = ps,
+    threshold = 10000
+){
+  dat = ps %>% vegan_otu() %>% t()
+  dim(dat)
+  num = dat[dat < threshold] %>% length()
+  print(num < dim(dat)[1]*dim(dat)[2]/5)
+  dat[dat < threshold] = 0
+  # row.names(dat)
+  otu_table(ps) = otu_table(as.matrix(dat),taxa_are_rows = TRUE)
+  return(ps)
+}
+
+#--ps对象更换row.names
+cg.Rownm.ps = function(ps,id = NULL){
+
+  if (is.null(id)) {
+    psfin = ps
+  } else{
+    otu = ps %>% vegan_otu() %>% t() %>%
+      as.data.frame()
+
+    head(otu)
+
+    tax = ps %>% vegan_tax() %>%
+      as.data.frame()
+
+    head(tax)
+    tax$old.rname = row.names(tax)
+    row.names(tax) = tax[[id]]
+    row.names(otu) = tax[[id]]
+
+    psfin = phyloseq(
+      otu_table(as.matrix(otu),taxa_are_rows = TRUE),
+      tax_table(as.matrix(tax)),
+      sample_data(ps)
+    )
+  }
+
+  return(psfin)
+}
+
+
