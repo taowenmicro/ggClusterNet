@@ -26,13 +26,17 @@
 
 
 edgeBuild = function(cor = cor,node = node){
+  cor[upper.tri(cor)] <- 0
   tem1 = cor %>%
+    # lower.tri() %>%
     tidyfst::mat_df() %>%
     dplyr::filter(row != col) %>%
 
     dplyr::rename(OTU_1 = row,OTU_2 = col,weight = value ) %>%
     dplyr::filter(weight != 0)
-  head(tem1)
+
+  # paste0(as.character(tem1$OTU_1),as.character(tem1$OTU_2)) %>% unique()
+
 
   tem2 = tem1 %>% dplyr::left_join(node,by = c("OTU_1" = "elements")) %>%
     dplyr::rename(Y1 = X2)
