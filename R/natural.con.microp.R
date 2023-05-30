@@ -1,6 +1,7 @@
 natural.con.microp = function(
     ps = ps,
     Top = 500,
+    corg = NULL,
     r.threshold= 0.8,
     p.threshold=0.05,
     method = "spearman",
@@ -11,27 +12,37 @@ natural.con.microp = function(
 
 ){
 
-  otutab<- ps %>%
-    vegan_otu() %>%
-    as.data.frame()
-  dim(otutab)
+  # otutab<- ps %>%
+  #   vegan_otu() %>%
+  #   as.data.frame()
+  # dim(otutab)
 
-  id <- sample_data(ps)$Group %>% unique()
+  # id <- sample_data(ps)$Group %>% unique()
+  if (!is.null(corg)) {
+    id = names(corg)
+  } else if (is.null(corg)){
 
+  }
 
   for (i in 1:length(id)) {
-    pst =  ps %>%
-      scale_micro() %>%
-      subset_samples.wt("Group", c(id[i])) %>%
-      filter_OTU_ps(Top)
+    if (is.null(corg)) {
+      pst =  ps %>%
+        scale_micro() %>%
+        subset_samples.wt("Group", c(id[i])) %>%
+        filter_OTU_ps(Top)
 
-    result = cor_Big_micro(ps = pst,
-                           N = 0,
-                           r.threshold= r.threshold,
-                           p.threshold= p.threshold,
-                           method = method)
+      result = cor_Big_micro(ps = pst,
+                             N = 0,
+                             r.threshold= r.threshold,
+                             p.threshold= p.threshold,
+                             method = method)
 
-    cor = result[[1]]
+      cor = result[[1]]
+      # head(cor)
+    } else if (!is.null(corg)){
+      cor = corg[[id[i]]]
+    }
+
 
 
     dat = natural.con.micro(cor = cor,start = start,

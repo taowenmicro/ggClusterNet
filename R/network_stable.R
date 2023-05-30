@@ -34,9 +34,12 @@
 # dat2 = res[[3]]
 # head(dat2)
 
+# corg = cortab
+
 
 module.compare.m = function(
     ps = ps,
+    corg = NULL,
     Top = 500,
     degree = TRUE,
     zipi = FALSE,
@@ -47,35 +50,41 @@ module.compare.m = function(
     n = 3
 
 ){
-  map = sample_data(ps)
-  head(map)
-  id <- map$Group %>% unique()
-  otu = ps %>% vegan_otu() %>% t() %>%
-    as.data.frame()
-  head(otu)
-  tax = ps %>% vegan_tax() %>%
-    as.data.frame()
-  head(tax)
 
+  if (!is.null(corg)) {
+    id = names(corg)
+  } else if (is.null(corg)){
+    map = sample_data(ps)
+    # head(map)
+    id <- map$Group %>% unique()
+    otu = ps %>% vegan_otu() %>% t() %>%
+      as.data.frame()
+    # head(otu)
+    tax = ps %>% vegan_tax() %>%
+      as.data.frame()
+    # head(tax)
+  }
 
-
-  i= 1
 
   for (i in 1:length(id)) {
 
-    pst =  ps %>%
-      scale_micro() %>%
-      subset_samples.wt("Group", c(id[i])) %>%
-      filter_OTU_ps(Top)
+    if (is.null(corg)) {
+      pst =  ps %>%
+        scale_micro() %>%
+        subset_samples.wt("Group", c(id[i])) %>%
+        filter_OTU_ps(Top)
 
-    result = cor_Big_micro(ps = pst,
-                           N = 0,
-                           r.threshold= r.threshold,
-                           p.threshold= p.threshold,
-                           method = method)
+      result = cor_Big_micro(ps = pst,
+                             N = 0,
+                             r.threshold= r.threshold,
+                             p.threshold= p.threshold,
+                             method = method)
 
-    cor = result[[1]]
-    head(cor)
+      cor = result[[1]]
+      # head(cor)
+    } else if (!is.null(corg)){
+      cor = corg[[id[i]]]
+    }
 
     # igraph = make_igraph(cor)
     #--计算模块信息，部分OTU没有模块，注意去除
@@ -100,7 +109,7 @@ module.compare.m = function(
 
   node_table2  = dat
   head(node_table2)
-  node_table2$Group %>% table()
+  # node_table2$Group %>% table()
 
   dat2 = model_compare(
     node_table2 = dat,
@@ -111,51 +120,60 @@ module.compare.m = function(
   head(dat2)
   head(node_table2)
   tem = node_table2 %>% distinct( group, .keep_all = TRUE)
-  edge = data.frame(from = dat2$module1,to = dat2$module2,Value = 1)
-  head(edge)
-  id = c(tem$group) %>% unique()
-  cor = matrix(0,nrow = length(id),ncol = length(id))
-  colnames(cor) = id
-  row.names(cor) = id
 
-  netClu = data.frame(ID = tem$group,group = tem$Group)
-  head(netClu)
-  netClu$ID %>%unique()
+  if (c("none") %in% dat2[1,1]) {
+    pnet = NULL
+    dat2 = NULL
+  } else{
+
+    edge = data.frame(from = dat2$module1,to = dat2$module2,Value = 1)
+    head(edge)
+    id = c(tem$group) %>% unique()
+    cor = matrix(0,nrow = length(id),ncol = length(id))
+    colnames(cor) = id
+    row.names(cor) = id
+
+    netClu = data.frame(ID = tem$group,group = tem$Group)
+    head(netClu)
+    netClu$ID %>%unique()
 
 
-  result2 = model_filled_circle(cor = cor,culxy =TRUE,
-                                da = NULL,# 数据框，包含x,和y列
-                                nodeGroup = netClu,
-                                seed = 10,
-                                mi.size = 0.5,
-                                zoom = 0.2)
-  node = result2[[1]]
-  head(node)
-  head(edge)
+    result2 = model_filled_circle(cor = cor,culxy =TRUE,
+                                  da = NULL,# 数据框，包含x,和y列
+                                  nodeGroup = netClu,
+                                  seed = 10,
+                                  mi.size = 0.5,
+                                  zoom = 0.2)
+    node = result2[[1]]
+    head(node)
+    head(edge)
 
-  edge2 = edge %>% left_join(node,by = c("from" = "elements")) %>%
-    dplyr::rename(x1 = X1,y1 = X2) %>%left_join(node,by = c("to" = "elements")) %>%
-    dplyr::rename(x2 = X1,y2 = X2)
-  head(edge2)
+    edge2 = edge %>% left_join(node,by = c("from" = "elements")) %>%
+      dplyr::rename(x1 = X1,y1 = X2) %>%left_join(node,by = c("to" = "elements")) %>%
+      dplyr::rename(x2 = X1,y2 = X2)
+    head(edge2)
 
-  ### 出图
-  # library(ggrepel)
-  pnet <- ggplot() +
-    geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2),
-                 data = edge2, size = 0.5,color = "#FF7F00") +
-    geom_point(aes(X1, X2),pch = 21, data = node,fill ="#984EA3" ) +
-    scale_colour_brewer(palette = "Set1") +
-    scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
-    # labs( title = paste(layout,"network",sep = "_"))+
-    ggrepel::geom_text_repel(aes(X1, X2,label=elements),size=4, data = node)+
-    # discard default grid + titles in ggplot2
-    theme(panel.background = element_blank()) +
-    # theme(legend.position = "none") +
-    theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
-    theme(legend.background = element_rect(colour = NA)) +
-    theme(panel.background = element_rect(fill = "white",  colour = NA)) +
-    theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank())
-  pnet
+    ### 出图
+    # library(ggrepel)
+    pnet <- ggplot() +
+      geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2),
+                   data = edge2, size = 0.5,color = "#FF7F00") +
+      geom_point(aes(X1, X2),pch = 21, data = node,fill ="#984EA3" ) +
+      scale_colour_brewer(palette = "Set1") +
+      scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
+      # labs( title = paste(layout,"network",sep = "_"))+
+      ggrepel::geom_text_repel(aes(X1, X2,label=elements),size=4, data = node)+
+      # discard default grid + titles in ggplot2
+      theme(panel.background = element_blank()) +
+      # theme(legend.position = "none") +
+      theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
+      theme(legend.background = element_rect(colour = NA)) +
+      theme(panel.background = element_rect(fill = "white",  colour = NA)) +
+      theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank())
+    pnet
+  }
+
+
   return(list(pnet,node_table2,dat2))
 }
 
@@ -172,6 +190,7 @@ module.compare.m = function(
 # dat = res[[2]]
 Robustness.Targeted.removal = function(
     ps = ps,
+    corg = NULL,
     Top = 500,
     degree = TRUE,
     zipi = FALSE,
@@ -186,25 +205,36 @@ Robustness.Targeted.removal = function(
     as.data.frame()
   dim(otutab)
 
-  id <- sample_data(ps)$Group %>% unique()
+  if (!is.null(corg)) {
+    id = names(corg)
+  } else if (is.null(corg)){
+
+  }
+
   i  = 1
   #计算每个物种的平均丰度，使用测序深度标准化
   sp.ra<-colMeans(otutab)/mean(rowSums(otutab))   #relative abundance of each species
 
   for (i in 1:length(id)){
-    pst =  ps %>%
-      scale_micro() %>%
-      subset_samples.wt("Group", c(id[i])) %>%
-      filter_OTU_ps(Top)
 
-    result = cor_Big_micro(ps = pst,
-                           N = 0,
-                           r.threshold= r.threshold,
-                           p.threshold= p.threshold,
-                           method = method)
+    if (is.null(corg)) {
+      pst =  ps %>%
+        scale_micro() %>%
+        subset_samples.wt("Group", c(id[i])) %>%
+        filter_OTU_ps(Top)
 
-    cor = result[[1]]
-    head(cor)
+      result = cor_Big_micro(ps = pst,
+                             N = 0,
+                             r.threshold= r.threshold,
+                             p.threshold= p.threshold,
+                             method = method)
+
+      cor = result[[1]]
+      # head(cor)
+    } else if (!is.null(corg)){
+      cor = corg[[id[i]]]
+    }
+
 
 
     #存在某些情况计算不出来相关系数，定义相关为0
@@ -220,7 +250,11 @@ Robustness.Targeted.removal = function(
 
     ##read otu table
 
-    otutab<- pst %>%
+    otutab<- ps %>%
+      scale_micro() %>%
+      subset_samples.wt("Group", c(id[i])) %>%
+      # filter_OTU_ps(Top) %>%
+      subset_taxa.wt("OTU",row.names(cor)) %>%
       scale_micro() %>%
       subset_taxa.wt(
         "OTU", row.names(network.raw)
@@ -346,6 +380,7 @@ Robustness.Targeted.removal = function(
 # dat = res[[2]]
 Vulnerability.micro = function(
     ps = ps,
+    corg = NULL,
     Top = 500,
     degree = TRUE,
     zipi = FALSE,
@@ -422,6 +457,7 @@ Vulnerability.micro = function(
 # dat = res[[2]]
 negative.correlation.ratio = function(
     ps = ps,
+    corg = cortab,
     Top = 500,
     degree = TRUE,
     zipi = FALSE,
@@ -435,23 +471,35 @@ negative.correlation.ratio = function(
     as.data.frame()
   dim(otutab)
 
-  id <- sample_data(ps)$Group %>% unique()
+  # id <- sample_data(ps)$Group %>% unique()
+  if (!is.null(corg)) {
+    id = names(corg)
+  } else if (is.null(corg)){
+
+  }
   i  = 1
   B = c()
   for (i in 1:length(id)) {
-    pst =  ps %>%
-      scale_micro() %>%
-      subset_samples.wt("Group", c(id[i])) %>%
-      filter_OTU_ps(Top)
 
-    result = cor_Big_micro(ps = pst,
-                           N = 0,
-                           r.threshold= r.threshold,
-                           p.threshold= p.threshold,
-                           method = method)
+    if (is.null(corg)) {
+      pst =  ps %>%
+        scale_micro() %>%
+        subset_samples.wt("Group", c(id[i])) %>%
+        filter_OTU_ps(Top)
 
-    cor = result[[1]]
-    head(cor)
+      result = cor_Big_micro(ps = pst,
+                             N = 0,
+                             r.threshold= r.threshold,
+                             p.threshold= p.threshold,
+                             method = method)
+
+      cor = result[[1]]
+      # head(cor)
+    } else if (!is.null(corg)){
+      cor = corg[[id[i]]]
+    }
+
+
     igraph = make_igraph(cor)
     ret2 = net_properties.2(igraph) %>% as.data.frame()
     head(ret2)
@@ -480,6 +528,7 @@ negative.correlation.ratio = function(
 # dat = res[[2]]
 community.stability = function(
     ps = ps,
+    corg = cortab,
     time = TRUE
 ){
   # id <- sample_data(ps)$Group %>% unique()
@@ -591,6 +640,7 @@ community.stability = function(
 # dat = res[[2]]
 Robustness.Random.removal = function(
     ps = ps,
+    corg = NULL,
     Top = 500,
     r.threshold= 0.8,
     p.threshold=0.05,
@@ -601,6 +651,12 @@ Robustness.Random.removal = function(
     as.data.frame()
   dim(otutab)
 
+  if (!is.null(corg)) {
+    id = names(corg)
+  } else if (is.null(corg)){
+
+  }
+
   id <- sample_data(ps)$Group %>% unique()
   i  = 1
   #计算每个物种的平均丰度，使用测序深度标准化
@@ -608,19 +664,24 @@ Robustness.Random.removal = function(
 
   # library(ggClusterNet)
   for (i in 1:length(id)){
-    pst =  ps %>%
-      scale_micro() %>%
-      subset_samples.wt("Group", c(id[i])) %>%
-      filter_OTU_ps(Top)
 
-    result = cor_Big_micro(ps = pst,
-                           N = 0,
-                           r.threshold= r.threshold,
-                           p.threshold= p.threshold,
-                           method = method)
+    if (is.null(corg)) {
+      pst =  ps %>%
+        scale_micro() %>%
+        subset_samples.wt("Group", c(id[i])) %>%
+        filter_OTU_ps(Top)
 
-    cor = result[[1]]
-    head(cor)
+      result = cor_Big_micro(ps = pst,
+                             N = 0,
+                             r.threshold= r.threshold,
+                             p.threshold= p.threshold,
+                             method = method)
+
+      cor = result[[1]]
+      # head(cor)
+    } else if (!is.null(corg)){
+      cor = corg[[id[i]]]
+    }
 
     #存在某些情况计算不出来相关系数，定义相关为0
     cor[is.na(cor)]<-0
@@ -648,7 +709,15 @@ Robustness.Random.removal = function(
     Unweighted.simu<-rmsimu2(netRaw=network.raw, rm.p.list=seq(0.05,1,by=0.05), sp.ra=sp.ra2,
                             abundance.weighted=F,nperm=100)
     head(Weighted.simu)
-    tem = pst %>% sample_data() %>% .$Group %>% unique() %>% as.character()
+
+    tem = ps %>%
+      scale_micro() %>%
+      subset_samples.wt("Group", c(id[i])) %>%
+      subset_taxa.wt("OTU",row.names(cor)) %>%
+      # filter_OTU_ps(Top) %>%
+      sample_data() %>%
+      .$Group %>%
+      unique() %>% as.character()
 
     dat1<-data.frame(Proportion.removed=rep(seq(0.05,1,by=0.05),2),
                      rbind(Weighted.simu,Unweighted.simu),

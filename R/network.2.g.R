@@ -259,14 +259,12 @@ network.2.g = function(
     colnames(netpro_result)<-layout
 
 
-    result = random_Net_compate(igraph = igraph, type = "gnm", step = 100, netName = layout)
-    p1 = result[[1]]
-    sum_net = result[[4]]
-
-    plotname = paste(path,"/Power_law_distribution_",layout,".pdf",sep = "")
-    ggsave(plotname, p1, width = 8, height =6)
-
-    write.csv(sum_net,paste(path,"/",layout,"_net_VS_erdos_properties.csv",sep = ""),row.names = TRUE)
+    # result = random_Net_compate(igraph = igraph, type = "gnm", step = 100, netName = layout)
+    # p1 = result[[1]]
+    # sum_net = result[[4]]
+    # plotname = paste(path,"/Power_law_distribution_",layout,".pdf",sep = "")
+    # ggsave(plotname, p1, width = 8, height =6)
+    # write.csv(sum_net,paste(path,"/",layout,"_net_VS_erdos_properties.csv",sep = ""),row.names = TRUE)
 
     y = as.data.frame(y)
     colnames(y) = layouts

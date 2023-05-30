@@ -71,7 +71,9 @@ module.compare.net.pip = function(
     mod1 = result2[[2]]
     head(mod1)
     # mod1$group =  NULL
-    mod1 = mod1 %>% filter(!group == "mother_no") %>% select(ID,group)
+    mod1 = mod1 %>%
+      dplyr::filter(!group == "mother_no") %>%
+      dplyr::select(ID,group)
     # mod1$group = paste(id[i],mod1$group,sep = "")
     mod1$Group = id[i]
     mod1$group = mod1$Group
