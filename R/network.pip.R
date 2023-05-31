@@ -63,7 +63,9 @@ network.pip = function(
     zipi = FALSE,
     clu_method = "cluster_fast_greedy",
     step = 100,
-    ram.net = FALSE
+    ram.net = FALSE,
+    R,
+    ncpus
 ){
 
   ps = inputMicro(otu,tax,map,tree,ps,group  = group)

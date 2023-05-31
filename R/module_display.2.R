@@ -35,6 +35,8 @@
 module_display.2 = function(
     pst = ps,
     Top = 500,
+    corg = NULL,
+    method = "spearman",
     r.threshold= 0.8,
     p.threshold=0.05,
     select.mod = c("model_1","model_2","model_3"),
@@ -43,19 +45,34 @@ module_display.2 = function(
     method.clu = "cluster_walktrap"
 ){
 
-  pst = pst %>%
-    filter_taxa(function(x) sum(x ) > 0, TRUE) %>%
-    scale_micro("rela") %>%
-    filter_OTU_ps(Top)
+  # pst = pst %>%
+  #   filter_taxa(function(x) sum(x ) > 0, TRUE) %>%
+  #   scale_micro("rela") %>%
+  #   filter_OTU_ps(Top)
+  #
+  # result = cor_Big_micro(ps = pst,
+  #                        N = 0,
+  #                        r.threshold= r.threshold,
+  #                        p.threshold= p.threshold,
+  #                        method = "spearman")
+  if (is.null(corg)) {
+    # pst =  ps %>%
+    #   scale_micro() %>%
+    #   subset_samples.wt("Group", c(id[i])) %>%
+    #   filter_OTU_ps(Top)
 
-  result = cor_Big_micro(ps = pst,
-                         N = 0,
-                         r.threshold= r.threshold,
-                         p.threshold= p.threshold,
-                         method = "spearman")
+    result = cor_Big_micro(ps = pst,
+                           N = Top,
+                           r.threshold= r.threshold,
+                           p.threshold= p.threshold,
+                           method = method)
 
-  cor = result[[1]]
-  head(cor)
+    cor = result[[1]]
+    # head(cor)
+  } else if (!is.null(corg)){
+    cor = corg
+  }
+
 
   #-计算模块
   result = model_maptree2(cor = cor, method =  method.clu)
@@ -89,13 +106,11 @@ module_display.2 = function(
                   tax_table = pst %>% vegan_tax() %>%
                     as.data.frame())
   # head(nodes2)
-
   nodes2 = nodes %>% inner_join(netClu,by = c("elements" = "ID"))
-  nodes2$group = paste("Model_",nodes2$group,sep = "")
-
+  nodes2$group = paste(nodes2$group,sep = "")
   #-----计算边
   edge = edgeBuild(cor = cor,node = node)
-  dim(edge)
+
   ### 出图
   pnet <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = as.factor(cor)),
                                   data = edge, size = 0.5) +
@@ -132,12 +147,16 @@ module_display.2 = function(
 
     ) %>% select(ID,group,degree)
 
-  } else if (is.character(select.mod)) {
+  } else if (is.character(select.mod)& select.mod != "no") {
     select.mod.name = select.mod
     mod1 = mod1 %>% filter(!group == "mother_no",
                            group %in%c(select.mod.name)
 
     ) %>% select(ID,group,degree)
+
+  } else if (select.mod == "no") {
+    select.mod.name = select.mod
+    mod1 = mod1 %>% filter(!group == "mother_no")
 
   }
 
@@ -166,25 +185,18 @@ module_display.2 = function(
     scale_colour_brewer(palette = "Set1") +
     scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
     theme_void()
-
-
-
   net.s = netClu[netClu$group %in% lab.t,]
-
   #-计算模块
   result = model_maptree_group(cor = cor, nodeGroup = net.s,
                                seed = 12)
-  node = result[[1]]
+  node = result[[1]]  %>% filter(elements %in% mod1$ID)
   tem = net.s$group %>% table() %>% as.data.frame() %>%
     arrange(desc(Freq))
   colnames(tem)[1] = "model"
-
-
   branch = result[[2]] %>% filter(!str_detect(elements,"other"))
   branch$elements = paste("model_",branch$elements,sep = "")
 
-
-
+  branch =branch  %>% filter(elements %in% mod1$group)
   # ---node节点注释
   nodes = nodeadd(plotcord =node,
                   otu_table = pst %>%
@@ -194,16 +206,15 @@ module_display.2 = function(
                   tax_table = pst %>% vegan_tax() %>%
                     as.data.frame())
   # head(nodes2)
-
   nodes2 = nodes %>% inner_join(net.s,by = c("elements" = "ID"))
+
+  head(nodes2)
   # nodes2$group = paste("Model_",nodes2$group,sep = "")
 
   #-----计算边
   # cor[node$elements,node$elements]
   edge = edgeBuild(cor = cor[node$elements,node$elements],node = node)
   head(edge)
-
-  head(net.s)
   n.1 = net.s$group %>% unique() %>% length()
   tab = data.frame(ID = net.s$group %>% unique(),color = RColorBrewer::brewer.pal(9,"Set1")[1:n.1])
   head(tab)
@@ -214,20 +225,14 @@ module_display.2 = function(
     dplyr::select(-degree) %>%
     dplyr::left_join(net.s,by = c("OTU_2" = "ID")) %>%
     dplyr::rename(group2 = group)
-  head(tem)
-
+  # head(tem)
   edge2 = tem %>% mutate(color1 = ifelse(group1 == group2,as.character(group1),"acorss")) %>%
     left_join(tab,by = c("color1" = "ID"))
-  head(edge2)
+  # head(edge2)
   edge2$color[is.na(edge2$color)] = "grey80"
-  # edge2$color = factor(edge2$color,levels = c(tab$color,"grey80"))
-  # nodes2$group = factor(nodes2$group,levels = )
-
-
   edgeb = edge2 %>%
     filter(color1 == "acorss")
-  head(edgeb)
-
+  # head(edgeb)
   edge3 = edge2 %>%
     filter(color1 != "acorss")
 
@@ -246,7 +251,7 @@ module_display.2 = function(
     scale_fill_brewer(palette = "Set1") +
     scale_x_continuous(breaks = NULL) + scale_y_continuous(breaks = NULL) +
     theme_void() +
-    theme(legend.position = "top") +
+    # theme(legend.position = "top") +
     guides(color=guide_legend(nrow=leg.col, byrow=TRUE),
            fill=guide_legend(nrow=leg.col, byrow=TRUE),
              size = guide_legend(nrow=3, byrow=TRUE),

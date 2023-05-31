@@ -18,18 +18,40 @@
 ZS.net.module = function(
     pst = pst,
     Top = 500,
+    corg = NULL,
+    method = "spearman",
     r.threshold= 0.8,
     p.threshold=0.05,
     select.mod = c("model_1","model_2","model_3")
 
 ){
 
-  result = cor_Big_micro(ps = pst,
-                         N = Top,
-                         r.threshold= r.threshold,
-                         p.threshold= p.threshold,
-                         method = "spearman")
-  cor = result[[1]]
+  # result = cor_Big_micro(ps = pst,
+  #                        N = Top,
+  #                        r.threshold= r.threshold,
+  #                        p.threshold= p.threshold,
+  #                        method = "spearman")
+  # cor = result[[1]]
+
+  if (is.null(corg)) {
+    # pst =  ps %>%
+    #   scale_micro() %>%
+    #   subset_samples.wt("Group", c(id[i])) %>%
+    #   filter_OTU_ps(Top)
+
+    result = cor_Big_micro(ps = pst,
+                           N = Top,
+                           r.threshold= r.threshold,
+                           p.threshold= p.threshold,
+                           method = method)
+
+    cor = result[[1]]
+    # head(cor)
+  } else if (!is.null(corg)){
+    cor = corg
+  }
+
+
   result2 = model_maptree2(cor = cor, method = "cluster_fast_greedy")
   mod1 = result2[[2]]
   # head(mod1)

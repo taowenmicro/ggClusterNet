@@ -13,23 +13,44 @@
 # res[[3]]
 
 net.property.module.env = function(
-    pst = pst,
+    pst = ps,
+    corg = NULL,
+    method = "pearson",
     Top = 500,
     r.threshold= 0.8,
     p.threshold=0.05,
-    env = env,
+    env = NULL,
     select.mod = c("model_1","model_2","model_3"),
-    select.env = "pH"
+    select.env = NULL
 ){
 
-  result = cor_Big_micro(ps = pst,
-                         N = 0,
-                         r.threshold= r.threshold,
-                         p.threshold= p.threshold,
-                         method = "spearman")
+  # result = cor_Big_micro(ps = pst,
+  #                        N = 0,
+  #                        r.threshold= r.threshold,
+  #                        p.threshold= p.threshold,
+  #                        method = "spearman")
+  #
+  # cor = result[[1]]
+  # head(cor)
 
-  cor = result[[1]]
-  head(cor)
+  if (is.null(corg)) {
+    # pst =  ps %>%
+    #   scale_micro() %>%
+    #   subset_samples.wt("Group", c(id[i])) %>%
+    #   filter_OTU_ps(Top)
+
+    result = cor_Big_micro(ps = pst,
+                           N = Top,
+                           r.threshold= r.threshold,
+                           p.threshold= p.threshold,
+                           method = method)
+
+    cor = result[[1]]
+    # head(cor)
+  } else if (!is.null(corg)){
+    cor = corg
+  }
+
 
 
   result2 = model_maptree2(cor = cor, method = "cluster_fast_greedy")
@@ -50,12 +71,16 @@ net.property.module.env = function(
 
     ) %>% select(ID,group,degree)
 
-  } else if (is.character(select.mod)) {
+  } else if (is.character(select.mod)& select.mod != "no") {
     select.mod.name = select.mod
     mod1 = mod1 %>% filter(!group == "mother_no",
                            group %in%c(select.mod.name)
 
     ) %>% select(ID,group,degree)
+
+  }else if (select.mod == "no") {
+    select.mod.name = select.mod
+    mod1 = mod1 %>% filter(!group == "mother_no")
 
   }
 
@@ -104,24 +129,29 @@ net.property.module.env = function(
     inner_join(tem,by = "id") %>%
     dplyr::rename(group = Group)
 
-  colnames(env)[1] = "id"
-  subenv = env %>% dplyr::select(id,everything()) %>% dplyr::select(id,select.env )
-  # head(data)
-  tab = data %>% left_join(subenv,by = "id")
-  modenv = tab
-  # head(tab)
-  # library(reshape2)
-  mtcars2 = reshape2::melt(tab, id.vars=c(select.env,"group","id"))
-  mtcars2$variable
-  head(mtcars2)
-  lab = mean(mtcars2[,select.env])
-  p1_1 = ggplot2::ggplot(mtcars2,aes(x= value,!!sym(select.env), colour=variable)) +
-    ggplot2::geom_point() +
-    ggpubr::stat_cor(label.y=lab*1.1)+
-    ggpubr::stat_regline_equation(label.y=lab*1.1,vjust = 2) +
-    facet_wrap(~variable, scales="free_x") +
-    geom_smooth(aes(value,!!sym(select.env), colour=variable), method=lm, se=T)+
-    theme_classic()
+  if (!is.null(env)) {
+    colnames(env)[1] = "id"
+    subenv = env %>% dplyr::select(id,everything()) %>% dplyr::select(id,select.env )
+    # head(data)
+    tab = data %>% left_join(subenv,by = "id")
+    modenv = tab
+    # head(tab)
+    # library(reshape2)
+    mtcars2 = reshape2::melt(tab, id.vars=c(select.env,"group","id"))
+    mtcars2$variable
+    head(mtcars2)
+    lab = mean(mtcars2[,select.env])
+    p1_1 = ggplot2::ggplot(mtcars2,aes(x= value,!!sym(select.env), colour=variable)) +
+      ggplot2::geom_point() +
+      ggpubr::stat_cor(label.y=lab*1.1)+
+      ggpubr::stat_regline_equation(label.y=lab*1.1,vjust = 2) +
+      facet_wrap(~variable, scales="free_x") +
+      geom_smooth(aes(value,!!sym(select.env), colour=variable), method=lm, se=T)+
+      theme_classic()
+  } else{
+    modenv =  NULL
+    p1_1 = NULL
+  }
 
   # p1_1
 
@@ -132,18 +162,23 @@ net.property.module.env = function(
   tab = dat.f %>% left_join(subenv,by = "id")
   # head(tab)
 
-  mtcars2 = reshape2::melt(tab, id.vars=c(select.env,"id"))
-  lab = mean(mtcars2[,select.env])
-  # head(mtcars2)
-  preoptab = tab
+ if (!is.null(env)) {
+   mtcars2 = reshape2::melt(tab, id.vars=c(select.env,"id"))
+   lab = mean(mtcars2[,select.env])
+   # head(mtcars2)
+   preoptab = tab
 
-  p0_1 = ggplot2::ggplot(mtcars2,aes(x= value,!!sym(select.env), colour=variable)) +
-    ggplot2::geom_point() +
-    ggpubr::stat_cor(label.y=lab*1.1)+
-    ggpubr::stat_regline_equation(label.y=lab*1.1,vjust = 2) +
-    facet_wrap(~variable, scales="free_x") +
-    geom_smooth(aes(value,!!sym(select.env), colour=variable), method=lm, se=T)+
-    theme_classic()
+   p0_1 = ggplot2::ggplot(mtcars2,aes(x= value,!!sym(select.env), colour=variable)) +
+     ggplot2::geom_point() +
+     ggpubr::stat_cor(label.y=lab*1.1)+
+     ggpubr::stat_regline_equation(label.y=lab*1.1,vjust = 2) +
+     facet_wrap(~variable, scales="free_x") +
+     geom_smooth(aes(value,!!sym(select.env), colour=variable), method=lm, se=T)+
+     theme_classic()
+ } else{
+   preoptab = NULL
+   p0_1 = NULL
+ }
 
   # p0_1
   plotdat = list(

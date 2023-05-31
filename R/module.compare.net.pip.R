@@ -24,7 +24,8 @@
 
 module.compare.net.pip = function(
     ps = ps,
-    Top = 500,
+    Top = NULL,
+    corg = NULL,
     degree = TRUE,
     zipi = FALSE,
     r.threshold= 0.8,
@@ -34,32 +35,43 @@ module.compare.net.pip = function(
     n = 3
 ){
 
-  map = sample_data(ps)
-  head(map)
-  id <- map$Group %>% unique()
-  otu = ps %>% vegan_otu() %>% t() %>%
-    as.data.frame()
-  head(otu)
-  tax = ps %>% vegan_tax() %>%
-    as.data.frame()
-  head(tax)
-  i= 1
+  # map = sample_data(ps)
+  # head(map)
+  # id <- map$Group %>% unique()
+  # otu = ps %>% vegan_otu() %>% t() %>%
+  #   as.data.frame()
+  # head(otu)
+  # tax = ps %>% vegan_tax() %>%
+  #   as.data.frame()
+  # head(tax)
+  if (!is.null(corg)) {
+    id = names(corg)
+  } else if (is.null(corg)){
+
+  }
+
   cortb = list()
   for (i in 1:length(id)) {
 
-    pst =  ps %>%
-      scale_micro() %>%
-      subset_samples.wt("Group", c(id[i])) %>%
-      filter_OTU_ps(Top)
+    if (is.null(corg)) {
+      pst =  ps %>%
+        scale_micro() %>%
+        subset_samples.wt("Group", c(id[i])) %>%
+        filter_OTU_ps(Top)
 
-    result = cor_Big_micro(ps = pst,
-                           N = 0,
-                           r.threshold= r.threshold,
-                           p.threshold= p.threshold,
-                           method = method)
+      result = cor_Big_micro(ps = pst,
+                             N = 0,
+                             r.threshold= r.threshold,
+                             p.threshold= p.threshold,
+                             method = method)
 
-    cor = result[[1]]
-    head(cor)
+      cor = result[[1]]
+      # head(cor)
+    } else if (!is.null(corg)){
+      cor = corg[[id[i]]]
+    }
+
+
     cortb[[i]] = cor
     names(cortb)[[i]] = id[i]
     # igraph = make_igraph(cor)
