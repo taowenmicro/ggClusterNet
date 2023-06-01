@@ -47,7 +47,8 @@ module.compare.m = function(
     p.threshold=0.05,
     method = "spearman",
     padj = F,
-    n = 3
+    n = 3,
+    zoom = 0.2
 
 ){
 
@@ -143,7 +144,7 @@ module.compare.m = function(
                                   nodeGroup = netClu,
                                   seed = 10,
                                   mi.size = 0.5,
-                                  zoom = 0.2)
+                                  zoom = zoom)
     node = result2[[1]]
     head(node)
     head(edge)

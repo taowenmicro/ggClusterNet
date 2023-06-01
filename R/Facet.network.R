@@ -39,7 +39,9 @@ Facet.network = function(
     layout_net = "model_maptree2",
     r.threshold=0.8,
     p.threshold=0.01,
-    maxnode = 5
+    maxnode = 5,
+    R = 100,
+    ncpus = 1
   ){
 
   ps.all = ps.st
@@ -110,13 +112,27 @@ Facet.network = function(
       map$Group
       ps.g = ps.f  %>% subset_samples.wt(g1,group[n])
 
-      result = cor_Big_micro(ps = ps.g,
-                             N = N,
-                             r.threshold= r.threshold,
-                             p.threshold= p.threshold,
-                             method = method,
-                             scale = FALSE)
+      if (method != "sparcc") {
+        result = cor_Big_micro(ps = ps.g,
+                               N = N,
+                               r.threshold= r.threshold,
+                               p.threshold= p.threshold,
+                               method = method,
+                               scale = FALSE)
+        cor = result[[1]]
+        print("cor matrix culculating over")
+      } else if (method %in% c("sparcc")){
+        result = corMicro (ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,
+                           method = method,R = R,ncpus = ncpus)
+        a = 1
+
+      print("cor matrix culculating over")
       cor = result[[1]]
+
+      }
+
+
+
       tem = paste(dat.f[j,1],dat.f[j,2],group[n],sep = ".")
       cor.all[[tem]] = cor
 

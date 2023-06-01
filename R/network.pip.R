@@ -94,7 +94,7 @@ network.pip = function(
 
     if (!is.null(N)) {
       psi = phyloseq(otu_table(ps),
-                     tax_table(ps),
+                     phyloseq::tax_table(ps),
                      sample_data(mapi)
       ) %>%
         filter_OTU_ps(Top = N) %>%

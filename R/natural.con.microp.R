@@ -60,7 +60,7 @@ natural.con.microp = function(
   }
 
 
-
+  datall$Natural.connectivity = Re(datall$Natural.connectivity)
   p=ggplot(datall, aes(Num.of.remove.nodes, Natural.connectivity,color=Group)) +
     geom_point(alpha = 0.1) +
     geom_smooth(level = F) +
@@ -85,12 +85,12 @@ natural.con.micro  =function(cor,
   for (j in start:end) {
     num = length(row.names(cor)) - j
     tem = sample(row.names(cor),num)
-    cor.z = cor[tem,tem]
+    cor.z = cor[tem,tem] %>% as.matrix()
     # igraph = make_igraph(cor)
     #存在某些情况计算不出来相关系数，定义相关为0
     cor[is.na(cor.z)]<-0
     #-去除自相关的点
-    diag(cor.z)<-0
+    diag(cor.z) <- 0
     #-查看网络边的数量
     sum(abs(cor.z)>0)/2
     #网络中节点的数量
