@@ -477,8 +477,11 @@ random.add.ps = function(ps = ps,add= 6,zoom = 0.3,
 
     head(otu)
 
-    if (dim(otu)[2] >= add) {
-      tab.d = otu[,1:add] %>% rownames_to_column("ID")
+    if (dim(otu)[2] >= add&add != 1) {
+    tab.d = otu[,1:add] %>% rownames_to_column("ID")
+    } else if (add == 1){
+      tab.d = otu %>% rownames_to_column("ID") %>%.[,1:(add+1)]
+
     }
 
     A[1:add] = id[i]
