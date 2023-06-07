@@ -77,7 +77,7 @@ network.pip = function(
   # plots = list()
   # plots1 = list()
   # aa = 1
-  # layout = layouts[1]
+  # layout = layouts[2]
   cor.all = list()
   for (layout in layouts) {
 
@@ -117,13 +117,16 @@ network.pip = function(
     if (big == TRUE) {
       result = cor_Big_micro(ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,method = method,scale = FALSE)
       a = 2} else if(big == FALSE){
-        result = corMicro (ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,method = method,R = R,ncpus = ncpus)
+        result = corMicro (ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,
+                           method = method,R = R,ncpus = ncpus
+
+                           )
         a = 1}
 
     print("cor matrix culculating over")
     cor = result[[1]]    #Extract correlation matrix
 
-
+    cor[is.na(cor)] = 0
     if (cor %>% as.vector() %>% max() == 0) {
       stop("The connect value in cor matrix all was zone")
     }
