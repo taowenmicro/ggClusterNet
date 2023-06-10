@@ -454,8 +454,8 @@ cor_link2 <- function(data,
   tab2$size = tem2
   # library(ggnewscale)
 
-  id1 = idtab %>% filter(group ==unique(data3$group)[i]) %>%.[1:(floor(nrow(data)/2)),] %>%.$label
-  id2 = idtab %>% filter(group ==unique(data3$group)[i]) %>%.[(floor(nrow(data)/2) + 1):nrow(data),] %>%.$label
+  id1 = idtab %>% filter(group ==unique(data3$group)[1]) %>%.[1:(floor(nrow(data)/2)),] %>%.$label
+  id2 = idtab %>% filter(group ==unique(data3$group)[1]) %>%.[(floor(nrow(data)/2) + 1):nrow(data),] %>%.$label
 
 
   p = p +
@@ -494,7 +494,8 @@ cor_link2 <- function(data,
     scale_fill_manual(values = c("#91331FFF","#46732EFF")) +
     ggnewscale::new_scale_fill() +
     geom_point(data = topdat,aes(x = xend, y = yend),pch = numpoint2,size =8,
-               color = "black",fill = "#FFF5EB")
+               color = "black",fill = "#FFF5EB") +
+    ggrepel::geom_text_repel(data = topdat,aes(x = xend, y = yend,label = group))
 
   p
 
