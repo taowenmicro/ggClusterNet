@@ -237,6 +237,10 @@ network.pip = function(
     theme(panel.background = element_rect(fill = "white",  colour = NA)) +
     theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank())
   p1
+
+  if (label == TRUE) {
+    p1 = p1 + geom_text_repel(aes(X1, X2,label = elements),pch = 21, data = node.1)
+  }
   #--net propeties#----
   i = 1
 

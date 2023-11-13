@@ -116,6 +116,43 @@ ZS.net.module = function(
     }
   }
 
+  #-计算每个模块的总丰度
+  id.s = mod1$group %>% unique()
+  i= 2
+  for (i in 1:length(id.s)) {
+    id.t =  mod1 %>%
+      dplyr::filter(group %in% id.s[i]) %>%
+      .$ID
+    ps.t = ps %>%
+      scale_micro() %>%
+      subset_taxa.wt("OTU", id.t )
 
-  return(Zscore = tem)
+    # otu = ps.t %>%
+    #   vegan_otu() %>%
+    #   t()
+
+    # colSD = function(x){
+    #   apply(x,2, sd)
+    # }
+    #
+    # dat = (otu - colMeans(otu))/colSD(otu)
+    # head(dat)
+    # otu_table(ps.t) = otu_table(as.matrix(dat),taxa_are_rows = T)
+    #--计算总丰度
+    otu = ps.t %>%  vegan_otu() %>% t()
+
+    colSums(otu)
+
+    dat = data.frame(id = names(colSums(otu)),abundance.zscore = colSums(otu))
+    colnames(dat)[2] = id.s[i]
+
+    if (i ==1) {
+      tem2 = dat
+    } else{
+      dat$id = NULL
+      tem2 = cbind(tem2,dat)
+    }
+  }
+
+  return(list(Zscore = tem,Rabundance = tem2))
 }

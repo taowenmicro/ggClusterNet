@@ -209,10 +209,11 @@ Robustness.Targeted.removal = function(
   if (!is.null(corg)) {
     id = names(corg)
   } else if (is.null(corg)){
+    id <- phyloseq::sample_data(ps)$Group %>% unique()
 
   }
 
-  i  = 1
+
   #计算每个物种的平均丰度，使用测序深度标准化
   sp.ra<-colMeans(otutab)/mean(rowSums(otutab))   #relative abundance of each species
 
@@ -278,7 +279,7 @@ Robustness.Targeted.removal = function(
     if (zipi ) {
       res = ZiPiPlot(igraph = igraph,method = "cluster_fast_greedy")
       # p <- res[[1]]
-      model = res[[2]] %>% filter(roles == "Module hubs")
+      model = res[[2]] %>%  dplyr::filter(roles == "Module hubs")
       head(model)
       model$roles %>% unique()
       module.hub <- as.character(row.names(model))
@@ -291,8 +292,8 @@ Robustness.Targeted.removal = function(
     if (degree) {
       ret3 = node_properties(igraph) %>%
         as.data.frame() %>%
-        filter(!is.na(igraph.degree) ) %>%
-        arrange(desc(igraph.degree))
+        dplyr::filter(!is.na(igraph.degree) ) %>%
+        dplyr::arrange(desc(igraph.degree))
       head(ret3)
       tem = round(length(ret3$igraph.degree) * 0.05,0)
       module.hub = row.names(ret3)[1:tem]

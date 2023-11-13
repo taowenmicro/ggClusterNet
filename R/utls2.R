@@ -618,4 +618,31 @@ cg.Rownm.ps = function(ps,id = NULL){
   return(psfin)
 }
 
+# ps01 = changeSamplenames(ps = ps0,newid = "newid" )
+# sample_data(ps01)
+changeSamplenames = function(
+    ps = ps0,
+    newid = "newid"  #in sample data ,was one of the colname
+){
+  if (!is.null(ps@otu_table)) {
+    otu = ps %>% vegan_otu() %>% t() %>%
+      as.data.frame()
+  }
 
+  if (!is.null(ps@sam_data)) {
+    map = ps %>% sample_data() %>% as.tibble() %>%column_to_rownames(newid ) %>%
+      as.data.frame()
+  }
+
+  colnames(otu) = row.names(map)
+  if (!is.null(ps@tax_table)) {
+    psout = phyloseq(sample_data(map),
+                     otu_table(as.matrix(otu), taxa_are_rows=TRUE),
+                     tax_table(ps)
+    )
+  } else{
+    psout = phyloseq(sample_data(map),
+                     otu_table(as.matrix(otu), taxa_are_rows=TRUE))
+  }
+  return(psout)
+}
