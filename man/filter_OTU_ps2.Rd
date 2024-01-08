@@ -19,5 +19,4 @@ filter_microbiome data upper
 }
 \examples{
 data(ps)
-ps_sub = filter_OTU_ps2(ps = ps,filter = 100)
 }

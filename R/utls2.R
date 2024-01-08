@@ -96,8 +96,8 @@ filter_OTU_ps <- function(ps = ps,Top = NULL
 #' @param  filter number or percent of tax or OTU
 #' @examples
 #' data(ps)
-#' ps_sub = filter_OTU_ps2(ps = ps,filter = 100)
-# library(ggClusterNet)
+# ps_sub = filter_OTU_ps2(ps = ps,filter = 100)
+# # library(ggClusterNet
 
 filter_OTU_ps2 <- function(ps = ps,filter = NULL
 ){
@@ -334,8 +334,21 @@ subset_taxa.wt = function(
 ){
 
 
+  if (is.null(ps@tax_table)) {
+    otu = ps %>% vegan_otu()
+    tax = data.frame(row.names = colnames(otu),ID = colnames(otu),
+                     group = colnames(otu))
+    tax_table(ps) = tax_table(as.matrix(tax))
+
+    }
+
+
+
 
   if (opst == FALSE) {
+
+
+
     if (rank %in% colnames(phyloseq::tax_table(ps))) {
 
       tax = ps %>%
@@ -646,3 +659,211 @@ changeSamplenames = function(
   }
   return(psout)
 }
+
+# out.ps.data(ps = ps01,path = outpath,mark = "16S")
+# out.ps.data(ps = psFun2,path = outpath,mark = "ITS")
+# out.ps.data(ps = psF2,path = outpath,mark = "function.k")
+# out.ps.data(ps = psG,path = outpath,mark = "compounds")
+out.ps.data = function(ps = ps,
+                       path = "./",
+                       mark = "16S"
+){
+  if (!is.null(ps@otu_table)) {
+    otu = ps %>% vegan_otu() %>% t() %>% as.data.frame() %>% rownames_to_column("ID.orig")
+    write_delim(otu,paste0(path,mark,"otu.txt"))}
+
+  if (!is.null(ps@tax_table)) {
+    tax = ps %>% vegan_tax() %>% as.data.frame() %>% rownames_to_column("ID.orig")
+    write_delim(tax,paste0(path,mark,"tax.txt"))
+  }
+
+  if (!is.null(ps@sam_data)) {
+    map = ps %>% sample_data() %>% as.data.frame() %>%
+      rownames_to_column("ID.seq") %>% as.tibble()
+    write_delim(map,paste0(path,mark,"map.txt"))
+  }
+}
+
+
+# tax_glom_wt.upper(ps = psG,ranks = "Metabolite")
+tax_glom_wt.upper <- function(ps = psG,ranks = "Metabolite") {
+
+
+  if (  is.numeric(ranks)) {
+    ranks <- phyloseq::rank.names(ps)[ranks]
+  }
+  tax = ps %>% vegan_tax() %>% as.data.frame() %>%
+    mutate(conb =!!sym(ranks) )
+  head(tax)
+  tax_table(ps) = tax_table(as.matrix(tax))
+
+  ranks= "conb"
+
+  otu <- as.data.frame(t(vegan_otu(ps)))
+  tax <- as.data.frame(vegan_tax(ps))
+
+  # building group
+  tax[[ranks]][is.na(tax[[ranks]])] = "Unknown"
+  tax[[ranks]][tax[[ranks]] == ""] = "Unknown"
+  tax[[ranks]][tax[[ranks]] == "NA"] = "Unknown"
+  split <- split(otu,tax[[ranks]])
+  #calculate sum by group
+  apply <- lapply(split,function(x)colSums(x[]))
+  # result chack
+  otucon <- do.call(rbind,apply)
+
+  taxcon <- tax[1:match(ranks,colnames(tax))]
+  taxcon <- taxcon[!duplicated(tax[[ranks]]),]
+
+  if (is.vector(taxcon)) {
+    taxcon = data.frame(row.names = taxcon,ranks = taxcon)
+    colnames(taxcon) = ranks
+  }
+
+  #-tax name with NA wound be repeated with unknown
+  taxcon[[ranks]][is.na(taxcon[[ranks]])] = "unknown"
+  row.names(taxcon) <- taxcon[[ranks]]
+
+
+  row.names(taxcon) <- gsub("-","_",row.names(taxcon))
+  row.names(taxcon) <- gsub("[/]","_",row.names(taxcon))
+  row.names(taxcon) <- gsub("[(]","_",row.names(taxcon))
+  row.names(taxcon) <- gsub("[)]","_",row.names(taxcon))
+  row.names(taxcon) <- gsub("[:]","_",row.names(taxcon))
+  row.names(taxcon) <- gsub("[[]","",row.names(taxcon))
+  row.names(taxcon) <- gsub("[]]","_",row.names(taxcon))
+  row.names(taxcon) <- gsub("[#]","_",row.names(taxcon))
+  row.names(taxcon) <- gsub("[+]","_",row.names(taxcon))
+  # row.names(taxcon) <- gsub("[ ]","_",row.names(taxcon))
+  row.names(taxcon) <- gsub("[']","_",row.names(taxcon))
+  # row.names(taxcon) <- gsub("[']","_",row.names(taxcon))
+
+
+  row.names(otucon) <- gsub("-","_",row.names(otucon))
+  row.names(otucon) <- gsub("[/]","_",row.names(otucon))
+  row.names(otucon) <- gsub("[(]","_",row.names(otucon))
+  row.names(otucon) <- gsub("[)]","_",row.names(otucon))
+  row.names(otucon) <- gsub("[:]","_",row.names(otucon))
+  row.names(otucon) <- gsub("[[]","",row.names(otucon))
+  row.names(otucon) <- gsub("[]]","_",row.names(otucon))
+  row.names(otucon) <- gsub("[#]","_",row.names(otucon))
+  row.names(otucon) <- gsub("[+]","_",row.names(otucon))
+  # row.names(otucon) <- gsub(" ","_",row.names(otucon))
+  row.names(otucon) <- gsub("[']","_",row.names(otucon))
+
+
+  pscon <- phyloseq::phyloseq(
+    phyloseq::otu_table( as.matrix(otucon),taxa_are_rows = TRUE),
+    phyloseq::tax_table(as.matrix(taxcon)),
+    phyloseq::sample_data(ps)
+  )
+  return(pscon)
+}
+
+
+
+tax_glom_wt.3 <- function(ps = ps,ranks = "Phylum") {
+
+
+
+
+  if (  is.numeric(ranks)) {
+    ranks <- phyloseq::rank.names(ps)[ranks]
+  }
+
+  tax = ps %>% vegan_tax() %>% as.data.frame() %>%
+    mutate(conb =!!sym(ranks) )
+  head(tax)
+  tax_table(ps) = tax_table(as.matrix(tax))
+
+  ranks= "conb"
+
+  otu <- as.data.frame(t(vegan_otu(ps)))
+  tax <- as.data.frame(vegan_tax(ps))
+
+  # building group
+  tax[[ranks]][is.na(tax[[ranks]])] = "Unknown"
+  tax[[ranks]][tax[[ranks]] == ""] = "Unknown"
+  tax[[ranks]][tax[[ranks]] == "NA"] = "Unknown"
+  split <- split(otu,tax[[ranks]])
+  #calculate sum by group
+  apply <- lapply(split,function(x)colSums(x[]))
+  # result chack
+  otucon <- do.call(rbind,apply)
+
+  taxcon <- tax[1:match(ranks,colnames(tax))]
+  taxcon <- taxcon[!duplicated(tax[[ranks]]),]
+
+  if (is.vector(taxcon)) {
+    taxcon = data.frame(row.names = taxcon,ranks = taxcon)
+    colnames(taxcon) = ranks
+  }
+
+  #-tax name with NA wound be repeated with unknown
+  taxcon[[ranks]][is.na(taxcon[[ranks]])] = "unknown"
+  row.names(taxcon) <- taxcon[[ranks]]
+
+
+  pscon <- phyloseq::phyloseq(
+    phyloseq::otu_table( as.matrix(otucon),taxa_are_rows = TRUE),
+    phyloseq::tax_table(as.matrix(taxcon)),
+    phyloseq::sample_data(ps)
+  )
+  return(pscon)
+}
+
+
+# library(ggClusterNet)
+# library(tidyverse)
+# library(phyloseq)
+
+scale_omics = function(
+    ps = ps,
+    method = "TPM",
+    efflength =  1000
+
+){
+
+  otu = ps %>% vegan_otu()
+  if (method == "TPM") {
+    efflength =  efflength
+  }
+
+  if (method == "TPM") {
+    counts2TPM <- function(count=count, efflength=  efflength){
+      RPK <- count/(efflength/1000)   #每千碱基reads (Reads Per Kilobase) 长度标准化
+      PMSC_rpk <- sum(RPK)/1e6        #RPK的每百万缩放因子 (“per million” scaling factor ) 深度标准化
+      RPK/PMSC_rpk
+    }
+
+    tpm <- as.data.frame(apply(otu,2,counts2TPM) %>% t())
+    otu_table(ps) = otu_table(as.matrix(tpm),taxa_are_rows = TRUE)
+  }
+
+  if (method == "FPKM") {
+    expr1 = otu/efflength
+    fpkm = t(t(expr1)/colSums(otu)) * 10^9
+    otu_table(ps) = otu_table(as.matrix(fpkm),taxa_are_rows = TRUE)
+  }
+  if (method == "RPKM") {
+    RPKM = function(count=count, efflength=  efflength){
+      lib.size = sum(count)
+      rpm = (count*10^9)/lib.size
+      rpkm = rpm/efflength
+      return(rpkm)
+    }
+
+    rpkm = RPKM(count= otu, efflength=  efflength) %>% t()
+
+    otu_table(ps) = otu_table(as.matrix(rpkm),taxa_are_rows = TRUE)
+
+  }
+
+  return(ps)
+}
+
+
+
+
+
+
