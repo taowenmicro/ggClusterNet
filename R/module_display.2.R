@@ -85,7 +85,8 @@ module_display.2 = function(
   colnames(tem)[1] = "model"
   head(tem)
 
-  lab.t = tem %>% filter(model != "mother_no") %>% filter(Freq > num) %>%
+  lab.t = tem %>%
+    dplyr::filter(model != "mother_no") %>% filter(Freq > num) %>%
     .$model %>% as.character()
 
 
