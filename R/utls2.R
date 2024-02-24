@@ -995,4 +995,9 @@ line.across.facets.network <- function(p, from=1, to=2,
   return(g2)
 }
 
-
+remove.zero = function(ps) {
+  pst = ps %>%
+    # scale_micro() %>%
+    filter_taxa(function(x) sum(x ) > 0 , TRUE)
+  return(pst)
+}
