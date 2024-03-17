@@ -892,7 +892,7 @@ add.id.facet = function(x = d,group = "id"){
 
 
 
-line.across.facets.network <- function(p, from=1, to=2,
+line.across.facets.network0 <- function(p, from=1, to=2,
                                        from_point_id=1,
                                        to_point_id=1,
                                        plotout = F,
@@ -994,10 +994,136 @@ line.across.facets.network <- function(p, from=1, to=2,
   if (plotout==TRUE) grid.draw(g2)
   return(g2)
 }
+line.across.facets.network <- function(p, from=1, to=2,
+                                       from_point_id=1,
+                                       to_point_id=1,
+                                       plotout = F,
+                                       gp=gpar(lty=2, alpha=0.5)){
+  if (TRUE %in% grepl("ggplot", class(p))) {
+    g <- ggplot_gtable(ggplot_build(p))
+  } else {
+    g <- p
+  }
+
+  # if one of them contains NA, return g
+  if (NA %in% c(from, to, from_point_id, to_point_id)) return(g)
+
+  # collect panel viewport names and index numbers in the grob
+  panel_vps <- c()
+  id_n <- c()
+  for (i in 1:length(g$grobs)) {
+    if (str_detect(g$layout[i, "name"], "panel") & g$grobs[[i]]$name != "NULL") {
+      p_name <- g$layout[i, "name"]
+      panel_vps <- c(panel_vps, p_name)
+      id_n <- c(id_n, i)
+    }
+  }
+
+  panel_vps %>%
+    str_replace("panel-", "") %>%
+    str_split("[\\-\\.]") %>%
+    map_chr(1) -> ind_col
+  ind_col <- as.numeric(ind_col)
+
+  panel_vps %>%
+    str_replace("panel-", "") %>%
+    str_split("[\\-\\.]") %>%
+    map_chr(2) -> ind_row
+  ind_row <- as.numeric(ind_row)
+
+  my_dim <- c(max(ind_row), max(ind_col))
+  x <- 1:length(id_n)
+  L <- length(x)
+  # x[(L+1):(my_dim[1]*my_dim[2])] <- NA
+  m1 <- as.vector(matrix(x, nrow=my_dim[1], byrow=TRUE))
+
+  x2 <- 1:L
+  xx <- as.vector(!is.na(m1))
+  xx[xx] <- x2
+  xx[!xx] <- NA
+  m2 <- as.vector(matrix(xx, nrow=my_dim[1]))
+
+  from <- m2[m1==from] %>% unique()
+  from <- from[complete.cases(from)]
+  to <- m2[m1==to]
+  to <- to[complete.cases(to)]
+
+  # select points to be connected
+  pnames1 <- names(g$grobs[[id_n[from]]]$children)
+  pnames2 <- names(g$grobs[[id_n[to]]]$children)
+
+  pname1 <- pnames1[str_detect(pnames1, "geom_point.points")]
+  pname2 <- pnames2[str_detect(pnames2, "geom_point.points")]
+
+  p1 <- g$grobs[[id_n[from]]]$children[[pname1[1]]]
+  p2 <- g$grobs[[id_n[to]]]$children[[pname2[1]]]
+
+  g1 <- with(g$layout[id_n[from],],
+             gtable_add_grob(g,
+                             moveToGrob(p1$x[from_point_id],
+                                        p1$y[from_point_id]),
+                             t=t, l=l,name = paste0(from,to,from_point_id,to_point_id)))
+  g2 <- with(g1$layout[id_n[to],],
+             gtable_add_grob(g1,
+                             lineToGrob(p2$x[to_point_id],
+                                        p2$y[to_point_id], gp=gp),
+                             t=t, l=l,name = paste0(from,to,from_point_id,to_point_id)))
+
+  # print(p1$x[from_point_id])
+  # print(p1$y[from_point_id])
+  # print(p2$x[to_point_id])
+  # print(p2$y[to_point_id])
+  # g <- gtable_add_grob(g,
+  #                      moveToGrob(p1$x[from_point_id],
+  #                                 p1$y[from_point_id]),
+  #                      t=id_n[from], l=id_n[from])
+  #
+  # g <- gtable_add_grob(g,
+  #                      lineToGrob(p2$x[to_point_id],
+  #                                 p2$y[to_point_id], gp=gp),
+  #                      t=id_n[2], l=id_n[2])
+  # tried curve, but it seems no function for curve across viewports, this is within viewport plot
+  # g <- with(g$layout[id_n[to],],
+  #           gtable_add_grob(g,
+  #                           segmentsGrob(p1$x[from_point_id],
+  #                                     p1$y[from_point_id],
+  #                                     p2$x[to_point_id],
+  #                                     p2$y[to_point_id], gp=gp),
+  #                           t=t, l=l))
+
+
+  g2$layout$clip <- "off"
+  if (plotout==TRUE) grid.draw(g2)
+  return(g2)
+}
+
 
 remove.zero = function(ps) {
   pst = ps %>%
     # scale_micro() %>%
     filter_taxa(function(x) sum(x ) > 0 , TRUE)
   return(pst)
+}
+
+ps.group.mean = function(ps,group = "Group" ){
+  otu_table = as.data.frame(t(vegan_otu(ps)))
+  head(otu_table)
+
+  design = as.data.frame(sample_data(ps))
+  ## 计算相对丰度，计算每个物种丰度均值，按照均值排序
+  OTU = as.matrix(otu_table)
+  norm = t(t(OTU)/colSums(OTU,na=TRUE)) #* 100 # normalization to total 100
+  norma = norm %>%
+    t() %>% as.data.frame()
+  #数据分组计算平均值
+  iris.split <- split(norma,as.factor(design$Group))
+
+  iris.apply <- lapply(iris.split,function(x)colMeans(x,na.rm = TRUE))
+  # 组合结果
+  norm2 <- do.call(rbind,iris.apply)%>%
+    t()
+  norm2 = as.data.frame(norm2)
+  norm2$mean=apply(norm2,1,mean)
+  norm2$ID = row.names(norm2)
+  return(norm2)
 }
