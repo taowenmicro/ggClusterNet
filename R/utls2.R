@@ -1127,3 +1127,238 @@ ps.group.mean = function(ps,group = "Group" ){
   norm2$ID = row.names(norm2)
   return(norm2)
 }
+
+line.across.facets.network2 <- function(p, from=1, to=2,
+                                        from_point_id=1,
+                                        to_point_id=1,
+                                        plotout = F,
+                                        gp=gpar(lty=2, alpha=0.5)){
+  if (TRUE %in% grepl("ggplot", class(p))) {
+    g <- ggplot_gtable(ggplot_build(p))
+  } else {
+    g <- p
+  }
+
+  # if one of them contains NA, return g
+  if (NA %in% c(from, to, from_point_id, to_point_id)) return(g)
+
+  # collect panel viewport names and index numbers in the grob
+  panel_vps <- c()
+  id_n <- c()
+  for (i in 1:length(g$grobs)) {
+    if (str_detect(g$layout[i, "name"], "panel") & g$grobs[[i]]$name != "NULL") {
+      p_name <- g$layout[i, "name"]
+      panel_vps <- c(panel_vps, p_name)
+      id_n <- c(id_n, i)
+    }
+  }
+
+  panel_vps %>%
+    str_replace("panel-", "") %>%
+    str_split("[\\-\\.]") %>%
+    map_chr(1) -> ind_col
+  ind_col <- as.numeric(ind_col)
+
+  panel_vps %>%
+    str_replace("panel-", "") %>%
+    str_split("[\\-\\.]") %>%
+    map_chr(2) -> ind_row
+  ind_row <- as.numeric(ind_row)
+
+  my_dim <- c(max(ind_row), max(ind_col))
+  x <- 1:length(id_n)
+  L <- length(x)
+  # x[(L+1):(my_dim[1]*my_dim[2])] <- NA
+  m1 <- as.vector(matrix(x, nrow=my_dim[1], byrow=TRUE))
+
+  x2 <- 1:L
+  xx <- as.vector(!is.na(m1))
+  xx[xx] <- x2
+  xx[!xx] <- NA
+  m2 <- as.vector(matrix(xx, nrow=my_dim[1]))
+
+  from <- m2[m1==from] %>% unique()
+  from <- from[complete.cases(from)]
+  to <- m2[m1==to]
+  to <- to[complete.cases(to)]
+
+  # select points to be connected
+  pnames1 <- names(g$grobs[[id_n[from]]]$children)
+  pnames2 <- names(g$grobs[[id_n[to]]]$children)
+
+  pname1 <- pnames1[str_detect(pnames1, "geom_rect.rect")]
+  pname2 <- pnames2[str_detect(pnames2, "geom_rect.rect")]
+
+  p1 <- g$grobs[[id_n[from]]]$children[[pname1[1]]]
+  p2 <- g$grobs[[id_n[to]]]$children[[pname2[1]]]
+
+  g1 <- with(g$layout[id_n[from],],
+             gtable_add_grob(g,
+                             moveToGrob(p1$x[from_point_id],
+                                        p1$y[from_point_id]),
+                             t=t, l=l,name = paste0(from,to,from_point_id,to_point_id)))
+  g2 <- with(g1$layout[id_n[to],],
+             gtable_add_grob(g1,
+                             lineToGrob(p2$x[to_point_id],
+                                        p2$y[to_point_id], gp=gp),
+                             t=t, l=l,name = paste0(from,to,from_point_id,to_point_id)))
+
+  # print(p1$x[from_point_id])
+  # print(p1$y[from_point_id])
+  # print(p2$x[to_point_id])
+  # print(p2$y[to_point_id])
+  # g <- gtable_add_grob(g,
+  #                      moveToGrob(p1$x[from_point_id],
+  #                                 p1$y[from_point_id]),
+  #                      t=id_n[from], l=id_n[from])
+  #
+  # g <- gtable_add_grob(g,
+  #                      lineToGrob(p2$x[to_point_id],
+  #                                 p2$y[to_point_id], gp=gp),
+  #                      t=id_n[2], l=id_n[2])
+  # tried curve, but it seems no function for curve across viewports, this is within viewport plot
+  # g <- with(g$layout[id_n[to],],
+  #           gtable_add_grob(g,
+  #                           segmentsGrob(p1$x[from_point_id],
+  #                                     p1$y[from_point_id],
+  #                                     p2$x[to_point_id],
+  #                                     p2$y[to_point_id], gp=gp),
+  #                           t=t, l=l))
+
+
+  g2$layout$clip <- "off"
+  if (plotout==TRUE) grid.draw(g2)
+  return(g2)
+}
+
+
+
+merge.ps <- function(ps1 ,
+                     ps2,
+                     N1 = 100,
+                     N2 = 100,
+                     scale = TRUE,
+                     onlygroup = FALSE,#不进行列合并，只用于区分不同域
+                     dat1.lab = "bac",
+                     dat2.lab = "fun") {
+
+  if (scale == TRUE) {
+    if (!is.null(ps16s)) {
+      ps1  = phyloseq::transform_sample_counts(ps1, function(x) x / sum(x) )
+    }
+    if (!is.null(psITS)) {
+      ps2  = phyloseq::transform_sample_counts(ps2, function(x) x / sum(x) )
+    }
+  }
+  if (!is.null(ps1)) {
+    # ps_16s = phyloseq::filter_taxa(ps16s, function(x) mean(x) > N16s, TRUE)#select OTUs according to  relative abundance
+    ps_16s  =  filter_OTU_ps(ps = ps1,Top = N1)
+    ###
+    otu_table_16s = as.data.frame(t(vegan_otu(ps_16s)))
+    row.names(otu_table_16s) = paste(dat1.lab,row.names(otu_table_16s),sep = "_")
+    ## change the OTU name of bac and fungi OTU table
+    tax_table_16s = as.data.frame(vegan_tax(ps_16s))
+    #-- add a col marked the bac and fungi
+    if ("filed" %in%colnames(tax_table_16s)) {
+
+    } else{
+      row.names(tax_table_16s) = paste(dat1.lab,row.names(tax_table_16s),sep = "_")
+      tax_table_16s$filed = rep(dat1.lab,length(row.names(tax_table_16s)))
+    }
+
+  }
+  if (!is.null(ps2)) {
+    # ps_ITS = phyloseq::filter_taxa(psITS, function(x) mean(x) > NITS , TRUE)#select OTUs according to  relative abundance
+    ps_ITS = filter_OTU_ps(ps = ps2,Top = N2)
+    otu_table_ITS = as.data.frame(t(vegan_otu(ps_ITS)))
+    row.names(otu_table_ITS) = paste(dat2.lab,row.names(otu_table_ITS ),sep = "_")
+    tax_table_ITS = as.data.frame(vegan_tax(ps_ITS))
+    row.names(tax_table_ITS) = paste(dat2.lab,row.names(tax_table_ITS),sep = "_")
+    tax_table_ITS$filed = rep(dat2.lab,length(row.names(tax_table_ITS)))
+
+    if ("filed" %in%colnames(tax_table_ITS)) {
+    } else{
+      row.names(tax_table_ITS) = paste(dat2.lab,row.names(tax_table_ITS),sep = "_")
+      tax_table_ITS$filed = rep(dat2.lab,length(row.names(tax_table_ITS)))
+    }
+  }
+
+
+  if (!is.null(ps2) & !is.null(ps1) ) {
+    ## merge OTU table of bac and fungi
+
+
+
+    otu_table = rbind(otu_table_16s[,intersect(names(otu_table_ITS),names(otu_table_16s))],
+
+                      otu_table_ITS[,intersect(names(otu_table_ITS),names(otu_table_16s))])
+
+    if (onlygroup == FALSE) {
+      tax_table = rbind(tax_table_16s,tax_table_ITS)
+      dim(otu_table)
+    } else if(onlygroup == TRUE){
+      tax_table = data.frame(filed = c(tax_table_16s$filed,tax_table_ITS$filed),row.names = row.names(otu_table),id = row.names(otu_table))
+    }
+    #on of map table as final map table
+
+    mapping = as.data.frame( phyloseq::sample_data(ps_16s))
+    head(mapping)
+    # mapping$Group4 = "all_sample"
+    # mapping$Group4 = as.factor(mapping$Group4)
+    ##merge all abject of phyloseq
+    pallps <-  phyloseq::phyloseq( phyloseq::otu_table(as.matrix(otu_table),taxa_are_rows = TRUE),
+                                   phyloseq::sample_data(mapping),
+                                   phyloseq::tax_table(as.matrix(tax_table)))
+
+
+  } else if(is.null(psITS) & !is.null(ps16s) ) {
+    otu_table = rbind(otu_table_16s)
+
+    if (onlygroup == FALSE) {
+      tax_table = rbind(tax_table_16s)
+      dim(otu_table)
+    } else if(onlygroup == TRUE){
+      tax_table = data.frame(filed = c(tax_table_16s$filed,row.names = row.names(otu_table),id = row.names(otu_table)))
+    }
+    #on of map table as final map table
+    mapping = as.data.frame(sample_data(ps_16s))
+    head(mapping)
+    # mapping$Group4 = "all_sample"
+    # mapping$Group4 = as.factor(mapping$Group4)
+    ##merge all abject of phyloseq
+    pallps <-  phyloseq::phyloseq( phyloseq::otu_table(as.matrix(otu_table),taxa_are_rows = TRUE),
+                                   phyloseq::sample_data(mapping),
+                                   phyloseq::tax_table(as.matrix(tax_table)))
+
+
+  } else if (!is.null(ps2) & is.null(ps1)){
+    otu_table = rbind(otu_table_ITS)
+
+    if (onlygroup == FALSE) {
+      tax_table = rbind(tax_table_ITS)
+      dim(otu_table)
+    } else if(onlygroup == TRUE){
+      tax_table = data.frame(filed = c(tax_table_ITS$filed),row.names = row.names(otu_table),id = row.names(otu_table))
+    }
+    #on of map table as final map table
+    mapping = as.data.frame( phyloseq::sample_data(psITS))
+    head(mapping)
+    # mapping$Group4 = "all_sample"
+    # mapping$Group4 = as.factor(mapping$Group4)
+    ##merge all abject of phyloseq
+    pallps <-  phyloseq::phyloseq( phyloseq::otu_table(as.matrix(otu_table),taxa_are_rows = T),
+                                   phyloseq::sample_data(mapping),
+                                   phyloseq::tax_table(as.matrix(tax_table)))
+
+  }
+
+  tax = pallps %>% vegan_tax() %>%
+    as.data.frame() %>% dplyr::select(filed,everything())
+  phyloseq::tax_table(pallps) = as.matrix(tax)
+
+
+  return(pallps)
+}
+
+
+
