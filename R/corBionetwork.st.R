@@ -86,7 +86,9 @@ corBionetwork.st = function(
     env = NULL,
     bio = TRUE,
     minsize = 4,
-    maxsize = 14
+    maxsize = 14,
+    group.node = NULL,
+    model.node = FALSE
 ){
 
   if (scale) {
@@ -240,9 +242,11 @@ corBionetwork.st = function(
       #--构造边和节点文件，全部放到一起
       res = node.edge(
         cor = cor,
-        select_layout = T,
+        select_layout = TRUE,
         clu_method=clu_method,
-        layout_net = layout_net
+        layout_net = layout_net,
+        group.node = group.node,
+        model.node = model.node
       )
 
       nod = res[[1]]
@@ -360,11 +364,13 @@ corBionetwork.st = function(
   )
 
 
-
+  col1 = c("red","blue")
+  names(col1) = c("+","-")
     p0 <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = as.factor(cor)),
                                   data = edge, size = 0.3,alpha = 0.5) +
       geom_point(aes(x = X1, y = X2,size = !!sym(size),fill = !!sym(fill)),pch = 21, data =  node) +
       scale_colour_brewer(palette = "Set1") +
+      scale_color_manual(values = col1) +
       scale_size(range = c(minsize, maxsize)) +
       scale_x_continuous(breaks = NULL) +
       scale_y_continuous(breaks = NULL) +

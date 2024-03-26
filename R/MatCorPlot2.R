@@ -405,7 +405,8 @@ cor_link2 <- function(data,
     dat = data.frame(x = data$x - zoom,y = data$y + zoom)
     seqnum = (max(dat$x) - min(dat$x))/n
     topdat = data.frame(x=seq(from=min(dat$x), to=max(dat$x),by=seqnum),
-                        y = seq(from=min(dat$y), to=max(dat$y),by=seqnum)) %>% slice(-1)
+                        y = seq(from=min(dat$y), to=max(dat$y),by=seqnum)) %>%
+      dplyr::slice(-1)
     topdat = topdat[-nrow(topdat),]
     colnames(topdat) = paste0(colnames(topdat),"end")
     topdat$group = unique(data3$group)

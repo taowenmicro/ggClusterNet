@@ -29,8 +29,13 @@ culculate_node_axis = function(
   if (is.null(group)) {
     #--total layout
     node = total_layout(cor = cor.matrix,layout =layout,method = method )
-  }else{ if (model) {
-      netClu  = modulGroup( cor = cor.matrix,cut = 3,method = method )}else{
+  }else{
+
+    if (model) {
+
+      netClu  = modulGroup( cor = cor.matrix,cut = 3,method = method )
+
+      }else{
       netClu = group}
     node = group_layout(
       cor = cor.matrix,
@@ -111,7 +116,8 @@ group_layout = function(
   }
 
   if (layout == "PolygonRrClusterG") {
-    result2 = PolygonRrClusterG(cor = cor,nodeGroup =netClu,zoom1 = 0.5,zoom2 = 0.2)
+    #
+    result2 = PolygonRrClusterG(cor = cor,nodeGroup =netClu,zoom = 1,zoom2 = 1)
     node = result2[[1]]
     head(node)
   }
@@ -139,7 +145,7 @@ group_layout = function(
                                   da = NULL,# 数据框，包含x,和y列
                                   nodeGroup =netClu,
                                   mi.size = 1,# 最小圆圈的半径，越大半径越大
-                                  zoom = 0.3# 不同模块之间距离
+                                  zoom = 0.15# 不同模块之间距离
                                   )
     node = result2[[1]]
     head(node)

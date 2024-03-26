@@ -1,10 +1,11 @@
 
 node.edge = function(
-
   cor = cor,
-  select_layout = T,
-                     clu_method=clu_method,
-                     layout_net = layout_net
+  select_layout = TRUE,
+    clu_method=clu_method,
+   layout_net = layout_net,
+  group.node = NULL,
+  model.node = FALSE
 ){
 
   if (select_layout) {
@@ -13,8 +14,8 @@ node.edge = function(
       cor.matrix = cor,
       layout = layout_net,
       seed = 1,
-      group = NULL,
-      model = FALSE,
+      group = group.node,
+      model = model.node,
       method = clu_method)
 
   }else {

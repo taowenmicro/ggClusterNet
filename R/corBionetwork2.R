@@ -402,73 +402,73 @@ corBionetwork = function(otu = NULL,
 #' Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
 #' @export
 
-
-
-PolygonRrClusterG = function(cor = cor,nodeGroup =netClu,zoom = 1,zoom2 = 1,bio = F){
-  num = length(levels(nodeGroup$group))
-  xs = as.data.frame(table(nodeGroup$group))
-  r = xs$Freq/10 *zoom
-
-  # Calculate angle according to group
-  arg = seq(0,360,360/(length(r))) - 180
-  # i = 1
-  rsum = sum(r)
-  x= rep(0,length(r))
-  y = rep(0,length(r))
-  for (i in 1:length(r)) {
-    x[i] = (rsum + r[i])* sin(arg[i]* 3.14/180)
-    y[i] = (rsum + r[i])* cos(arg[i]* 3.14/180)
-  }
-  if (bio == T) {
-    for (i in 1:length(r)) {
-      x[i] = 0
-      y[i] = 0
-    }
-  }
-  da = data.frame(x = x,y = y)
-  for (i in 1:length(levels(nodeGroup$group))) {
-    # Extract all otu in this group
-    as = dplyr::filter(nodeGroup, group == levels(nodeGroup$group)[i])
-    if (length(as$ID) == 1) {
-      data = cbind(da[i,1],da[i,2] )
-      data =as.data.frame(data)
-      row.names(data ) = as$ID
-      data$elements = row.names(data )
-      colnames(data)[1:2] = c("X1","X2")
-    }
-    as$ID = as.character(as$ID)
-
-    if (length(as$ID)!=1 ) {
-      m = cor[as$ID,as$ID]
-
-      d  =m
-      d <- sna::as.edgelist.sna(d)
-      # if (is.list(d))
-      # d <- d[[1]]
-      n <- attr(d, "n")
-      # 提取半径
-      s = r[i]
-      s = s * zoom2
-
-      data = cbind(sin(2 * pi * ((0:(n - 1))/n))*s +da[i,1], cos(2 * pi * ((0:(n - 1))/n))*s +da[i,2])
-
-      data =as.data.frame(data)
-      row.names(data ) = row.names(m)
-      data$elements = row.names(data )
-      colnames(data)[1:2] = c("X1","X2")
-
-    }
-
-    if (i == 1) {
-      oridata = data
-    }
-    if (i != 1) {
-      oridata = rbind(oridata,data)
-    }
-
-  }
-  plotcord = oridata[match(oridata$elements,row.names(cor )),]
-
-  return(list(plotcord,da))
-}
-
+#
+#
+# PolygonRrClusterG = function(cor = cor,nodeGroup =netClu,zoom = 1,zoom2 = 1,bio = F){
+#   num = length(levels(nodeGroup$group))
+#   xs = as.data.frame(table(nodeGroup$group))
+#   r = xs$Freq/10 *zoom
+#
+#   # Calculate angle according to group
+#   arg = seq(0,360,360/(length(r))) - 180
+#   # i = 1
+#   rsum = sum(r)
+#   x= rep(0,length(r))
+#   y = rep(0,length(r))
+#   for (i in 1:length(r)) {
+#     x[i] = (rsum + r[i])* sin(arg[i]* 3.14/180)
+#     y[i] = (rsum + r[i])* cos(arg[i]* 3.14/180)
+#   }
+#   if (bio == T) {
+#     for (i in 1:length(r)) {
+#       x[i] = 0
+#       y[i] = 0
+#     }
+#   }
+#   da = data.frame(x = x,y = y)
+#   for (i in 1:length(levels(nodeGroup$group))) {
+#     # Extract all otu in this group
+#     as = dplyr::filter(nodeGroup, group == levels(nodeGroup$group)[i])
+#     if (length(as$ID) == 1) {
+#       data = cbind(da[i,1],da[i,2] )
+#       data =as.data.frame(data)
+#       row.names(data ) = as$ID
+#       data$elements = row.names(data )
+#       colnames(data)[1:2] = c("X1","X2")
+#     }
+#     as$ID = as.character(as$ID)
+#
+#     if (length(as$ID)!=1 ) {
+#       m = cor[as$ID,as$ID]
+#
+#       d  =m
+#       d <- sna::as.edgelist.sna(d)
+#       # if (is.list(d))
+#       # d <- d[[1]]
+#       n <- attr(d, "n")
+#       # 提取半径
+#       s = r[i]
+#       s = s * zoom2
+#
+#       data = cbind(sin(2 * pi * ((0:(n - 1))/n))*s +da[i,1], cos(2 * pi * ((0:(n - 1))/n))*s +da[i,2])
+#
+#       data =as.data.frame(data)
+#       row.names(data ) = row.names(m)
+#       data$elements = row.names(data )
+#       colnames(data)[1:2] = c("X1","X2")
+#
+#     }
+#
+#     if (i == 1) {
+#       oridata = data
+#     }
+#     if (i != 1) {
+#       oridata = rbind(oridata,data)
+#     }
+#
+#   }
+#   plotcord = oridata[match(oridata$elements,row.names(cor )),]
+#
+#   return(list(plotcord,da))
+# }
+#
