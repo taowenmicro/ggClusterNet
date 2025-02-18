@@ -706,10 +706,10 @@ Robustness.Random.removal = function(
     Weighted.simu<-rmsimu2(netRaw = network.raw,
 
                           rm.p.list=seq(0.05,1,by=0.05), sp.ra=sp.ra2,
-                          abundance.weighted=T,nperm=100)
+                          abundance.weighted=TRUE,nperm=100)
     head(Weighted.simu)
     Unweighted.simu<-rmsimu2(netRaw=network.raw, rm.p.list=seq(0.05,1,by=0.05), sp.ra=sp.ra2,
-                            abundance.weighted=F,nperm=100)
+                            abundance.weighted=FALSE,nperm=100)
     head(Weighted.simu)
 
     tem = ps %>%

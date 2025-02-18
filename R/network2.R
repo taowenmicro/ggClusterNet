@@ -87,7 +87,7 @@ network.2 = function(
 
     mapi <- mapping[mapping$Group ==  layout,]
     psi = phyloseq(otu_table(ps_rela),
-                   tax_table(ps_rela),
+                   phyloseq::tax_table(ps_rela),
                    sample_data(mapi)
     ) %>%
       filter_OTU_ps(Top = N) %>%

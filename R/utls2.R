@@ -1255,15 +1255,30 @@ merge.ps <- function(ps1 ,
     ps_16s  =  filter_OTU_ps(ps = ps1,Top = N1)
     ###
     otu_table_16s = as.data.frame(t(vegan_otu(ps_16s)))
-    row.names(otu_table_16s) = paste(dat1.lab,row.names(otu_table_16s),sep = "_")
+
+    if (is.null(dat1.lab)) {
+      row.names(otu_table_16s) = row.names(otu_table_16s)
+    } else{
+      row.names(otu_table_16s) = paste(dat1.lab,row.names(otu_table_16s),sep = "_")
+    }
+
+
     ## change the OTU name of bac and fungi OTU table
     tax_table_16s = as.data.frame(vegan_tax(ps_16s))
     #-- add a col marked the bac and fungi
     if ("filed" %in%colnames(tax_table_16s)) {
 
     } else{
-      row.names(tax_table_16s) = paste(dat1.lab,row.names(tax_table_16s),sep = "_")
+
+
+      if (is.null(dat1.lab)) {
+        row.names(tax_table_16s) = row.names(tax_table_16s)
+      } else{
+        row.names(tax_table_16s) = paste(dat1.lab,row.names(tax_table_16s),sep = "_")
+      }
+
       tax_table_16s$filed = rep(dat1.lab,length(row.names(tax_table_16s)))
+
     }
 
   }
@@ -1273,12 +1288,28 @@ merge.ps <- function(ps1 ,
     otu_table_ITS = as.data.frame(t(vegan_otu(ps_ITS)))
     row.names(otu_table_ITS) = paste(dat2.lab,row.names(otu_table_ITS ),sep = "_")
     tax_table_ITS = as.data.frame(vegan_tax(ps_ITS))
+
+    if (is.null(dat2.lab)) {
+      row.names(tax_table_ITS) = row.names(tax_table_ITS)
+    } else{
+      row.names(tax_table_ITS) = paste(dat2.lab,row.names(tax_table_ITS),sep = "_")
+    }
+
+
+
     row.names(tax_table_ITS) = paste(dat2.lab,row.names(tax_table_ITS),sep = "_")
     tax_table_ITS$filed = rep(dat2.lab,length(row.names(tax_table_ITS)))
 
     if ("filed" %in%colnames(tax_table_ITS)) {
     } else{
-      row.names(tax_table_ITS) = paste(dat2.lab,row.names(tax_table_ITS),sep = "_")
+
+      if (is.null(dat2.lab)) {
+        row.names(tax_table_ITS) = row.names(tax_table_ITS)
+      } else{
+        row.names(tax_table_ITS) = paste(dat2.lab,row.names(tax_table_ITS),sep = "_")
+      }
+
+      # row.names(tax_table_ITS) = paste(dat2.lab,row.names(tax_table_ITS),sep = "_")
       tax_table_ITS$filed = rep(dat2.lab,length(row.names(tax_table_ITS)))
     }
   }

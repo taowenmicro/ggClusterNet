@@ -5,7 +5,7 @@ natural.con.microp = function(
     r.threshold= 0.8,
     p.threshold=0.05,
     method = "spearman",
-    norm = T,
+    norm = TRUE,
     end = 400,
     start = 0,
     con.method = "pulsar"
@@ -86,13 +86,20 @@ natural.con.micro  =function(cor,
     num = length(row.names(cor)) - j
     tem = sample(row.names(cor),num)
     cor.z = cor[tem,tem] %>% as.matrix()
+    # cor.z[1:50,1:5]
     # igraph = make_igraph(cor)
     #存在某些情况计算不出来相关系数，定义相关为0
     cor[is.na(cor.z)]<-0
+    cor.z[is.na(cor.z)] = 0
     #-去除自相关的点
     diag(cor.z) <- 0
     #-查看网络边的数量
-    sum(abs(cor.z)>0)/2
+    # tem = abs(cor.z)>0 %>% as.vector()
+    # tem2 = as.matrix(tem) %>% as.vector() %>% table() %>% as.data.frame()
+    # tem2[2,2]/2
+
+
+    sum(tem>0)/2
     #网络中节点的数量
     sum(colSums(abs(cor.z))>0)  # node number: number of species with at least one linkage with others.
     # #去除没有任何相关的节点.
@@ -106,9 +113,16 @@ natural.con.micro  =function(cor,
     }
   }
 
+
+
+
+
+
+
   dat = data.frame(Num.of.remove.nodes = A,Natural.connectivity = B)
   return(dat)
 }
+
 
 
 
