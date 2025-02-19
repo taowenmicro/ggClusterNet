@@ -9,9 +9,9 @@ net_properties.4 <-function(igraph, n.hub = FALSE
   #  Order (number of vertices) of a graph
   num.vertices <- length(igraph::V(igraph))# length(diversity(igraph, weights = NULL, vids = 	V(igraph)))
   num.vertices
-  
-  connectance <- edge_density(igraph,loops=FALSE)
-  
+
+  connectance <- igraph::edge_density(igraph,loops=FALSE)
+
   # (Average degree)
   average.degree <- mean(igraph::degree(igraph))# 或者为2M/N,其中M 和N 分别表示网络的边数和节点数。
   average.degree
@@ -20,35 +20,35 @@ net_properties.4 <-function(igraph, n.hub = FALSE
     igraph.weight <- igraph::E(igraph)$weight
     igraph::E(igraph)$weight = abs(igraph::E(igraph)$weight)
   }
-  
-  average.path.length <- average.path.length(igraph) # 同mean_distance(igraph) # mean_distance calculates the average path length in a graph
+
+  average.path.length <- igraph::average.path.length(igraph) # 同mean_distance(igraph) # mean_distance calculates the average path length in a graph
   average.path.length
-  
+
   # (Diameter)
-  diameter <- diameter(igraph, directed = FALSE, unconnected = TRUE, weights = NULL)
+  diameter <- igraph::diameter(igraph, directed = FALSE, unconnected = TRUE, weights = NULL)
   diameter
-  
-  
+
+
   if (!is.null(igraph::E(igraph)$weight)) {
     igraph::E(igraph)$weight = igraph.weight
   }
   #  edge connectivity / group adhesion
-  edge.connectivity <- edge_connectivity(igraph)
+  edge.connectivity <- igraph::edge_connectivity(igraph)
   edge.connectivity
   # (Clustering coefficient)
-  clustering.coefficient <- transitivity(igraph,type = "average")
+  clustering.coefficient <- igraph::transitivity(igraph,type = "average")
   clustering.coefficient
-  
-  no.clusters <- no.clusters(igraph)
+
+  no.clusters <- igraph::no.clusters(igraph)
   no.clusters
   # (Degree centralization)
-  centralization.degree <- centralization.degree(igraph)$centralization
+  centralization.degree <- igraph::centralization.degree(igraph)$centralization
   centralization.degree
   # (Betweenness centralization)
-  centralization.betweenness <- centralization.betweenness(igraph)$centralization
+  centralization.betweenness <- igraph::centralization.betweenness(igraph)$centralization
   centralization.betweenness
   # (Closeness centralization)
-  centralization.closeness <- centralization.closeness(igraph)$centralization
+  centralization.closeness <- igraph::centralization.closeness(igraph)$centralization
   centralization.closeness
   if (!is.null(igraph::E(igraph)$weight)) {
     num.pos.edges<-sum(igraph.weight>0)# number of postive correlation
@@ -57,13 +57,13 @@ net_properties.4 <-function(igraph, n.hub = FALSE
     num.pos.edges<-0# number of postive correlation
     num.neg.edges<-0# number of negative correlation
   }
-  
+
   #-----add RM
   modularity_igraph = function(net,method = "cluster_walktrap"){
     if (method == "cluster_walktrap" ) {
       fc <- igraph::cluster_walktrap(net,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
     }
-    
+
     if (method == "cluster_edge_betweenness" ) {
       fc <- igraph::cluster_edge_betweenness(net,weights =  abs(igraph::E(igraph)$weight))# cluster_walktrap 	cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
     }
@@ -79,7 +79,7 @@ net_properties.4 <-function(igraph, n.hub = FALSE
   mod1 = modularity_igraph(igraph,method = "cluster_walktrap")
   rand.g <- erdos.renyi.game(length(igraph::V(igraph)), length(igraph::E(igraph)),type = "gnm")
   mod2 = modularity_igraph(rand.g,method = "cluster_walktrap")
-  
+
   RM = (mod1-mod2)/mod2
   #---
   if (n.hub) {
@@ -90,8 +90,8 @@ net_properties.4 <-function(igraph, n.hub = FALSE
   } else {
     n.hub = "Not.calculated"
   }
-  
-  
+
+
   igraph.network.pro <- rbind(num.edges,num.pos.edges,
                               num.neg.edges,num.vertices,
                               connectance,average.degree,average.path.length,
@@ -103,7 +103,7 @@ net_properties.4 <-function(igraph, n.hub = FALSE
                               mod1,
                               mod2,
                               n.hub
-                              
+
   )
   rownames(igraph.network.pro)<-c("num.edges(L)",
                                   "num.pos.edges",

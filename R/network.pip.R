@@ -115,7 +115,17 @@ network.pip = function(
     print(layout)
 
     if (big == TRUE) {
-      result = cor_Big_micro(ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,method = method,scale = FALSE)
+
+      if (method == "sparcc") {
+        result = corMicro (ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,
+                           method = method,R = R,ncpus = ncpus)
+
+        }else{
+          result = cor_Big_micro(ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,method = method,scale = FALSE)
+        }
+
+
+
       a = 2} else if(big == FALSE){
         result = corMicro (ps = psi,N = 0,r.threshold= r.threshold,p.threshold=p.threshold,
                            method = method,R = R,ncpus = ncpus
@@ -239,7 +249,7 @@ network.pip = function(
   p1
 
   if (label == TRUE) {
-    p1 = p1 + geom_text_repel(aes(X1, X2,label = elements),pch = 21, data = node.1)
+    p1 = p1 + ggrepel::geom_text_repel(aes(X1, X2,label = elements),pch = 21, data = node.1)
   }
   #--net propeties#----
   i = 1
@@ -384,7 +394,7 @@ facet.zipi = function(
     guides(fill=guide_legend(title="Topological roles")) +
     scale_fill_manual(values = roles.colors)+
     geom_point(data=net.dat.4,aes(x=p, y=z,color=module)) + theme_bw()+
-    guides(color= F) +
+    guides(color= FALSE) +
     ggrepel::geom_text_repel(data = net.dat.4,
                              aes(x = p, y = z,
                                  color = module,label=label),size=4)+

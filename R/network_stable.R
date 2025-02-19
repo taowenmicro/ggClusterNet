@@ -46,6 +46,7 @@ module.compare.m = function(
     r.threshold= 0.8,
     p.threshold=0.05,
     method = "spearman",
+    clu.method = "cluster_fast_greedy",
     padj = F,
     n = 3,
     zoom = 0.2
@@ -90,7 +91,7 @@ module.compare.m = function(
     # igraph = make_igraph(cor)
     #--计算模块信息，部分OTU没有模块，注意去除
     result2 = model_maptree2(cor = cor,
-                             method = "cluster_fast_greedy"
+                             method = clu.method
     )
 
     mod1 = result2[[2]]

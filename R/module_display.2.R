@@ -148,7 +148,7 @@ module_display.2 = function(
 
     ) %>% select(ID,group,degree)
 
-  } else if (is.character(select.mod)& select.mod != "no") {
+  } else if (is.character(select.mod)& select.mod[1] != "no") {
     select.mod.name = select.mod
     mod1 = mod1 %>% filter(!group == "mother_no",
                            group %in%c(select.mod.name)
@@ -176,10 +176,10 @@ module_display.2 = function(
 
   nodes2 = nodes %>% inner_join(mod1,by = c("elements" = "ID"))
 
-  #-----计算边
+  #-----
   edge = edgeBuild(cor = cor[mod1$ID,mod1$ID],node = node)
 
-  ### 出图
+  ###
   p2 <- ggplot() + geom_segment(aes(x = X1, y = Y1, xend = X2, yend = Y2,color = as.factor(cor)),
                                 data = edge, size = 0.5) +
     geom_point(aes(X1, X2,fill = group,size = mean),pch = 21, data = nodes2) +

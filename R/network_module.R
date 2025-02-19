@@ -71,7 +71,7 @@ net.property.module.env = function(
 
     ) %>% select(ID,group,degree)
 
-  } else if (is.character(select.mod)& select.mod != "no") {
+  } else if (is.character(select.mod)& select.mod[1] != "no") {
     select.mod.name = select.mod
     mod1 = mod1 %>% filter(!group == "mother_no",
                            group %in%c(select.mod.name)
