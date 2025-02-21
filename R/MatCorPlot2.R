@@ -109,7 +109,7 @@ MatCorPlot2 <- function(
 
 
 
-  cor_link2(
+  p = cor_link2(
     data = result[[2]],# env table
     p = result[[1]], # ggplot object
     envdata = repR,# R value table
@@ -124,6 +124,8 @@ MatCorPlot2 <- function(
     p.thur = p.thur,#sig value
     onlysig = onlysig # if show sig connect
   )
+
+  return(p)
 }
 
 
@@ -201,7 +203,7 @@ Miccorplot2 <- function(data,
                        laby = colname[axis.2])
   # base plot
   p <- ggplot() +
-    geom_tile(aes(x = x, y = y),data = df0,fill=NA,color='gray',size=0.5) +
+    geom_tile(aes(x = x, y = y),data = df0,fill=NA,color='gray',linewidth =0.5) +
     scale_size(range = c(1, 8))+
     scale_fill_distiller(palette="RdYlBu") + theme_void()
 
@@ -328,6 +330,7 @@ Miccorplot2 <- function(data,
   }
 
 
+
   return(list(p,lindat))
 }
 
@@ -379,7 +382,7 @@ cor_link2 <- function(data,
   x = length(unique(data3$group))
   idtab = data3
   # filter R2 for curve
-  if (onlysig == TRUE) {
+  if (onlysig == TRUE& sig) {
     data3 = data3 %>% filter(p < p.thur )
   }
 
@@ -435,14 +438,7 @@ cor_link2 <- function(data,
     topdat$group = unique(data3$group)
 
   }
-
-
-
-
-
   # head(data3)
-
-
   tab2 = data3 %>% left_join(topdat,by = "group")
   # head(tab2)
 
@@ -458,8 +454,9 @@ cor_link2 <- function(data,
   id1 = idtab %>% filter(group ==unique(data3$group)[1]) %>%.[1:(floor(nrow(data)/2)),] %>%.$label
   id2 = idtab %>% filter(group ==unique(data3$group)[1]) %>%.[(floor(nrow(data)/2) + 1):nrow(data),] %>%.$label
 
-
+head(tab2)
   p = p +
+    # new_scale("size") +
     geom_curve(data = tab2 %>% filter(label %in% id1),
                aes_string(x = "xend",
                           y = "yend",
@@ -468,8 +465,9 @@ cor_link2 <- function(data,
                           group = "groupbc",
                           color ="groupr",
                           size = "size"),
-              curvature = -corva
+              curvature = -corva,show.legend = TRUE
                ) +
+    ggnewscale::new_scale("size") +
     geom_curve(data = tab2 %>% filter(label %in% id2),
                aes_string(x = "xend",
                           y = "yend",
@@ -478,11 +476,13 @@ cor_link2 <- function(data,
                           group = "groupbc",
                           color ="groupr",
                           size = "size"),
-               curvature = corva
+               curvature = corva,show.legend = FALSE
     ) +
+    scale_size_continuous(name = "Size.matel") +
     scale_color_manual(values = c("#91331FFF","#46732EFF")) +
     # guides(shape = guide_legend(override.aes = list(fill = "blue") )) +
     ggnewscale::new_scale_fill() +
+    ggnewscale::new_scale_color() +
     geom_point(data = tab2,
                    aes_string(x = "x",
                               y = "y",
@@ -490,15 +490,15 @@ cor_link2 <- function(data,
                   fill = "groupr",
                   size = tem2*0.65
                   ),
-                  pch = 21) +
+                  pch = 21,) +
     scale_color_manual(values = c("#91331FFF","#46732EFF")) +
     scale_fill_manual(values = c("#91331FFF","#46732EFF")) +
     ggnewscale::new_scale_fill() +
     geom_point(data = topdat,aes(x = xend, y = yend),pch = numpoint2,size =8,
-               color = "black",fill = "#FFF5EB") +
+               color = "grey60",fill = "#FFF5EB") +
     ggrepel::geom_text_repel(data = topdat,aes(x = xend, y = yend,label = group))
 
-  p
+  return(p)
 
 }
 
