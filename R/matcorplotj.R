@@ -48,11 +48,12 @@ matcorplotj = function(
                         numpoint = numpoint,
                         numsymbol = numsymbol)
 
-  cor_linkj(data = result[[2]],# env table
+  p = cor_linkj(data = result[[2]],# env table
             p = result[[1]], # ggplot object
             repR = repR,# R value table
             repP = repP,#p value table
             zoom = zoom,
+            sig = sig,
             matrix.line = matrix.line,
             corva = corva,
             numpoint2 = numpoint2,
@@ -66,7 +67,7 @@ matcorplotj = function(
 
 
 
-
+return(p)
 
 }
 

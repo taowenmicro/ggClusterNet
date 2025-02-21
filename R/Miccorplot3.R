@@ -71,6 +71,7 @@ Miccorplot3 <- function(data,
   labdat <- data.frame(x = axis,z = axis.2,
                        labx = colname[length(colname):1],
                        laby = colname[axis.2])
+
   # base plot
   p <- ggplot() +
     geom_tile(aes(x = x, y = y),data = df0,fill=NA,color='gray',linewidth =0.5) +
@@ -201,6 +202,6 @@ Miccorplot3 <- function(data,
 
 
 
-  return(list(p,lindat))
+  return(list(p,lindat,df0,labdat))
 }
 

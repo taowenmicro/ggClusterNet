@@ -8,6 +8,7 @@
 cor_link.dat <- function(data,
                       envdata = report,
                       Ptab,
+                      sig = F,
                       zoom = 2,
                       show = "z",
                       corva = 0,
