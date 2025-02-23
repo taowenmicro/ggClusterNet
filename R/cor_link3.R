@@ -116,11 +116,11 @@ cor_link3 <- function(data,
   }else if(show == "x"& lacy == "top"&lacx == "right"){
     data = data.frame(x = data$x ,y =max(data$y)+1,label = data$label)
   }else if(show == "x"& lacy == "top"&lacx == "left"){
-    data = data.frame(x = data$x+1 ,y =max(data$y)+1,label = data$label)
+    data = data.frame(x = data$x,y =max(data$y)+1,label = data$label)
   }else if(show == "x"& lacy == "bottom"&lacx == "left"){
-    data = data.frame(x = data$x,y =min(data$x)-1,label = data$label)
+    data = data.frame(x = data$x,y =min(data$y)-1,label = data$label)
   }else if(show == "x"& lacy == "bottom"&lacx == "right"){
-    data = data.frame(x = data$x ,y =min(data$x)-1,label = data$label)
+    data = data.frame(x = data$x ,y =min(data$y)-1,label = data$label)
   } else if(show == "z"){
     data = data
   }
