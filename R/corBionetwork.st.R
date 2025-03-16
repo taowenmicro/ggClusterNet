@@ -26,6 +26,10 @@
 # maxsize = 14
 # lab = NULL
 # label = TRUE
+# group.node = gru
+# model.node = TRUE
+
+
 # data(psITS)
 # #--细菌和真菌ps对象中的map文件要一样
 # ps.merge <- ggClusterNet::merge16S_ITS(ps16s = ps16s,
@@ -171,7 +175,7 @@ corBionetwork.st = function(
       head(map)
       map$Group
       ps.g = ps.f  %>% subset_samples.wt(g1,group[n]) %>% filter_OTU_ps(N)
-      big =- TRUE
+      big = TRUE
       if (bio) {
         if (!is.null(env)) {
 
@@ -228,18 +232,24 @@ corBionetwork.st = function(
 
           netClu = group2
           colnames(netClu) <- c("ID","group")
+
         }
 
       }
 
-      head(netClu)
+      # head(netClu)
 
       cor = result[[1]]
       tem = paste(dat.f[j,1],dat.f[j,2],group[n],sep = ".")
       cor.all[[tem]] = cor
       # gru.all[[tem]] = cor
 
-      #--构造边和节点文件，全部放到一起
+      if (!is.null(group.node)) {
+        group.node = group.node %>% dplyr::filter(ID %in% row.names(cor))
+        netClu = group.node
+
+      }
+
       res = node.edge(
         cor = cor,
         select_layout = TRUE,
@@ -251,6 +261,9 @@ corBionetwork.st = function(
 
       nod = res[[1]]
       nod$group = tem
+      # head(nod)
+      # ggplot(nod) + geom_point(aes(X1,X2))
+
       edg = res[[2]]
       edg$group = tem
 
@@ -341,6 +354,8 @@ corBionetwork.st = function(
   head(edge)
   head(node)
 
+  # ggplot(node %>% filter(group == "..Group1")) +geom_point(aes(X1,X2))
+
   tax = ps.st %>% vegan_tax() %>% as.data.frame() %>% rownames_to_column("elements")
   node = node %>% left_join(tax,by = "elements")
 
@@ -391,7 +406,7 @@ corBionetwork.st = function(
 
     }
 
-  return(list(network.plot = p0,network.data = net.dat))
+  return(list(network.plot = p0,network.data = net.dat,p1))
 
 }
 

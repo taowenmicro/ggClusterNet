@@ -36,7 +36,10 @@ culculate_node_axis = function(
       netClu  = modulGroup( cor = cor.matrix,cut = 3,method = method )
 
       }else{
-      netClu = group}
+      netClu = group
+      }
+
+
     node = group_layout(
       cor = cor.matrix,
       layout =layout,
@@ -91,6 +94,49 @@ total_layout = function(cor = cor,layout =layout,method = "cluster_fast_greedy" 
     )
     node = result2[[1]]
   }
+
+  if (layout == "model_Gephi.3") {
+    result2 = model_Gephi.3(
+      cor = cor,
+      t0 = 0.98,
+      t2 = 1.2,
+      t3 = 0)
+
+    node0 = result2[[1]]
+    node=data.frame(row.names = node0$OTU,X1 = node0$X1,X2 = node0$X2,elements = node0$OTU )
+
+  }
+
+  if (layout == "model_Gephi.4") {
+
+  dat <- layout.forceatlas2(cor = cor,
+                            noigraph = TRUE,
+                            iterations=500,
+                            plotstep=10,
+                            directed=FALSE,
+                            linlog = F,
+                            pos = NULL,
+                            nohubs = F,
+                            k = 100,
+                            gravity=0.1,
+                            ks=0.1,
+                            ksmax=10,
+                            delta = 15,
+                            center=NULL,
+                            tolerance = 5,
+                            dim = 2,
+                            plotlabels=TRUE
+  )
+
+
+
+  # head(dat)
+  node =dat
+  row.names(node) = node$elements
+  }
+
+
+
 
  return(node)
 

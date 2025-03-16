@@ -50,7 +50,7 @@ edgeBuild = function(cor = cor,node = node){
     dplyr::mutate(
       cor = ifelse(weight > 0,"+","-")
     )
-  colnames(edge)[8] = "cor"
+  # colnames(edge)[8] = "cor"
 
   return(edge)
 }

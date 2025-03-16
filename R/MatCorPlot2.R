@@ -115,6 +115,7 @@ MatCorPlot2 <- function(
     envdata = repR,# R value table
     Ptab = repP,#p value table
     zoom = zoom,
+    sig = sig,
     corva = corva,
     numpoint2 = numpoint2,
     curvature = curvature,
@@ -340,6 +341,7 @@ cor_link2 <- function(data,
                      p,
                      envdata = report,
                      Ptab,
+                     sig = sig,
                      zoom = 2,
                      corva = 0.2,
                      range = 1,
