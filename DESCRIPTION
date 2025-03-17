@@ -1,7 +1,7 @@
 Package: ggClusterNet
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.1.0
+Version: 2.00
 Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
@@ -13,6 +13,7 @@ RoxygenNote: 7.2.3
 Imports:
 	dplyr,
 	tidyr,
+	igraph,
 	network,
 	psych,
 	sna,
@@ -27,4 +28,4 @@ Imports:
 URL: https://github.com/taowenmicro/ggClusterNet
 BugReports: https://github.com/taowenmicro/ggClusterNet/issues
 Depends: 
-    R (>= 2.10)
+    R (>= 4.00)
