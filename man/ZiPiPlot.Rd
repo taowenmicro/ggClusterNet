@@ -2,31 +2,43 @@
 % Please edit documentation in R/ZiPiPlot.R
 \name{ZiPiPlot}
 \alias{ZiPiPlot}
-\title{Use the layout in the sne package to calculate the visual layout of the network}
+\title{Fast and robust Zi-Pi topological roles}
 \usage{
-ZiPiPlot(igraph = igraph, method = "cluster_fast_greedy")
+ZiPiPlot(
+  igraph,
+  method = "cluster_fast_greedy",
+  membership = NULL,
+  module_weights = TRUE,
+  role_weights = c("degree", "strength"),
+  zi_cut = 2.5,
+  pi_cut = 0.62,
+  label_key = TRUE
+)
 }
 \arguments{
-\item{method}{method to culculate Degree of modularity}
+\item{igraph}{igraph object.}
 
-\item{cor}{Correlation matrix}
+\item{method}{Community method: cluster_fast_greedy, cluster_walktrap,
+cluster_edge_betweenness, cluster_spinglass, or cluster_louvain.}
+
+\item{membership}{Optional precomputed module membership. If supplied,
+community detection is skipped.}
+
+\item{module_weights}{Use absolute edge weights for community detection.}
+
+\item{role_weights}{"degree" (recommended/default) or "strength".}
+
+\item{zi_cut}{Zi threshold for hubs.}
+
+\item{pi_cut}{Pi threshold for the simplified four-role scheme.}
+
+\item{label_key}{Label connectors/module hubs/network hubs.}
 }
 \value{
-list
+ZiPiPlot returns list(plot, data); module.roles returns data.frame.
 }
 \description{
-Use the layout in the sne package to calculate the visual layout of the network
-}
-\examples{
-data(igraph)
-res = ZiPiPlot(igraph = igraph,method = "cluster_fast_greedy")
-res[[1]]
-}
-\references{
-Yuan J, Zhao J, Wen T, Zhao M, Li R, Goossens P, Huang Q, Bai Y, Vivanco JM, Kowalchuk GA, Berendsen RL, Shen Q
-Root exudates drive the soil-borne legacy of aboveground pathogen infection
-Microbiome 2018,DOI: \url{doi: 10.1186/s40168-018-0537-x}
-}
-\author{
-Contact: Tao Wen \email{2018203048@njau.edu.cn} Jun Yuan \email{junyuan@njau.edu.cn}
+Drop-in replacement for the previous ZiPiPlot/module.roles implementation.
+Zi follows within-module degree z-score; Pi follows Guimera & Amaral (2005).
+Computation is O(E) after community detection instead of O(V^2).
 }

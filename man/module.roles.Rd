@@ -2,32 +2,16 @@
 % Please edit documentation in R/module.roles.R
 \name{module.roles}
 \alias{module.roles}
-\title{Module roles}
+\title{Fast module roles}
 \usage{
-module.roles(comm_graph)
-}
-\arguments{
-\item{comm_graph}{: Graph object returned by `co_occurence_network` function.}
+module.roles(
+  comm_graph,
+  membership = NULL,
+  role_weights = c("degree", "strength"),
+  zi_cut = 2.5,
+  pi_cut = 0.62
+)
 }
 \description{
-This function assigns roles to features identified in sub communities using
-two metrics that is: within-module degree which measures how well a particular feature is connected to others in the same subcommunity (module.)
-The second metric is among-module connectivity which measures how a feature is linked
-to other modules in the network. Features are classified as ultra peripherals,
-peripherals, provincial, connectors, kinless, module hubs, or non hubs.
-}
-\examples{
-taxa.roles <- module.roles(g)
-p <- plot_roles(taxa.roles)
-print(p)
-
-}
-\references{
-\url{http://userweb.eng.gla.ac.uk/umer.ijaz/}, Umer Ijaz, 2015
-
-Guimera, Roger, and Luis A Nunes Amaral. 2005. “Functional Cartography of Complex Metabolic Networks.”
-Nature 433 (7028). NIH Public Access: 895.
-}
-\author{
-Alfred Ssekagiri \email{assekagiri@gmail.com},  Umer Zeeshan Ijaz \email{Umer.Ijaz@glasgow.ac.uk}
+Uses an existing vertex attribute "module" when membership is not supplied.
 }
