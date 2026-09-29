@@ -97,7 +97,9 @@ module.compare.m = function(
     mod1 = result2[[2]]
     head(mod1)
 
-    mod1 = mod1 %>% filter(!group == "mother_no") %>% select(ID,group)
+    mod1 = mod1 %>%
+      dplyr::filter(!group == "mother_no") %>%
+      dplyr::select(ID, group)
     mod1$group = paste(id[i],mod1$group,sep = "")
     mod1$Group = id[i]
     head(mod1)
@@ -121,7 +123,7 @@ module.compare.m = function(
 
   head(dat2)
   head(node_table2)
-  tem = node_table2 %>% distinct( group, .keep_all = TRUE)
+  tem = node_table2 %>% dplyr::distinct(group, .keep_all = TRUE)
 
   if (c("none") %in% dat2[1,1]) {
     pnet = NULL
@@ -150,9 +152,10 @@ module.compare.m = function(
     head(node)
     head(edge)
 
-    edge2 = edge %>% left_join(node,by = c("from" = "elements")) %>%
-      dplyr::rename(x1 = X1,y1 = X2) %>%left_join(node,by = c("to" = "elements")) %>%
-      dplyr::rename(x2 = X1,y2 = X2)
+    edge2 = edge %>% dplyr::left_join(node, by = c("from" = "elements")) %>%
+      dplyr::rename(x1 = X1, y1 = X2) %>%
+      dplyr::left_join(node, by = c("to" = "elements")) %>%
+      dplyr::rename(x2 = X1, y2 = X2)
     head(edge2)
 
     ### 出图
@@ -706,11 +709,11 @@ Robustness.Random.removal = function(
     #输入相关矩阵 OTU表格
     Weighted.simu<-rmsimu2(netRaw = network.raw,
 
-                          rm.p.list=seq(0.05,1,by=0.05), sp.ra=sp.ra2,
-                          abundance.weighted=TRUE,nperm=100)
+                           rm.p.list=seq(0.05,1,by=0.05), sp.ra=sp.ra2,
+                           abundance.weighted=TRUE,nperm=100)
     head(Weighted.simu)
     Unweighted.simu<-rmsimu2(netRaw=network.raw, rm.p.list=seq(0.05,1,by=0.05), sp.ra=sp.ra2,
-                            abundance.weighted=FALSE,nperm=100)
+                             abundance.weighted=FALSE,nperm=100)
     head(Weighted.simu)
 
     tem = ps %>%
